@@ -139,8 +139,7 @@ psychology-backend/.venv/
 .env
 .env.local
 psychology-backend/.env
-center-for-psychology-health/.env
-center-for-psychology-health/.env.local
+
 
 # pixi
 #   Similar to Pipfile.lock, it is generally recommended to include pixi.lock in version control.
