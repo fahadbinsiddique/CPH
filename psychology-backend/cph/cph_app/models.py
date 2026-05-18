@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from cloudinary.models import CloudinaryField
 
 class User(AbstractUser):
     ROLE_CHOICES = (
@@ -16,9 +17,18 @@ class User(AbstractUser):
 
     # username= 'email'
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username'] # সুপারইউজার তৈরি
-    
-    
-
+    REQUIRED_FIELDS = ['username'] # for superuser
     def __str__(self):
         return self.email
+    
+
+class StudentInfo(models.Model):
+    name=models.CharField(max_length=120,null=True)
+    adress=models.CharField(max_length=120,null=True)
+    department=models.CharField(max_length=120,null=True)
+    phone=models.CharField(max_length=120,null=True)
+    photo=CloudinaryField('image')
+
+    def __str__(self):
+        return f'{self.name}'
+    
