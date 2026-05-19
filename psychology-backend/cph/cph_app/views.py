@@ -51,3 +51,5 @@ class StudentModelViewSet(ModelViewSet):
     queryset = StudentInfo.objects.all()
 
     serializer_class = StudentInfoSerializer
+    # permission_classes=[IsAuthenticated]
+  

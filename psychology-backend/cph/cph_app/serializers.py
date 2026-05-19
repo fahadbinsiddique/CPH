@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from django.contrib.auth import authenticate
+from rest_framework.permissions import IsAuthenticated
 from cph_app.models import *
 
 
@@ -44,3 +45,4 @@ class StudentInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = StudentInfo
         fields = '__all__'
+    

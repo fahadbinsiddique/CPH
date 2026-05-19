@@ -1,17 +1,37 @@
 "use client";
 
-import { Eye, EyeOff, Lock, Mail } from 'lucide-react';
+import React, { useState } from 'react';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useRouter } from 'next/navigation'; // ১. useRouter ইম্পোর্ট করুন
+import { Eye, EyeOff, Mail, Lock } from 'lucide-react';
 
 export default function LoginPage() {
+  const router = useRouter(); // ২. হুকটি ইনিশিয়ালাইজ করুন
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({ email: '', password: '' });
+  const [isLoading, setIsLoading] = useState(false); // লোডিং স্টেট
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Login Data submitted:", formData);
-    // এখানে আমরা পরে আমাদের authService.js কানেক্ট করব
+    setIsLoading(true);
+
+    try {
+      console.log("Login Data submitted:", formData);
+      
+      // -------------------------------------------------------------
+      // এখানে পরে ব্যাকএন্ডের আসল এপিআই (authService.js) কল হবে।
+      // আপাতত আমরা ১ সেকেন্ডের একটা নকল (Mock) সাকসেস লজিক বানাচ্ছি:
+      // -------------------------------------------------------------
+      await new Promise((resolve) => setTimeout(resolve, 1000)); 
+
+      // ৩. লগইন সফল হলে ড্যাশবোর্ডে রিডাইরেক্ট করুন
+      router.push('/'); 
+      
+    } catch (error) {
+      console.error("Login failed:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -67,9 +87,10 @@ export default function LoginPage() {
         {/* Submit Button */}
         <button
           type="submit"
-          className="w-full bg-slate-900 hover:bg-slate-800 text-white py-2.5 rounded-lg font-medium transition shadow-sm"
+          disabled={isLoading}
+          className="w-full bg-slate-900 hover:bg-slate-800 disabled:bg-slate-400 text-white py-2.5 rounded-lg font-medium transition shadow-sm"
         >
-          Sign In
+          {isLoading ? "Signing In..." : "Sign In"}
         </button>
       </form>
 
