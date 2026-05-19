@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState } from 'react';
+import { Eye, EyeOff, Lock, Mail } from 'lucide-react';
 import Link from 'next/link';
-import { Eye, EyeOff, Mail, Lock } from 'lucide-react';
+import { useState } from 'react';
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);

@@ -5,7 +5,7 @@ from cph_app.models import *
 
 
 class RegisterSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True)
+    password = serializers.CharField(write_only=True,min_length=8)
     confirm_password = serializers.CharField(write_only=True)
 
     class Meta:
@@ -28,9 +28,9 @@ class LoginSerializer(serializers.Serializer):
     password = serializers.CharField(write_only=True)
 
     def validate(self, data):
-        print(f"লগইন চেষ্টা - ইউজারনেম: {data['username']}, পাসওয়ার্ড: {data['password']}")
+        
         user = authenticate(username=data["username"], password=data["password"])
-        print(f"Authentication Result: {user}") #
+        
         if not user:
             raise ValidationError("Invalid credential")
 

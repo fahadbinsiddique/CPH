@@ -36,7 +36,11 @@ INSTALLED_APPS = [
     'cloudinary',
 
     # Local App
-    'cph_app'
+    'cph_app',
+    'consultants',
+    'appointments',
+    'blogs',
+    'assessments',
 ]
 
 MIDDLEWARE = [
