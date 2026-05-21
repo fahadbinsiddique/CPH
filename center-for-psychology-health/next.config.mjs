@@ -17,9 +17,16 @@ const nextConfig = {
         port: '',
         pathname: '/**',
       },
+      // 🎯 Cloudinary-কে 'domains' থেকে সরিয়ে 'remotePatterns'-এ নিয়ে আসা হলো
+      {
+        protocol: 'https',
+        hostname: 'res.cloudinary.com',
+        port: '',
+        pathname: '/**',
+      },
     ],
-    domains: ['res.cloudinary.com'],
   },
+
 }
 
-export default nextConfig
+export default nextConfig;
