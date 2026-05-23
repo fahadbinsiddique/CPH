@@ -53,24 +53,28 @@ const Navbar = () => {
 
   const handleAuth = (action) => {
     console.log(`${action} clicked`)
-    // Replace with your auth logic (e.g., router.push(`/auth/${action}`))
   }
 
   return (
-    <header className="fixed top-0 left-0 w-full z-50 font-sans ">
-      {/* Top Header Component */}
+    <header className="fixed top-0 left-0 w-full z-50 font-sans">
+      {/* Top Header Component (Our lean, passive version) */}
       <TopHeader />
 
       {/* Main Navigation Bar */}
       <nav
         className={`transition-all duration-300 ${
-          scrolled ? 'bg-white/80 backdrop-blur-md shadow-lg' : 'bg-white/60 backdrop-blur-sm'
-        } border-b border-white/20`}
+          /* 
+            FIX: 
+            - স্ক্রল না করলেও ব্যাকগ্রাউন্ডকে হোয়াইট-অপাসিটি ৯০% দেওয়া হয়েছে (bg-white/90) যাতে কনটেন্ট রিডিবিলিটি বাড়ে।
+            - স্ক্রল করলে একদম সলিড রিচ শ্যাডো (shadow-md) জেনারেট হবে।
+          */
+          scrolled ? 'bg-white backdrop-blur-md shadow-md py-2' : 'bg-white/90 backdrop-blur-sm py-4'
+        } border-b border-slate-200/80`}
       >
-        <div className="container mx-auto px-4 py-3 flex items-center justify-between">
+        <div className="container mx-auto px-4 flex items-center justify-between">
           {/* Logo */}
           <motion.div
-            whileHover={{ scale: 1.02 }}
+            whileHover={{ scale: 1.01 }}
             className="flex items-center gap-2 cursor-pointer"
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           >
@@ -93,10 +97,16 @@ const Navbar = () => {
                   e.preventDefault()
                   handleLinkClick(link.href, link.id)
                 }}
-                className={`relative text-gray-700 font-medium text-xl transition-all duration-300 hover:text-teal-600 ${
+                /* 
+                  FIX: 
+                  - text-gray-700 থেকে text-slate-800 করা হয়েছে গভীর ডার্ক ও অথরিটি লুকের জন্য।
+                  - font-medium থেকে font-semibold করা হয়েছে ফন্টের ওয়েট বা থিকনেস বাড়ানোর জন্য।
+                  - একটিভ লিংকে text-teal-700 এবং font-bold দিয়ে কন্ট্রাস্ট বাড়ানো হয়েছে।
+                */
+                className={`relative text-xl transition-all duration-300 hover:text-teal-600 tracking-tight ${
                   activeSection === link.id
-                    ? 'text-teal-600 after:absolute after:bottom-[-4px] after:left-0 after:w-full after:h-0.5 after:bg-teal-500 after:rounded-full after:scale-x-100'
-                    : 'after:absolute after:bottom-[-4px] after:left-0 after:w-full after:h-0.5 after:bg-teal-500 after:rounded-full after:scale-x-0 after:transition-transform after:duration-300 hover:after:scale-x-100'
+                    ? 'text-teal-700 font-bold after:absolute after:bottom-[-6px] after:left-0 after:w-full after:h-[3px] after:bg-teal-600 after:rounded-full after:scale-x-100'
+                    : 'text-slate-800 font-semibold after:absolute after:bottom-[-6px] after:left-0 after:w-full after:h-[3px] after:bg-teal-600 after:rounded-full after:scale-x-0 after:transition-transform after:duration-300 hover:after:scale-x-100'
                 }`}
               >
                 {link.name}
@@ -104,32 +114,39 @@ const Navbar = () => {
             ))}
           </div>
 
-          {/* Desktop Auth Buttons */}
-          <div className="hidden md:flex items-center gap-3">
+          {/* Desktop Auth Buttons (More Dominant) */}
+          <div className="hidden md:flex items-center gap-4">
+            {/* Sign In button */}
             <motion.button
-              whileHover={{ scale: 1.03 }}
+              whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               onClick={() => handleAuth('signin')}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-full border border-teal-300 text-teal-600 hover:bg-teal-50 hover:border-teal-400 transition-all font-medium shadow-sm"
+              className="flex items-center gap-2 px-5 py-2.5 rounded-full border-2 border-teal-600 text-teal-700 hover:bg-teal-50 transition-all font-semibold text-base shadow-sm"
             >
-              <LogIn size={16} />
+              <LogIn size={16} className="stroke-[2.5]" />
               Sign In
             </motion.button>
 
+            {/* Sign Up button (Primary CTA) */}
             <motion.button
-              whileHover={{ scale: 1.03 }}
+              whileHover={{ scale: 1.02, y: -1 }}
               whileTap={{ scale: 0.98 }}
               onClick={() => handleAuth('signup')}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-teal-600 to-emerald-600 text-white font-medium shadow-md hover:shadow-lg transition-all"
+              /* 
+                FIX: 
+                - border এবং শ্যাডো বুস্ট করা হয়েছে (shadow-teal-100)।
+                - font-bold এবং টেক্সট ট্র্যাকিং ইমপ্রুভ করা হয়েছে।
+              */
+              className="flex items-center gap-2 px-6 py-2.5 rounded-full bg-gradient-to-r from-teal-600 to-emerald-600 text-white font-bold text-base shadow-md shadow-teal-600/10 hover:shadow-lg hover:shadow-teal-600/20 transition-all"
             >
-              <UserPlus size={16} />
+              <UserPlus size={16} className="stroke-[2.5]" />
               Sign Up
             </motion.button>
           </div>
 
           {/* Mobile Menu Toggle */}
           <button
-            className="md:hidden text-gray-700 focus:outline-none"
+            className="md:hidden text-slate-800 focus:outline-none"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label="Toggle menu"
           >
@@ -145,7 +162,7 @@ const Navbar = () => {
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.3 }}
-              className="md:hidden bg-white/95 backdrop-blur-lg border-t border-gray-100 shadow-xl overflow-hidden"
+              className="md:hidden bg-white border-t border-slate-100 shadow-xl overflow-hidden"
             >
               <div className="container mx-auto px-4 py-6 flex flex-col gap-4">
                 {navLinks.map((link) => (
@@ -156,10 +173,10 @@ const Navbar = () => {
                       e.preventDefault()
                       handleLinkClick(link.href, link.id)
                     }}
-                    className={`text-gray-800 font-medium py-2 transition-all duration-200 ${
+                    className={`text-lg font-semibold py-2 transition-all duration-200 ${
                       activeSection === link.id
                         ? 'text-teal-600 border-l-4 border-teal-500 pl-3'
-                        : 'hover:text-teal-600 hover:pl-3'
+                        : 'text-slate-800 hover:text-teal-600 hover:pl-3'
                     }`}
                   >
                     {link.name}
@@ -167,19 +184,19 @@ const Navbar = () => {
                 ))}
 
                 {/* Mobile Auth Buttons */}
-                <div className="flex flex-col sm:flex-row gap-3 mt-4 pt-4 border-t border-gray-100">
+                <div className="flex flex-col sm:flex-row gap-3 mt-4 pt-4 border-t border-slate-100">
                   <button
                     onClick={() => handleAuth('signin')}
-                    className="flex items-center justify-center gap-2 w-full border border-teal-300 text-teal-600 py-2.5 rounded-full hover:bg-teal-50 transition-all font-medium"
+                    className="flex items-center justify-center gap-2 w-full border-2 border-teal-600 text-teal-700 py-2.5 rounded-full hover:bg-teal-50 transition-all font-semibold"
                   >
-                    <LogIn size={16} />
+                    <LogIn size={16} className="stroke-[2.5]" />
                     Sign In
                   </button>
                   <button
                     onClick={() => handleAuth('signup')}
-                    className="flex items-center justify-center gap-2 w-full bg-gradient-to-r from-teal-600 to-emerald-600 text-white py-2.5 rounded-full hover:shadow-lg transition-all font-medium"
+                    className="flex items-center justify-center gap-2 w-full bg-gradient-to-r from-teal-600 to-emerald-600 text-white py-2.5 rounded-full hover:shadow-lg transition-all font-bold"
                   >
-                    <UserPlus size={16} />
+                    <UserPlus size={16} className="stroke-[2.5]" />
                     Sign Up
                   </button>
                 </div>

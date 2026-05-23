@@ -245,7 +245,7 @@ const TherapistsSection = () => {
         >
           <Button
             variant="secondary"
-            className="inline-flex items-center gap-2 text-sm font-semibold text-emerald-600 hover:text-emerald-700 transition-colors group"
+            className="inline-flex items-center gap-2 text-sm font-semibold border-2 border-teal-600 text-teal-700 text-emerald-600 hover:text-emerald-700 transition-colors group"
           >
             <span>View all 50+ specialists</span>
             <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
