@@ -1,141 +1,216 @@
-'use client';
+"use client"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { Eye, EyeOff, Lock, Mail, Phone, User, AlertCircle } from 'lucide-react'
+import { useState } from "react"
+import { useRouter } from "next/router"
 
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
-
-export default function RegisterPage() {
-  const router = useRouter();
+const RegisterForm = () => {
+  // const router = useRouter()
+  // ফর্ম স্টেট
   const [formData, setFormData] = useState({
     username: '',
     email: '',
     phone_number: '',
-    // role: 'client', // Default role matching your model
     password: '',
-    confirm_password: '',
-  });
+    confirm_password: ''
+  })
 
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
-  const [loading, setLoading] = useState(false);
+  // স্টেট ম্যানেজমেন্ট
+  const [error, setError] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
 
-  // Input হ্যান্ডেলার
+  // ইনপুট চেঞ্জ হ্যান্ডলার
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
+    const { name, value } = e.target
+    setFormData(prev => ({ ...prev, [name]: value }))
+    // ইউজার টাইপ করা শুরু করলে আগের এরর রিমুভ করে দেওয়া
+    if (error) setError('')
+  }
 
-  // ফর্ম সাবমিট হ্যান্ডেলার
+  // ফর্ম সাবমিট হ্যান্ডলার
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError('');
-    setSuccess('');
+    e.preventDefault()
+    setError('')
 
-    // ১. পাসওয়ার্ড ম্যাচিং ভ্যালিডেশন (ফ্রন্টএন্ডেই চেক করে নেওয়া ভালো)
+    // পাসওয়ার্ড ম্যাচিং চেক (আপনার সিরিয়ালাইজারের লজিক অনুযায়ী)
     if (formData.password !== formData.confirm_password) {
-      setError('পাসওয়ার্ড দুটি মিলছে না!');
-      return;
+      setError("Passwords do not match")
+      return
     }
 
-    setLoading(true);
+    setIsLoading(true)
 
     try {
-      // ২. ব্যাকএন্ড API-তে ডেটা পাঠানো
+      // এখানে আপনার API কল হবে
+      console.log("Submitting to Django backend:", formData)
+      
+      // API Call Example:
       const response = await fetch('http://127.0.0.1:8000/api/auth/register/', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          username: formData.username,
-          email: formData.email,
-          phone_number: formData.phone_number,
-        //   role: formData.role,
-          password: formData.password,
-          confirm_password: formData.confirm_password,
-        }),
-      });
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      })
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        // ব্যাকএন্ড থেকে কোনো এরর মেসেজ আসলে তা দেখানো
-        throw new Error(data.message || data.error || 'রেজিস্ট্রেশন ব্যর্থ হয়েছে। আবার চেষ্টা করুন।');
-      }
-
-      // ৩. সফল হলে মেসেজ দেখানো এবং লগইন পেজে রিডাইরেক্ট করা
-      setSuccess('রেজিস্ট্রেশন সফল হয়েছে! লগইন পেজে রিডাইরেক্ট করা হচ্ছে...');
+      // if (response.ok)
+      //   router.push('/auth/login')
       
-      setTimeout(() => {
-        router.push('/auth/login'); // আপনার লগইন পেজের রাউট
-      }, 2000); // ২ সেকেন্ড পর রিডাইরেক্ট হবে
-
+      
     } catch (err) {
-      setError(err.message);
+      setError("Something went wrong. Please try again.")
     } finally {
-      setLoading(false);
+      setIsLoading(false)
     }
-  };
+  }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 p-6">
-      <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-        <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">Create an Account</h2>
+    <div className="w-full max-w-md mx-auto p-4">
+      <Card className="border-slate-200/80 bg-white/80 backdrop-blur-md shadow-xl shadow-teal-900/5 rounded-2xl">
+        <CardHeader className="space-y-1 text-center">
+          <CardTitle className="text-2xl font-bold tracking-tight text-slate-800">
+            Create an account
+          </CardTitle>
+          <CardDescription className="text-slate-500">
+            Start your journey to mental wellness today
+          </CardDescription>
+        </CardHeader>
         
-        {/* এরর এবং সাকসেস মেসেজ অ্যালার্ট */}
-        {error && <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded mb-4 text-sm">{error}</div>}
-        {success && <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded mb-4 text-sm">{success}</div>}
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            
+            {/* পাসওয়ার্ড না মিললে Shadcn Alert দেখাবে */}
+            {error && (
+              <Alert variant="destructive" className="bg-red-50 text-red-900 border-red-200 py-3 rounded-xl">
+                <AlertCircle className="h-4 w-4 text-red-600" />
+                <AlertDescription className="text-sm font-medium">
+                  {error}
+                </AlertDescription>
+              </Alert>
+            )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          
-          {/* Username */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Username</label>
-            <input type="text" name="username" required value={formData.username} onChange={handleChange} className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-black" />
-          </div>
+            {/* Username Field */}
+            <div className="space-y-1.5">
+              <Label htmlFor="username" className="text-slate-700 font-medium text-sm">Username</Label>
+              <div className="relative">
+                <User className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
+                <Input
+                  id="username"
+                  name="username"
+                  type="text"
+                  placeholder="johndoe"
+                  required
+                  value={formData.username}
+                  onChange={handleChange}
+                  className="pl-9 bg-slate-50/50 border-slate-200 focus-visible:ring-teal-500 h-10 rounded-xl"
+                />
+              </div>
+            </div>
 
-          {/* Full Name */}
-          {/* <div>
-            <label className="block text-sm font-medium text-gray-700">Full Name</label>
-            <input type="text" name="full_name" value={formData.full_name} onChange={handleChange} className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-black" />
-          </div> */}
+            {/* Email Field */}
+            <div className="space-y-1.5">
+              <Label htmlFor="email" className="text-slate-700 font-medium text-sm">Email address</Label>
+              <div className="relative">
+                <Mail className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
+                <Input
+                  id="email"
+                  name="email"
+                  type="email"
+                  placeholder="name@example.com"
+                  required
+                  value={formData.email}
+                  onChange={handleChange}
+                  className="pl-9 bg-slate-50/50 border-slate-200 focus-visible:ring-teal-500 h-10 rounded-xl"
+                />
+              </div>
+            </div>
 
-          {/* Email */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Email Address</label>
-            <input type="email" name="email" required value={formData.email} onChange={handleChange} className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-black" />
-          </div>
+            {/* Phone Number Field */}
+            <div className="space-y-1.5">
+              <Label htmlFor="phone_number" className="text-slate-700 font-medium text-sm">Phone Number</Label>
+              <div className="relative">
+                <Phone className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
+                <Input
+                  id="phone_number"
+                  name="phone_number"
+                  type="tel"
+                  placeholder="017XXXXXXXX"
+                  required
+                  value={formData.phone_number}
+                  onChange={handleChange}
+                  className="pl-9 bg-slate-50/50 border-slate-200 focus-visible:ring-teal-500 h-10 rounded-xl"
+                />
+              </div>
+            </div>
 
-          {/* Phone Number */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Phone Number</label>
-            <input type="text" name="phone_number" value={formData.phone_number} onChange={handleChange} className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-black" />
-          </div>
+            {/* Password Field */}
+            <div className="space-y-1.5">
+              <Label htmlFor="password" className="text-slate-700 font-medium text-sm">Password</Label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
+                <Input
+                  id="password"
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="••••••••"
+                  required
+                  value={formData.password}
+                  onChange={handleChange}
+                  className="pl-9 pr-10 bg-slate-50/50 border-slate-200 focus-visible:ring-teal-500 h-10 rounded-xl"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 transition-colors"
+                >
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
+            </div>
 
-       
+            {/* Confirm Password Field */}
+            <div className="space-y-1.5">
+              <Label htmlFor="confirm_password" className="text-slate-700 font-medium text-sm">Confirm Password</Label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
+                <Input
+                  id="confirm_password"
+                  name="confirm_password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="••••••••"
+                  required
+                  value={formData.confirm_password}
+                  onChange={handleChange}
+                  className="pl-9 bg-slate-50/50 border-slate-200 focus-visible:ring-teal-500 h-10 rounded-xl"
+                />
+              </div>
+            </div>
 
-          {/* Password */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Password</label>
-            <input type="password" name="password" required value={formData.password} onChange={handleChange} className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-black" />
-          </div>
-
-          {/* Confirm Password */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Confirm Password</label>
-            <input type="password" name="confirm_password" required value={formData.confirm_password} onChange={handleChange} className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-black" />
-          </div>
-
-          {/* Submit Button */}
-          <button type="submit" disabled={loading} className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-indigo-400">
-            {loading ? 'Registering...' : 'Register'}
-          </button>
-        </form>
-
-        <button><Link href={'/auth/login'}>Already have an account?</Link></button>
-      </div>
+            {/* Submit Button */}
+            <Button 
+              type="submit" 
+              disabled={isLoading}
+              className="w-full bg-teal-600 hover:bg-teal-700 text-white font-medium h-10 rounded-xl transition-all shadow-md shadow-teal-600/10 mt-2"
+            >
+              {isLoading ? "Creating account..." : "Register"}
+            </Button>
+          </form>
+        </CardContent>
+        
+        <CardFooter className="justify-center border-t border-slate-100 py-4">
+          <p className="text-xs text-slate-500">
+            Already have an account?
+            <a href="/auth/login" className="text-teal-600 font-semibold hover:underline">
+              Sign in
+            </a>
+          </p>
+        </CardFooter>
+      </Card>
     </div>
-  );
+  )
 }
+
+export default RegisterForm

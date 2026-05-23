@@ -2,16 +2,17 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from django.contrib.auth import authenticate
 from rest_framework.permissions import IsAuthenticated
+from django.contrib.auth.password_validation import validate_password
 from cph_app.models import *
 
 
 class RegisterSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True,min_length=8)
+    password = serializers.CharField(write_only=True, validators=[validate_password])
     confirm_password = serializers.CharField(write_only=True)
 
     class Meta:
         model = User
-        fields = ["username", "email", "phone_number", "password", "confirm_password"]
+        fields = ["full_name", "email", "phone_number", "role", "password", "confirm_password"]
 
     def validate(self, data):
         if data["password"] != data["confirm_password"]:
@@ -20,6 +21,12 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         validated_data.pop("confirm_password")
+
+        # ম্যাজিক ট্রিক: যেহেতু USERNAME_FIELD হলো email, তাই ব্যাকগ্রাউন্ডে 
+        # ইমেইলের ভ্যালুটাকেই username হিসেবে সেট করে দেওয়া হলো। ফ্রন্টএন্ডের আর প্যারা নাই!
+        email = validated_data.get('email')
+        validated_data['username'] = email
+
         user = User.objects.create_user(**validated_data)
         return user
 
