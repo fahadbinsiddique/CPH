@@ -19,7 +19,6 @@ const nextConfig = {
       },
       // 🎯 Cloudinary-কে 'domains' থেকে সরিয়ে 'remotePatterns'-এ নিয়ে আসা হলো
       {
-        protocol: 'https',
         hostname: 'res.cloudinary.com',
         port: '',
         pathname: '/**',

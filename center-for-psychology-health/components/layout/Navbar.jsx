@@ -5,8 +5,11 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, X, LogIn, UserPlus } from 'lucide-react'
 import Image from 'next/image'
 import TopHeader from './TopHeader' // adjust import path as needed
+import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 
 const Navbar = () => {
+  const router = useRouter()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const [activeSection, setActiveSection] = useState('')
@@ -36,20 +39,13 @@ const Navbar = () => {
 
   const navLinks = [
     { name: 'Features', href: '#features', id: 'features' },
-    { name: 'Consultants', href: '#therapists', id: 'therapists' },
+    { name: 'Consultants', href: '/consultant', id: 'consultant' },
     { name: 'Testimonials', href: '#testimonials', id: 'testimonials' },
     { name: 'Blog', href: '#faq', id: 'faq' },
     { name: 'About', href: '#blog', id: 'blog' },
   ]
 
-  const handleLinkClick = (href, id) => {
-    setMobileMenuOpen(false)
-    const element = document.querySelector(href)
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth', block: 'start' })
-      setActiveSection(id)
-    }
-  }
+  
 
   const handleAuth = (action) => {
     console.log(`${action} clicked`)
@@ -63,12 +59,9 @@ const Navbar = () => {
       {/* Main Navigation Bar */}
       <nav
         className={`transition-all duration-300 ${
-          /* 
-            FIX: 
-            - স্ক্রল না করলেও ব্যাকগ্রাউন্ডকে হোয়াইট-অপাসিটি ৯০% দেওয়া হয়েছে (bg-white/90) যাতে কনটেন্ট রিডিবিলিটি বাড়ে।
-            - স্ক্রল করলে একদম সলিড রিচ শ্যাডো (shadow-md) জেনারেট হবে।
-          */
-          scrolled ? 'bg-white backdrop-blur-md shadow-md py-2' : 'bg-white/90 backdrop-blur-sm py-4'
+          scrolled
+            ? 'bg-white backdrop-blur-md shadow-md py-2'
+            : 'bg-white/90 backdrop-blur-sm py-4'
         } border-b border-slate-200/80`}
       >
         <div className="container mx-auto px-4 flex items-center justify-between">
@@ -78,31 +71,25 @@ const Navbar = () => {
             className="flex items-center gap-2 cursor-pointer"
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           >
+            <Link href={'/'}>
             <Image
               src={'/logo.jpg'}
-              width={180}
-              height={120}
+              loading='eager'
+              width={300}
+              height={200}
               alt="Center For Psychological Health logo"
               className="object-contain"
-            />
+              />
+              </Link>
           </motion.div>
 
           {/* Desktop Navigation Links */}
           <div className="hidden md:flex items-center gap-8">
             {navLinks.map((link) => (
-              <a
+              <Link
                 key={link.name}
                 href={link.href}
-                onClick={(e) => {
-                  e.preventDefault()
-                  handleLinkClick(link.href, link.id)
-                }}
-                /* 
-                  FIX: 
-                  - text-gray-700 থেকে text-slate-800 করা হয়েছে গভীর ডার্ক ও অথরিটি লুকের জন্য।
-                  - font-medium থেকে font-semibold করা হয়েছে ফন্টের ওয়েট বা থিকনেস বাড়ানোর জন্য।
-                  - একটিভ লিংকে text-teal-700 এবং font-bold দিয়ে কন্ট্রাস্ট বাড়ানো হয়েছে।
-                */
+          
                 className={`relative text-xl transition-all duration-300 hover:text-teal-600 tracking-tight ${
                   activeSection === link.id
                     ? 'text-teal-700 font-bold after:absolute after:bottom-[-6px] after:left-0 after:w-full after:h-[3px] after:bg-teal-600 after:rounded-full after:scale-x-100'
@@ -110,7 +97,7 @@ const Navbar = () => {
                 }`}
               >
                 {link.name}
-              </a>
+              </Link>
             ))}
           </div>
 
@@ -137,7 +124,7 @@ const Navbar = () => {
                 - border এবং শ্যাডো বুস্ট করা হয়েছে (shadow-teal-100)।
                 - font-bold এবং টেক্সট ট্র্যাকিং ইমপ্রুভ করা হয়েছে।
               */
-              className="flex items-center gap-2 px-6 py-2.5 rounded-full bg-gradient-to-r from-teal-600 to-emerald-600 text-white font-bold text-base shadow-md shadow-teal-600/10 hover:shadow-lg hover:shadow-teal-600/20 transition-all"
+              className="flex items-center gap-2 px-5 py-[12px] rounded-full bg-gradient-to-r from-teal-600 to-emerald-600 text-white font-bold text-base shadow-md shadow-teal-600/10 hover:shadow-lg hover:shadow-teal-600/20 transition-all"
             >
               <UserPlus size={16} className="stroke-[2.5]" />
               Sign Up

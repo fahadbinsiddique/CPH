@@ -16,10 +16,11 @@ router.register(
 urlpatterns = [
     path('', include(router.urls)),
     
-    path('auth/register/', RegisterView.as_view(),name='RegisterView'),
-    path('auth/login/',LoginView.as_view(),name="LoginView"),
-    path('auth/logout/',LogoutView.as_view(),name="LogoutView"),
+    path('register/', RegisterView.as_view(),name='RegisterView'),
+    path('login/',LoginView.as_view(),name="LoginView"),
+    path('logout/',LogoutView.as_view(),name="LogoutView"),
+    path('refresh/', RefreshTokenView.as_view(), name='token_refresh'),
+    path('me/', MeView.as_view(), name='me'),
 
-    path('token/',TokenObtainPairView.as_view(),name='token_obtain_pair'),
-    path('token/refresh/',TokenRefreshView.as_view(),name='token_refresh')
+    
 ]

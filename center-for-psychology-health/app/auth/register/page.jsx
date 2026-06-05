@@ -1,216 +1,194 @@
-"use client"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Eye, EyeOff, Lock, Mail, Phone, User, AlertCircle } from 'lucide-react'
-import { useState } from "react"
-import { useRouter } from "next/router"
+'use client';
 
-const RegisterForm = () => {
-  // const router = useRouter()
-  // ফর্ম স্টেট
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { motion } from 'framer-motion';
+import { Eye, EyeOff, Brain, Loader2, User, Mail, Lock } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import useAuthStore from '@/store/authStore';
+
+export default function RegisterPage() {
+  const router = useRouter();
+  const { register, isLoading, clearError } = useAuthStore();
+
   const [formData, setFormData] = useState({
-    username: '',
+    full_name: '',
     email: '',
-    phone_number: '',
     password: '',
-    confirm_password: ''
-  })
+    confirm_password: '',
+  });
+  const [showPassword, setShowPassword] = useState(false);
+  const [formError, setFormError] = useState('');
+  console.log('formdata', formData);
+  
 
-  // স্টেট ম্যানেজমেন্ট
-  const [error, setError] = useState('')
-  const [showPassword, setShowPassword] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-
-  // ইনপুট চেঞ্জ হ্যান্ডলার
   const handleChange = (e) => {
-    const { name, value } = e.target
-    setFormData(prev => ({ ...prev, [name]: value }))
-    // ইউজার টাইপ করা শুরু করলে আগের এরর রিমুভ করে দেওয়া
-    if (error) setError('')
-  }
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    setFormError('');
+    clearError();
+  };
 
-  // ফর্ম সাবমিট হ্যান্ডলার
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    setError('')
+    e.preventDefault();
+    setFormError('');
 
-    // পাসওয়ার্ড ম্যাচিং চেক (আপনার সিরিয়ালাইজারের লজিক অনুযায়ী)
+    if (!formData.full_name || !formData.email || !formData.password) {
+      setFormError('সব field পূরণ করো');
+      return;
+    }
+
+
+
     if (formData.password !== formData.confirm_password) {
-      setError("Passwords do not match")
-      return
+      setFormError('Password মিলছে না');
+      return;
     }
 
-    setIsLoading(true)
+    const result = await register(formData);
 
-    try {
-      // এখানে আপনার API কল হবে
-      console.log("Submitting to Django backend:", formData)
-      
-      // API Call Example:
-      const response = await fetch('http://127.0.0.1:8000/api/auth/register/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
-      })
-
-      // if (response.ok)
-      //   router.push('/auth/login')
-      
-      
-    } catch (err) {
-      setError("Something went wrong. Please try again.")
-    } finally {
-      setIsLoading(false)
+    if (result.success) {
+      router.push('/auth/login');
+    } else {
+      const errMsg = Object.values(result.error || {})[0];
+      setFormError(Array.isArray(errMsg) ? errMsg[0] : errMsg || 'Registration failed');
     }
-  }
+  };
+
+  const fields = [
+    { name: 'full_name', label: 'পুরো নাম', placeholder: 'আপনার নাম', type: 'text', Icon: User },
+    { name: 'email', label: 'Email', placeholder: 'example@email.com', type: 'email', Icon: Mail },
+  ];
 
   return (
-    <div className="w-full max-w-md mx-auto p-4">
-      <Card className="border-slate-200/80 bg-white/80 backdrop-blur-md shadow-xl shadow-teal-900/5 rounded-2xl">
-        <CardHeader className="space-y-1 text-center">
-          <CardTitle className="text-2xl font-bold tracking-tight text-slate-800">
-            Create an account
-          </CardTitle>
-          <CardDescription className="text-slate-500">
-            Start your journey to mental wellness today
-          </CardDescription>
-        </CardHeader>
-        
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            
-            {/* পাসওয়ার্ড না মিললে Shadcn Alert দেখাবে */}
-            {error && (
-              <Alert variant="destructive" className="bg-red-50 text-red-900 border-red-200 py-3 rounded-xl">
-                <AlertCircle className="h-4 w-4 text-red-600" />
-                <AlertDescription className="text-sm font-medium">
-                  {error}
-                </AlertDescription>
-              </Alert>
-            )}
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 flex items-center justify-center p-4">
+      <motion.div
+        initial={{ opacity: 0, y: 24 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, ease: 'easeOut' }}
+        className="w-full max-w-md"
+      >
+        {/* Logo */}
+        <div className="flex flex-col items-center mb-8">
+          <div className="w-14 h-14 bg-blue-600 rounded-2xl flex items-center justify-center mb-3 shadow-lg">
+            <Brain className="text-white w-7 h-7" />
+          </div>
+          <h1 className="text-2xl font-semibold text-slate-800">Center for Psychology</h1>
+          <p className="text-slate-500 text-sm mt-1">Mental wellness, একটু কাছে</p>
+        </div>
 
-            {/* Username Field */}
-            <div className="space-y-1.5">
-              <Label htmlFor="username" className="text-slate-700 font-medium text-sm">Username</Label>
-              <div className="relative">
-                <User className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
-                <Input
-                  id="username"
-                  name="username"
-                  type="text"
-                  placeholder="johndoe"
-                  required
-                  value={formData.username}
-                  onChange={handleChange}
-                  className="pl-9 bg-slate-50/50 border-slate-200 focus-visible:ring-teal-500 h-10 rounded-xl"
-                />
+        <Card className="border-0 shadow-xl shadow-slate-200/60">
+          <CardHeader className="pb-4">
+            <CardTitle className="text-xl text-slate-800">নতুন Account</CardTitle>
+            <CardDescription>তোমার তথ্য দিয়ে register করো</CardDescription>
+          </CardHeader>
+
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {/* Full name & Email */}
+              {fields.map(({ name, label, placeholder, type, Icon }) => (
+                <div key={name} className="space-y-1.5">
+                  <Label htmlFor={name} className="text-slate-700">{label}</Label>
+                  <div className="relative">
+                    <Icon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                    <Input
+                      id={name}
+                      name={name}
+                      type={type}
+                      placeholder={placeholder}
+                      value={formData[name]}
+                      onChange={handleChange}
+                      className="h-11 pl-9"
+                      disabled={isLoading}
+                    />
+                  </div>
+                </div>
+              ))}
+
+              {/* Password */}
+              <div className="space-y-1.5">
+                <Label htmlFor="password" className="text-slate-700">Password</Label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                  <Input
+                    id="password"
+                    name="password"
+                    type={showPassword ? 'text' : 'password'}
+                    placeholder="কমপক্ষে ৮ character"
+                    value={formData.password}
+                    onChange={handleChange}
+                    className="h-11 pl-9 pr-10"
+                    disabled={isLoading}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((v) => !v)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                  >
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
               </div>
-            </div>
 
-            {/* Email Field */}
-            <div className="space-y-1.5">
-              <Label htmlFor="email" className="text-slate-700 font-medium text-sm">Email address</Label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
-                <Input
-                  id="email"
-                  name="email"
-                  type="email"
-                  placeholder="name@example.com"
-                  required
-                  value={formData.email}
-                  onChange={handleChange}
-                  className="pl-9 bg-slate-50/50 border-slate-200 focus-visible:ring-teal-500 h-10 rounded-xl"
-                />
+              {/* Confirm Password */}
+              <div className="space-y-1.5">
+                <Label htmlFor="confirm_password" className="text-slate-700">Password নিশ্চিত করো</Label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                  <Input
+                    id="confirm_password"
+                    name="confirm_password"
+                    type={showPassword ? 'text' : 'password'}
+                    placeholder="আবার password দাও"
+                    value={formData.confirm_password}
+                    onChange={handleChange}
+                    className="h-11 pl-9"
+                    disabled={isLoading}
+                  />
+                </div>
               </div>
-            </div>
 
-            {/* Phone Number Field */}
-            <div className="space-y-1.5">
-              <Label htmlFor="phone_number" className="text-slate-700 font-medium text-sm">Phone Number</Label>
-              <div className="relative">
-                <Phone className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
-                <Input
-                  id="phone_number"
-                  name="phone_number"
-                  type="tel"
-                  placeholder="017XXXXXXXX"
-                  required
-                  value={formData.phone_number}
-                  onChange={handleChange}
-                  className="pl-9 bg-slate-50/50 border-slate-200 focus-visible:ring-teal-500 h-10 rounded-xl"
-                />
-              </div>
-            </div>
-
-            {/* Password Field */}
-            <div className="space-y-1.5">
-              <Label htmlFor="password" className="text-slate-700 font-medium text-sm">Password</Label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
-                <Input
-                  id="password"
-                  name="password"
-                  type={showPassword ? "text" : "password"}
-                  placeholder="••••••••"
-                  required
-                  value={formData.password}
-                  onChange={handleChange}
-                  className="pl-9 pr-10 bg-slate-50/50 border-slate-200 focus-visible:ring-teal-500 h-10 rounded-xl"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 transition-colors"
+              {/* Error */}
+              {formError && (
+                <motion.p
+                  initial={{ opacity: 0, y: -6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="text-sm text-red-500 bg-red-50 px-3 py-2 rounded-lg"
                 >
-                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                </button>
-              </div>
-            </div>
+                  {formError}
+                </motion.p>
+              )}
 
-            {/* Confirm Password Field */}
-            <div className="space-y-1.5">
-              <Label htmlFor="confirm_password" className="text-slate-700 font-medium text-sm">Confirm Password</Label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
-                <Input
-                  id="confirm_password"
-                  name="confirm_password"
-                  type={showPassword ? "text" : "password"}
-                  placeholder="••••••••"
-                  required
-                  value={formData.confirm_password}
-                  onChange={handleChange}
-                  className="pl-9 bg-slate-50/50 border-slate-200 focus-visible:ring-teal-500 h-10 rounded-xl"
-                />
-              </div>
-            </div>
+              {/* Submit */}
+              <Button
+                type="submit"
+                className="w-full h-11 bg-blue-600 hover:bg-blue-700 text-white"
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <span className="flex items-center gap-2">
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Register হচ্ছে...
+                  </span>
+                ) : (
+                  'Register করো'
+                )}
+              </Button>
+            </form>
 
-            {/* Submit Button */}
-            <Button 
-              type="submit" 
-              disabled={isLoading}
-              className="w-full bg-teal-600 hover:bg-teal-700 text-white font-medium h-10 rounded-xl transition-all shadow-md shadow-teal-600/10 mt-2"
-            >
-              {isLoading ? "Creating account..." : "Register"}
-            </Button>
-          </form>
-        </CardContent>
-        
-        <CardFooter className="justify-center border-t border-slate-100 py-4">
-          <p className="text-xs text-slate-500">
-            Already have an account?
-            <a href="/auth/login" className="text-teal-600 font-semibold hover:underline">
-              Sign in
-            </a>
-          </p>
-        </CardFooter>
-      </Card>
+            {/* Login link */}
+            <p className="text-center text-sm text-slate-500 mt-5">
+              Already account আছে?{' '}
+              <Link href="/auth/login" className="text-blue-600 font-medium hover:underline">
+                Login করো
+              </Link>
+            </p>
+          </CardContent>
+        </Card>
+      </motion.div>
     </div>
-  )
+  );
 }
-
-export default RegisterForm

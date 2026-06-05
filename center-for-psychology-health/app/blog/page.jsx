@@ -10,7 +10,6 @@ async function getStudents() {
 
   console.log("=== NEXT.JS COOKIE DEBUG ===");
   console.log("Fetched Token from Cookie:", token ? "Token Found! ✅" : "Token is UNDEFINED ❌");
-  console.log("=============================");
 
   if (!token) {
     return null; 
@@ -18,7 +17,7 @@ async function getStudents() {
 
   try {
     // লোকালহোস্ট কুকি ইরর এড়াতে 127.0.0.1 এর বদলে localhost ব্যবহার করা হলো
-    const res = await fetch('http://localhost:8000/api/student/', {
+    const res = await fetch('http://127.0.0.1:8000/api/student/', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -46,8 +45,9 @@ async function getStudents() {
 async function handleLogout() {
   'use server'; // এটি নেক্সট জেএসকে বলে যে এই ফাংশনটি সার্ভারেই রান হবে
   
+  // localStorage.clear();
   try {
-    await fetch('http://localhost:8000/api/auth/logout/', {
+    await fetch('http://127.0.0.1:8000/api/auth/logout/', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -63,7 +63,7 @@ async function handleLogout() {
   cookieStore.delete('access_token');
   cookieStore.delete('refresh_token');
 
-  redirect('auth//login'); // লগইন পেজে রিডাইরেক্ট
+  redirect('auth/login'); // লগইন পেজে রিডাইরেক্ট
 }
 
 const BlogPage = async () => {

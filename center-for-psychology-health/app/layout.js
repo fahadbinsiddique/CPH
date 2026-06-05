@@ -1,5 +1,7 @@
 import { Geist, Geist_Mono, Plus_Jakarta_Sans } from 'next/font/google' // <- Plus_Jakarta_Sans ইমপোর্ট করা হলো
 import './globals.css'
+import Navbar from '@/components/layout/Navbar'
+import Footer from '@/components/layout/Footer'
 
 // Geist Sans (বডি এবং সাধারণ টেক্সটের জন্য)
 const geistSans = Geist({
@@ -30,7 +32,11 @@ export default function RootLayout({ children }) {
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} ${plusJakartaSans.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <Navbar />
+        {children}
+        <Footer />
+      </body>
     </html>
   )
 }

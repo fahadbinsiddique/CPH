@@ -187,7 +187,7 @@ const TherapistsSection = () => {
                       </div>
 
                       {/* Stats Grid */}
-                      {/* <div className="grid grid-cols-2 gap-y-3 gap-x-2 text-sm text-slate-600 mb-5 mt-auto">
+                      <div className="grid grid-cols-2 gap-y-3 gap-x-2 text-sm text-slate-600 mb-5 mt-auto">
                         <div className="flex items-center gap-1.5">
                           <Clock className="w-4 h-4 text-slate-400" />
                           <span className="text-xs">{doc.experience}</span>
@@ -213,7 +213,7 @@ const TherapistsSection = () => {
                             {doc.rating}
                           </span>
                         </div>
-                      </div> */}
+                      </div>
 
                       {/* Action Button */}
                       <button className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-slate-50 text-slate-700 text-sm font-semibold border border-slate-200 hover:bg-emerald-600 hover:text-white hover:border-emerald-600 transition-all group/btn mt-auto">

@@ -16,7 +16,7 @@ import React from 'react'
 const Page = () => {
   return (
     <>
-      <Navbar />
+      {/* <Navbar /> */}
       <main>
         <Hero />
         <FeaturesTrustSection />
@@ -30,7 +30,7 @@ const Page = () => {
         {/* <BlogPreview /> */}
         <FinalCTA />
       </main>
-      <Footer />
+      {/* <Footer /> */}
     </>
   )
 }
