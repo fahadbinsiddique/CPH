@@ -30,7 +30,7 @@ class Consultant(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.user.full_name
+        return self.user.full_name or self.user.email or "Consultant"
 
     def save(self, *args, **kwargs):
         if not self.slug:

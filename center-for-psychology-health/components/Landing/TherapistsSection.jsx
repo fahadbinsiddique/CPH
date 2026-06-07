@@ -186,34 +186,7 @@ const TherapistsSection = () => {
                         </span>
                       </div>
 
-                      {/* Stats Grid */}
-                      <div className="grid grid-cols-2 gap-y-3 gap-x-2 text-sm text-slate-600 mb-5 mt-auto">
-                        <div className="flex items-center gap-1.5">
-                          <Clock className="w-4 h-4 text-slate-400" />
-                          <span className="text-xs">{doc.experience}</span>
-                        </div>
-                        <div className="flex items-center gap-1.5">
-                          <Users className="w-4 h-4 text-slate-400" />
-                          <span className="text-xs">{doc.sessions}</span>
-                        </div>
-                        <div className="col-span-2 flex items-center gap-1 text-amber-500">
-                          <div className="flex items-center gap-0.5">
-                            {[...Array(5)].map((_, i) => (
-                              <Star
-                                key={i}
-                                className={`w-3.5 h-3.5 ${
-                                  i < Math.floor(doc.rating)
-                                    ? 'fill-amber-400 text-amber-400'
-                                    : 'fill-slate-200 text-slate-200'
-                                }`}
-                              />
-                            ))}
-                          </div>
-                          <span className="text-xs font-semibold text-slate-700 ml-1">
-                            {doc.rating}
-                          </span>
-                        </div>
-                      </div>
+                    
 
                       {/* Action Button */}
                       <button className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-slate-50 text-slate-700 text-sm font-semibold border border-slate-200 hover:bg-emerald-600 hover:text-white hover:border-emerald-600 transition-all group/btn mt-auto">

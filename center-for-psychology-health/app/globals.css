@@ -4,6 +4,28 @@
 
 @custom-variant dark (&:is(.dark *));
 
+
+/* =========================
+   PREMIUM BUTTON SYSTEM
+========================= */
+
+
+
+/* Secondary Outline (Navbar Sign In style) */
+.btn-outline-soft {
+  @apply  border-2 border-teal-600 text-teal-700  hover:bg-teal-50 bg-white transition-all font-semibold text-base shadow-sm;
+}
+
+/* Primary Gradient CTA (Navbar Sign Up style) */
+.btn-primary-gradient {
+  @apply  text-white font-bold 
+  bg-gradient-to-r from-teal-600 to-emerald-600 
+  shadow-md shadow-teal-600/10 
+  hover:shadow-lg hover:shadow-teal-600/20;
+}
+
+
+
 @theme inline {
   /* 🎛️ ফন্ট কনফিগারেশন - এখানে layout.js এর ফন্টগুলো ম্যাপ করা হলো */
   --font-sans: var(--font-geist-sans), sans-serif;
