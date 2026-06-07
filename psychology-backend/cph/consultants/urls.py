@@ -4,10 +4,13 @@ from .views import (
     ConsultantDetailView,
     SpecializationListView,
     ConsultantMyAvailabilityView,
+    ConsultantCreateView
 )
 
 urlpatterns = [
     path('', ConsultantListView.as_view(), name='consultant-list'),
+
+    path('create/', ConsultantCreateView.as_view(), name='consultant-create'),
 
     # STATIC ROUTES FIRST
     path('specializations/', SpecializationListView.as_view(), name='specialization-list'),

@@ -18,11 +18,11 @@ export default function ConsultantCard({ consultant }) {
     location,
   } = consultant;
 
-  const cloudName = "ds8pqfvld";
+  // const cloudName = "ds8pqfvld";
 
-  const fullImageUrl = profile_image
-    ? `https://res.cloudinary.com/${cloudName}/${profile_image}`
-    : null;
+  // const fullImageUrl = profile_image
+  //   ? `https://res.cloudinary.com/${cloudName}/${profile_image}`
+  //   : null;
 
   return (
     <Card className="group relative border border-slate-200/60 shadow-sm hover:shadow-xl hover:border-teal-500/20 transition-all duration-300 rounded-2xl overflow-hidden bg-white">
@@ -37,9 +37,9 @@ export default function ConsultantCard({ consultant }) {
 
             <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl overflow-hidden bg-teal-50 border border-slate-100 shadow-sm">
 
-              {fullImageUrl ? (
+              {profile_image ? (
                 <Image
-                  src={fullImageUrl}
+                  src={profile_image}
                   alt={user?.full_name || "Consultant"}
                   width={96}
                   height={96}

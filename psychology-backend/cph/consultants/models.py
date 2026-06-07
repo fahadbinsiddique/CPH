@@ -1,3 +1,5 @@
+import uuid
+from django.utils.text import slugify
 from django.db import models
 from django.conf import settings
 from cloudinary.models import CloudinaryField
@@ -34,8 +36,10 @@ class Consultant(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            from django.utils.text import slugify
-            self.slug = slugify(self.user.full_name)
+            # নামের সাথে uuid এর ছোট অংশ যোগ করে ইউনিক স্লাগ নিশ্চিত করা
+            base_slug = slugify(self.user.full_name or "consultant")
+            unique_suffix = uuid.uuid4().hex[:6]
+            self.slug = f"{base_slug}-{unique_suffix}"
         super().save(*args, **kwargs)
 
 
@@ -50,6 +54,12 @@ class ConsultantAvailability(models.Model):
         ('friday', 'Friday'),
     ]
 
+    consultation_type_choices = [
+        ('online', 'Online'),
+        ('offline', 'Offline'),
+        ('both', 'Both'),
+    ]
+
     consultant = models.ForeignKey(
         Consultant, on_delete=models.CASCADE,
         related_name='availability'
@@ -57,9 +67,11 @@ class ConsultantAvailability(models.Model):
     day = models.CharField(max_length=10, choices=DAY_CHOICES)
     start_time = models.TimeField()
     end_time = models.TimeField()
+    session_type = models.CharField(max_length=10, choices=consultation_type_choices, default='both')
 
     class Meta:
         unique_together = ('consultant', 'day')
-
+        ordering = ['day', 'start_time'] # অর্ডারিং ঠিক রাখার জন্য
+        
     def __str__(self):
         return f"{self.consultant} — {self.day}"

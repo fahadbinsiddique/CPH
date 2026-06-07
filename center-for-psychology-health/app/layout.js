@@ -2,6 +2,7 @@ import { Geist, Geist_Mono, Plus_Jakarta_Sans } from 'next/font/google' // <- Pl
 import './globals.css'
 import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
+import { Toaster } from 'sonner'
 
 // Geist Sans (বডি এবং সাধারণ টেক্সটের জন্য)
 const geistSans = Geist({
@@ -34,7 +35,8 @@ export default function RootLayout({ children }) {
     >
       <body className="min-h-full flex flex-col">
         <Navbar />
-        {children}
+        <main>{children}</main>
+        <Toaster/>
         <Footer />
       </body>
     </html>

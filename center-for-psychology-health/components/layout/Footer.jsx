@@ -106,7 +106,7 @@ const Footer = () => {
           >
             <div className="flex items-center gap-2 mb-4">
               <Image
-                src={'/logo.jpg'}
+                src={'/logo.png'}
                 width={180}
                 height={120}
                 alt="Center For Psychological Health logo"

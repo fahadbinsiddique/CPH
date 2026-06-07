@@ -47,7 +47,7 @@ export default function ConsultantProfilePage() {
   } = consultant;
 
   return (
-    <div className="min-h-screen bg-slate-50 py-10">
+    <div className="min-h-screen mt-32 bg-slate-50 py-10">
       <div className="max-w-4xl mx-auto px-4">
         {/* Back */}
         <button

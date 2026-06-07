@@ -7,12 +7,17 @@ import Image from 'next/image'
 import TopHeader from './TopHeader' // adjust import path as needed
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import LoginDrawer from '../auth/LoginDrawer'
+import { Button } from '../ui/button'
+import RegisterDrawer from '../auth/RegisterDrawer'
 
 const Navbar = () => {
   const router = useRouter()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const [activeSection, setActiveSection] = useState('')
+  const [isLoginOpen, setIsLoginOpen] = useState(false)
+  const [isRegisterOpen, setIsRegisterOpen] = useState(false)
 
   // Add shadow on scroll & track active section
   useEffect(() => {
@@ -47,9 +52,18 @@ const Navbar = () => {
 
   
 
-  const handleAuth = (action) => {
+const handleAuth = (action) => {
+  
+  if (action === 'signin') {
+    setIsLoginOpen(true)
+    setMobileMenuOpen(false) // মোবাইল মেনু খোলা থাকলে তা বন্ধ করে ড্রয়ার ওপেন করবে
+  } else if (action === 'signup'){
+    setIsRegisterOpen(true)
+    setMobileMenuOpen(false)
+  } else{
     console.log(`${action} clicked`)
   }
+}
 
   return (
     <header className="fixed top-0 left-0 w-full z-50 font-sans">
@@ -72,15 +86,15 @@ const Navbar = () => {
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           >
             <Link href={'/'}>
-            <Image
-              src={'/logo.jpg'}
-              loading='eager'
-              width={300}
-              height={200}
-              alt="Center For Psychological Health logo"
-              className="object-contain"
+              <Image
+                src={'/logo.png'}
+                loading="eager"
+                width={300}
+                height={200}
+                alt="Center For Psychological Health logo"
+                className="object-contain"
               />
-              </Link>
+            </Link>
           </motion.div>
 
           {/* Desktop Navigation Links */}
@@ -89,7 +103,6 @@ const Navbar = () => {
               <Link
                 key={link.name}
                 href={link.href}
-          
                 className={`relative text-xl transition-all duration-300 hover:text-teal-600 tracking-tight ${
                   activeSection === link.id
                     ? 'text-teal-700 font-bold after:absolute after:bottom-[-6px] after:left-0 after:w-full after:h-[3px] after:bg-teal-600 after:rounded-full after:scale-x-100'
@@ -191,6 +204,23 @@ const Navbar = () => {
             </motion.div>
           )}
         </AnimatePresence>
+        <LoginDrawer
+          isOpen={isLoginOpen}
+          setIsOpen={setIsLoginOpen}
+          onRedirect={() => {
+            setIsLoginOpen(false) // ১. লগইন ড্রয়ার বন্ধ করবে
+            setIsRegisterOpen(true) // ২. রেজিস্ট্রেশন ড্রয়ার খুলবে
+          }}
+        />
+
+        <RegisterDrawer
+          isOpen={isRegisterOpen}
+          setIsOpen={setIsRegisterOpen}
+          onSuccessRedirect={() => {
+            setIsRegisterOpen(false) // ১. রেজিস্ট্রেশন ড্রয়ার বন্ধ করবে
+            setIsLoginOpen(true) // ২. লগইন ড্রয়ার খুলবে
+          }}
+        />
       </nav>
     </header>
   )
