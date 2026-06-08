@@ -13,7 +13,7 @@
 
 /* Secondary Outline (Navbar Sign In style) */
 .btn-outline-soft {
-  @apply  border-2 border-teal-600 text-teal-700  hover:bg-teal-50 bg-white transition-all font-semibold text-base shadow-sm;
+  @apply  border-2 border-teal-600 text-teal-700  hover:bg-teal-50 bg-white transition-all text-base shadow-sm;
 }
 
 /* Primary Gradient CTA (Navbar Sign Up style) */
