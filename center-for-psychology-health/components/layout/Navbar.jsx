@@ -204,6 +204,8 @@ const handleAuth = (action) => {
             </motion.div>
           )}
         </AnimatePresence>
+
+        
         <LoginDrawer
           isOpen={isLoginOpen}
           setIsOpen={setIsLoginOpen}

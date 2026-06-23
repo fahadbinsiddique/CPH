@@ -8,9 +8,9 @@ from cph_app.models import *
 User = get_user_model()
 
 
-# =========================================
+  
 # Register Serializer
-# =========================================
+  
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, )
     confirm_password = serializers.CharField(write_only=True)
@@ -52,9 +52,9 @@ class RegisterSerializer(serializers.ModelSerializer):
         return user
 
 
-# =========================================
+  
 # Login Serializer
-# =========================================
+  
 class LoginSerializer(serializers.Serializer):
     username = serializers.CharField()
     password = serializers.CharField(write_only=True)
@@ -71,9 +71,9 @@ class LoginSerializer(serializers.Serializer):
         return data
 
 
-# =========================================
+  
 # User Serializer (Public Profile)
-# =========================================
+  
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User

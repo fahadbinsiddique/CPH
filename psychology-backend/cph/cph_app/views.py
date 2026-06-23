@@ -22,8 +22,8 @@ def set_auth_cookies(response, access_token, refresh_token):
         key="access_token",
         value=str(access_token),
         httponly=True,
-        secure=False,  # Production এ True করবে
-        samesite="Lax",
+        secure=True,  # Production এ True করবে
+        samesite="None",
         max_age=60 * 60,  # 1 hour
     )
 
@@ -31,8 +31,8 @@ def set_auth_cookies(response, access_token, refresh_token):
         key="refresh_token",
         value=str(refresh_token),
         httponly=True,
-        secure=False,  # Production এ True করবে
-        samesite="Lax",
+        secure=True,  # Production এ True করবে
+        samesite="None",
         max_age=7 * 24 * 60 * 60,  # 7 days
     )
 
@@ -188,8 +188,8 @@ class RefreshTokenView(APIView):
                 key="access_token",
                 value=str(access),
                 httponly=True,
-                secure=False,  # Production এ True করবে
-                samesite="Lax",
+                secure=True,  # Production এ True করবে
+                samesite="None",
                 max_age=60 * 60,
             )
 
