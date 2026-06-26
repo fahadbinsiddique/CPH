@@ -59,13 +59,13 @@ export default function LoginDrawer({ isOpen, setIsOpen, onRedirect }) {
 
       switch (role) {
         case 'admin':
-          router.push('/dashboard/admin');
+          router.push('/dashboard/');
           break;
         case 'consultant':
-          router.push('/dashboard/consultant');
+          router.push('/dashboard/');
           break;
         default:
-          router.push('/blog');
+          router.push('/dashboard/bookings');
       }
     } else {
       setFormError(

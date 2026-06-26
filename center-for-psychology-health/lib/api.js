@@ -3,6 +3,17 @@
 import axios from 'axios'
 import useAuthStore from '@/store/authStore' // Zustand store
 
+// ==========================================
+// অপশন ১: Chrome DevTools Console Watermark
+// ==========================================
+if (typeof window !== 'undefined') {
+  console.log(
+    '%c (◣ _ ◢) Developed By: Fahad Bin Siddique',
+    'background: #1e1e2f; color: #00ffcc; padding: 6px 12px; border-radius: 8px; font-weight: bold; font-family: sans-serif;'
+  );
+}
+
+
 // Create Axios Instance
 
 const api = axios.create({
@@ -17,6 +28,7 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
     Accept: 'application/json',
+    
   },
 })
 

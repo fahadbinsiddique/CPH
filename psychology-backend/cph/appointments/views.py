@@ -2,8 +2,9 @@ from rest_framework import generics, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-
+from rest_framework.permissions import IsAdminUser
 from .models import Appointment
+from cph_app.authentication import CookieJWTAuthentication
 from .serializers import (
     AppointmentCreateSerializer,
     AppointmentSerializer,
@@ -90,7 +91,7 @@ class BookedSlotsView(APIView):
         date = request.query_params.get('date')
         if not date:
             return Response(
-                {'error': 'date parameter দরকার'},
+                {'error': 'date parameter need'},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
@@ -101,3 +102,23 @@ class BookedSlotsView(APIView):
         ).values_list('appointment_time', flat=True)
 
         return Response({'booked_slots': list(booked)})
+
+class AdminStatsView(APIView):
+    # authentication_classes = [CookieJWTAuthentication]
+    permission_classes = [IsAdminUser]
+
+    def get(self, request):
+        from django.contrib.auth import get_user_model
+        from consultants.models import Consultant
+
+        User = get_user_model()
+
+        stats = {
+            'total_users': User.objects.filter(role='client').count(),
+            'total_consultants': Consultant.objects.count(),
+            'verified_consultants': Consultant.objects.filter(is_verified=True).count(),
+            'total_appointments': Appointment.objects.count(),
+            'pending_appointments': Appointment.objects.filter(status='pending').count(),
+            'completed_appointments': Appointment.objects.filter(status='completed').count(),
+        }
+        return Response(stats)

@@ -166,13 +166,13 @@ const handleAuth = (action) => {
             >
               <div className="container mx-auto px-4 py-6 flex flex-col gap-4">
                 {navLinks.map((link) => (
-                  <a
+                  <Link
                     key={link.name}
                     href={link.href}
-                    onClick={(e) => {
-                      e.preventDefault()
-                      handleLinkClick(link.href, link.id)
-                    }}
+                    // onClick={(e) => {
+                    //   e.preventDefault()
+                    //   handleLinkClick(link.href, link.id)
+                    // }}
                     className={`text-lg font-semibold py-2 transition-all duration-200 ${
                       activeSection === link.id
                         ? 'text-teal-600 border-l-4 border-teal-500 pl-3'
@@ -180,7 +180,7 @@ const handleAuth = (action) => {
                     }`}
                   >
                     {link.name}
-                  </a>
+                  </Link>
                 ))}
 
                 {/* Mobile Auth Buttons */}

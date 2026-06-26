@@ -10,9 +10,9 @@ from cph_app.serializers import *
 
 
 
-# =========================================
+ 
 # Cookie Helper
-# =========================================
+ 
 def set_auth_cookies(response, access_token, refresh_token):
     """
     Set JWT tokens in HttpOnly cookies
@@ -50,9 +50,9 @@ def clear_auth_cookies(response):
     return response
 
 
-# =========================================
+ 
 # Register View
-# =========================================
+ 
 class RegisterView(generics.CreateAPIView):
     serializer_class = RegisterSerializer
     permission_classes = [AllowAny]
@@ -83,9 +83,9 @@ class RegisterView(generics.CreateAPIView):
         return set_auth_cookies(response, access, refresh)
 
 
-# =========================================
+ 
 # Login View
-# =========================================
+ 
 class LoginView(generics.GenericAPIView):
     serializer_class = LoginSerializer
     permission_classes = [AllowAny]
@@ -117,9 +117,9 @@ class LoginView(generics.GenericAPIView):
         return set_auth_cookies(response, access, refresh)
 
 
-# =========================================
+ 
 # Logout View
-# =========================================
+ 
 class LogoutView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -153,9 +153,9 @@ class LogoutView(APIView):
             )
 
 
-# =========================================
+ 
 # Refresh Access Token
-# =========================================
+ 
 class RefreshTokenView(APIView):
     permission_classes = [AllowAny]
 
@@ -205,9 +205,9 @@ class RefreshTokenView(APIView):
             )
 
 
-# =========================================
+ 
 # Current Logged-in User
-# =========================================
+ 
 class MeView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -224,10 +224,17 @@ class MeView(APIView):
         )
 
 
-class StudentModelViewSet(ModelViewSet):
+class UpdateProfileView(APIView):
+    permission_classes = [IsAuthenticated]
 
-    queryset = StudentInfo.objects.all()
+    def patch(self, request):
+        user = request.user
+        data = request.data
 
-    serializer_class = StudentInfoSerializer
+        allowed_fields = ['full_name']
+        for field in allowed_fields:
+            if field in data:
+                setattr(user, field, data[field])
+        user.save()
 
-    # permission_classes = [IsAuthenticated]
+        return Response(UserSerializer(user).data)
