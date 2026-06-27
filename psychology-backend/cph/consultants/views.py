@@ -16,9 +16,9 @@ from .serializers import (
 )
 
 class ConsultantListView(generics.ListAPIView):
-    """
-    পাবলিক ডিরেক্টরি: এখানে শুধু ভেরিফাইড কনসালট্যান্টরা দেখাবে।
-    """
+    
+   # পাবলিক ডিরেক্টরি: এখানে শুধু ভেরিফাইড কনসালট্যান্টরা দেখাবে।
+   
     serializer_class = ConsultantListSerializer
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ['is_available', 'specializations__slug', 'location']
@@ -33,9 +33,9 @@ class ConsultantListView(generics.ListAPIView):
 
 
 class ConsultantDetailView(generics.RetrieveAPIView):
-    """
-    যেকোনো সিঙ্গেল কনসালট্যান্টের ডিটেইলস (পাবলিক বা নিজের প্রোফাইল)।
-    """
+    
+    #যেকোনো সিঙ্গেল কনসালট্যান্টের ডিটেইলস (পাবলিক বা নিজের প্রোফাইল)।
+
     serializer_class = ConsultantDetailSerializer
     lookup_field = 'slug'
 
@@ -130,3 +130,36 @@ class ConsultantCreateView(generics.CreateAPIView):
                 status=status.HTTP_201_CREATED
             )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+class AvailabilityDeleteView(generics.DestroyAPIView):
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return ConsultantAvailability.objects.filter(
+            consultant__user=self.request.user
+        )
+
+from rest_framework.permissions import IsAdminUser
+
+class AdminConsultantListView(generics.ListAPIView):
+    serializer_class = ConsultantDetailSerializer
+    permission_classes = [IsAdminUser]
+
+    def get_queryset(self):
+        return Consultant.objects.select_related('user').prefetch_related(
+            'specializations', 'availability'
+        )
+
+
+class AdminConsultantVerifyView(APIView):
+    permission_classes = [IsAdminUser]
+
+    def patch(self, request, pk):
+        try:
+            consultant = Consultant.objects.get(pk=pk)
+            consultant.is_verified = request.data.get('is_verified', False)
+            consultant.save()
+            return Response({'status': 'updated'})
+        except Consultant.DoesNotExist:
+            return Response({'error': 'Not found'}, status=404)

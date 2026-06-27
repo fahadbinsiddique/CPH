@@ -27,6 +27,7 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import useAuthStore from '@/store/authStore';
 import AuthGuard from '@/components/shared/AuthGuard';
+import { toast } from 'sonner';
 
 const NAV_ITEMS = {
   client: [
@@ -75,8 +76,12 @@ function Sidebar({ open, onClose }) {
   const roleColor = ROLE_COLORS[role] || ROLE_COLORS.client;
 
   const handleLogout = async () => {
-    await logout();
-    router.push('/auth/login');
+    try {
+      await logout();
+      toast.success("Logout successfull") // এটি ভেতর থেকেই স্টোরেজ ক্লিয়ার করে '/' এ পাঠিয়ে দেবে
+    } catch (error) {
+      console.error("Component logout error:", error);
+    }
   };
 
   // Get user initials
@@ -146,7 +151,7 @@ function Sidebar({ open, onClose }) {
               <div className="relative">
                 <Avatar className="w-14 h-14 border-2 border-white shadow-md">
                   <AvatarFallback className={`bg-gradient-to-br ${roleColor} text-white font-bold text-lg`}>
-                    {getInitials(user?.full_name)}
+                    {getInitials(user?.full_name || 'User' )}
                   </AvatarFallback>
                 </Avatar>
                 <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-emerald-500 rounded-full border-2 border-white shadow-sm animate-pulse" />

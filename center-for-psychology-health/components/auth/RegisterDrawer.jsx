@@ -65,7 +65,7 @@ export default function RegisterDrawer({ isOpen, setIsOpen, onSuccessRedirect })
 
     if (result?.success) {
 
-        toast("Account created successfully!", 
+        toast.success("Account created successfully!", 
             { description: "Please sign in with your secure credentials.",position: "top-right"}
               
         );

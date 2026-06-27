@@ -49,7 +49,7 @@ const SESSION_TYPES = [
     value: 'in_person', 
     label: 'In-Person Visit', 
     icon: MapPin, 
-    desc: 'Face-to-face at our serene clinic',
+    desc: 'Face-to-face at our clinic',
     color: 'from-emerald-500 to-teal-600'
   },
 ];

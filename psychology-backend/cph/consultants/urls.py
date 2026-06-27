@@ -4,7 +4,10 @@ from .views import (
     ConsultantDetailView,
     SpecializationListView,
     ConsultantMyAvailabilityView,
-    ConsultantCreateView
+    ConsultantCreateView,
+    AvailabilityDeleteView,
+    AdminConsultantListView, 
+    AdminConsultantVerifyView
 )
 
 urlpatterns = [
@@ -18,4 +21,9 @@ urlpatterns = [
     
     # DYNAMIC ROUTE LAST
     path('<slug:slug>/', ConsultantDetailView.as_view(), name='consultant-detail'),
+    
+    path('availability/<int:pk>/', AvailabilityDeleteView.as_view(), name='availability-delete'),
+
+    path('admin/list/', AdminConsultantListView.as_view(), name='admin-consultant-list'),
+    path('admin/<int:pk>/verify/', AdminConsultantVerifyView.as_view(), name='admin-consultant-verify'),
 ]

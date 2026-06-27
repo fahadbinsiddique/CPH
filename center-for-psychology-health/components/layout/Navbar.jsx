@@ -92,7 +92,7 @@ const handleAuth = (action) => {
                 width={300}
                 height={200}
                 alt="Center For Psychological Health logo"
-                className="object-contain"
+                className="object-contain h-auto w-auto"
               />
             </Link>
           </motion.div>

@@ -9,10 +9,8 @@ from rest_framework_simplejwt.exceptions import TokenError
 from cph_app.serializers import *
 
 
-
- 
 # Cookie Helper
- 
+
 def set_auth_cookies(response, access_token, refresh_token):
     """
     Set JWT tokens in HttpOnly cookies
@@ -40,19 +38,28 @@ def set_auth_cookies(response, access_token, refresh_token):
 
 
 def clear_auth_cookies(response):
-    """
-    Remove auth cookies
-    """
+   
 
-    response.delete_cookie("access_token")
-    response.delete_cookie("refresh_token")
+    # ১। জ্যাঙ্গোর সেটিংসের কুকি কনফিগারেশন অনুযায়ী ডিলিট করুন
+    response.delete_cookie(
+        "access_token", 
+        path="/",          # 👈 এটিই আসল কালপ্রিট, ড্যাশবোর্ড ও মেইন রুট সব ক্লিয়ার করবে
+        samesite="None",
+        # secure=True,  # set_cookie তে True থাকলে এখানেও True থাকতে হবে 
+    )
+    
+    response.delete_cookie(
+        "refresh_token", 
+        path="/", 
+        samesite="None",
+        # secure=True,  # set_cookie তে True থাকলে এখানেও True থাকতে হবে
+    )   
 
     return response
 
 
- 
 # Register View
- 
+
 class RegisterView(generics.CreateAPIView):
     serializer_class = RegisterSerializer
     permission_classes = [AllowAny]
@@ -83,9 +90,8 @@ class RegisterView(generics.CreateAPIView):
         return set_auth_cookies(response, access, refresh)
 
 
- 
 # Login View
- 
+
 class LoginView(generics.GenericAPIView):
     serializer_class = LoginSerializer
     permission_classes = [AllowAny]
@@ -117,13 +123,18 @@ class LoginView(generics.GenericAPIView):
         return set_auth_cookies(response, access, refresh)
 
 
- 
 # Logout View
- 
 class LogoutView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
+        response = Response(
+            {
+                "success": True,
+                "message": "Logout successful",
+            },
+            status=status.HTTP_200_OK,
+        )
 
         try:
             refresh_token = request.COOKIES.get("refresh_token")
@@ -133,29 +144,19 @@ class LogoutView(APIView):
                 token = RefreshToken(refresh_token)
                 token.blacklist()
 
-            response = Response(
-                {
-                    "success": True,
-                    "message": "Logout successful",
-                },
-                status=status.HTTP_200_OK,
-            )
+        except (TokenError, Exception) as e:
+            # 🚀 ক্রিশিয়াল ফিক্স: টোকেন যদি অলরেডি এক্সপায়ার বা ইনভ্যালিডও হয়,
+            # তাও আমরা ইউজারকে ৪০০ এরর দিয়ে আটকে রাখব না। বরং সাইলেন্টলি ক্যাচ করে
+            # ব্রাউজার থেকে কুকিগুলো ডিলিট করে দেব যাতে সেশন অন্তত ফ্রন্টএন্ডে ক্লিন হয়।
+            print(f"Logout token blacklisting skipped/failed: {str(e)}")
+            pass
 
-            return clear_auth_cookies(response)
-
-        except TokenError:
-            return Response(
-                {
-                    "success": False,
-                    "message": "Invalid or expired token",
-                },
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+        # সবসময় কুকি ক্লিয়ার করা রেসপন্সটি রিটার্ন হবে
+        return clear_auth_cookies(response)
 
 
- 
 # Refresh Access Token
- 
+
 class RefreshTokenView(APIView):
     permission_classes = [AllowAny]
 
@@ -205,9 +206,8 @@ class RefreshTokenView(APIView):
             )
 
 
- 
 # Current Logged-in User
- 
+
 class MeView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -238,3 +238,38 @@ class UpdateProfileView(APIView):
         user.save()
 
         return Response(UserSerializer(user).data)
+
+from rest_framework.permissions import IsAdminUser
+from django.contrib.auth import get_user_model
+
+class AdminUserListView(generics.ListAPIView):
+    serializer_class = UserSerializer
+    permission_classes = [IsAdminUser]
+
+    def get_queryset(self):
+        return get_user_model().objects.all().order_by('-created_at')
+    
+    
+class ChangePasswordView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        user = request.user
+        old_password = request.data.get('old_password')
+        new_password = request.data.get('new_password')
+
+        if not user.check_password(old_password):
+            return Response(
+                {'error': 'Current password is incorrect.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        if len(new_password) < 8:
+            return Response(
+                {'error': 'Password must be at least 8 characters.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        user.set_password(new_password)
+        user.save()
+        return Response({'message': 'Password updated successfully.'})

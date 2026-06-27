@@ -81,7 +81,10 @@ api.interceptors.response.use(
           // যাতে ব্যাকগ্রাউন্ডে বারবার /api/auth/logout/ এপিআই কল হয়ে লুপ না হয়
           useAuthStore.setState({ user: null, isAuthenticated: false })
 
-          // ৩. ইউজারকে ধাক্কা দিয়ে মেইন হোমপেজে পাঠিয়ে দিন
+          // ৩. লোকাল স্টোরেজ থেকে জোরপূর্বক কি-টি মুছে দিন যাতে AuthGuard আর ফলস ডাটা না পায়
+          localStorage.removeItem('auth-storage');
+
+          // 4. ইউজারকে ধাক্কা দিয়ে মেইন হোমপেজে পাঠিয়ে দিন
           window.location.href = '/'
         }
 

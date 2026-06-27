@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Eye, EyeOff, Brain, Loader2, Lock, Mail } from 'lucide-react';
-
+import { toast } from "sonner"
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -54,6 +54,10 @@ export default function LoginDrawer({ isOpen, setIsOpen, onRedirect }) {
     const result = await login(formData);
 
     if (result?.success) {
+      toast.success("Login successfully!", 
+            { description: "successfully Login with your secure credentials.",position: "top-right"}
+              
+        );
       setIsOpen(false);
       const role = result?.user?.role;
 
