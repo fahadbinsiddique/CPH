@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import api from '@/lib/api';
+import { ConsultantCreateModal } from '@/components/consultant/ConsultantCreateModal';
 
 export default function SettingsPage() {
   const [passwords, setPasswords] = useState({
@@ -81,7 +82,7 @@ export default function SettingsPage() {
                   />
                   <button
                     type="button"
-                    onClick={() => setShow(v => !v)}
+                    onClick={() => setShow((v) => !v)}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
                   >
                     {show ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -95,7 +96,9 @@ export default function SettingsPage() {
             <p className="text-sm text-red-500 bg-red-50 px-3 py-2 rounded-lg mt-4">{error}</p>
           )}
           {success && (
-            <p className="text-sm text-green-600 bg-green-50 px-3 py-2 rounded-lg mt-4">✅ {success}</p>
+            <p className="text-sm text-green-600 bg-green-50 px-3 py-2 rounded-lg mt-4">
+              ✅ {success}
+            </p>
           )}
 
           <Button
@@ -103,10 +106,15 @@ export default function SettingsPage() {
             onClick={handlePasswordChange}
             disabled={saving}
           >
-            {saving
-              ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Saving...</>
-              : <><Shield className="w-4 h-4 mr-2" /> Update Password</>
-            }
+            {saving ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" /> Saving...
+              </>
+            ) : (
+              <>
+                <Shield className="w-4 h-4 mr-2" /> Update Password
+              </>
+            )}
           </Button>
         </CardContent>
       </Card>
@@ -139,6 +147,25 @@ export default function SettingsPage() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Notification preferences — UI only */}
+      <Card className="border-0 shadow-sm rounded-2xl">
+        <CardContent className="p-6">
+          <div className="flex items-center gap-2 mb-5">
+            <Bell className="w-4 h-4 text-slate-500" />
+            <h2 className="font-semibold text-slate-800">Notifications</h2>
+          </div>
+
+          <div className="space-y-3 ">
+            <ConsultantCreateModal
+              onSuccess={(data) => {
+                // সফলভাবে ক্রিয়েট হওয়ার পর যদি লোকাল স্টেট আপডেট বা রিডাইরেক্ট করতে চান
+                console.log('Upgraded data:', data)
+              }}
+            />
+          </div>
+        </CardContent>
+      </Card>
     </div>
-  );
+  )
 }

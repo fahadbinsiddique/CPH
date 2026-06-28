@@ -9,4 +9,11 @@ export const consultantService = {
 
   getSpecializations: () =>
     api.get('/api/consultants/specializations/'),
+  
+  create: (data) =>
+    api.post('/api/consultants/create/', data, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    }),
 };
