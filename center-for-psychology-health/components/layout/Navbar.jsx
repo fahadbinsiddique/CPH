@@ -1,152 +1,297 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Menu, X, LogIn, UserPlus } from 'lucide-react'
+import { 
+  Menu, X, LogIn, UserPlus, 
+  LogOut, Settings, Heart, 
+  Calendar, LayoutDashboard, ChevronDown,
+  User, Sparkles, Shield
+} from 'lucide-react'
 import Image from 'next/image'
-import TopHeader from './TopHeader' // adjust import path as needed
-import { useRouter } from 'next/navigation'
+import TopHeader from './TopHeader'
+import { useRouter, usePathname } from 'next/navigation'
 import Link from 'next/link'
 import LoginDrawer from '../auth/LoginDrawer'
-import { Button } from '../ui/button'
 import RegisterDrawer from '../auth/RegisterDrawer'
+import useAuthStore from '@/store/authStore'
 
 const Navbar = () => {
   const router = useRouter()
+  const pathname = usePathname()
+  const { user, logout, isAuthenticated } = useAuthStore()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
-  const [activeSection, setActiveSection] = useState('')
   const [isLoginOpen, setIsLoginOpen] = useState(false)
   const [isRegisterOpen, setIsRegisterOpen] = useState(false)
+  const [dropdownOpen, setDropdownOpen] = useState(false)
+  const dropdownRef = useRef(null)
 
-  // Add shadow on scroll & track active section
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setDropdownOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
+
+  // Scroll effect
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 10)
-
-      // Track active section for nav highlighting
-      const sections = ['features', 'therapists', 'testimonials', 'faq', 'blog']
-      const scrollPosition = window.scrollY + 200
-      for (const section of sections) {
-        const element = document.getElementById(section)
-        if (element) {
-          const { offsetTop, offsetHeight } = element
-          if (scrollPosition >= offsetTop && scrollPosition < offsetTop + offsetHeight) {
-            setActiveSection(section)
-            break
-          }
-        }
-      }
     }
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
   const navLinks = [
-    { name: 'Features', href: '#features', id: 'features' },
+    { name: 'Home', href: '/', id: 'home' },
     { name: 'Consultants', href: '/consultant', id: 'consultant' },
-    { name: 'Testimonials', href: '#testimonials', id: 'testimonials' },
-    { name: 'Blog', href: '#faq', id: 'faq' },
-    { name: 'About', href: '#blog', id: 'blog' },
+    { name: 'Services', href: '/services', id: 'services' },
+    { name: 'Blog', href: '/blog', id: 'blog' },
+    { name: 'About', href: '/about-us', id: 'about-us' },
   ]
 
-  
-
-const handleAuth = (action) => {
-  
-  if (action === 'signin') {
-    setIsLoginOpen(true)
-    setMobileMenuOpen(false) // মোবাইল মেনু খোলা থাকলে তা বন্ধ করে ড্রয়ার ওপেন করবে
-  } else if (action === 'signup'){
-    setIsRegisterOpen(true)
-    setMobileMenuOpen(false)
-  } else{
-    console.log(`${action} clicked`)
+  // Check if link is active
+  const isActiveLink = (href, id) => {
+    if (href === '/') {
+      return pathname === '/'
+    }
+    return pathname?.startsWith(href) || pathname === href
   }
-}
+
+  const handleAuth = (action) => {
+    if (action === 'signin') {
+      setIsLoginOpen(true)
+      setMobileMenuOpen(false)
+    } else if (action === 'signup') {
+      setIsRegisterOpen(true)
+      setMobileMenuOpen(false)
+    }
+  }
+
+  const handleLogout = async () => {
+    await logout()
+    router.push('/')
+    setMobileMenuOpen(false)
+    setDropdownOpen(false)
+  }
+
+  const handleDashboard = () => {
+    router.push('/dashboard')
+    setMobileMenuOpen(false)
+    setDropdownOpen(false)
+  }
+
+  const handleNavigation = (href) => {
+    router.push(href)
+    setMobileMenuOpen(false)
+  }
+
+  // Get user initials
+  const getInitials = (name) => {
+    if (!name) return 'U'
+    return name
+      .split(' ')
+      .map(n => n[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 2)
+  }
 
   return (
     <header className="fixed top-0 left-0 w-full z-50 font-sans">
-      {/* Top Header Component (Our lean, passive version) */}
       <TopHeader />
 
-      {/* Main Navigation Bar */}
       <nav
         className={`transition-all duration-300 ${
           scrolled
-            ? 'bg-white backdrop-blur-md shadow-md py-2'
-            : 'bg-white/90 backdrop-blur-sm py-4'
+            ? 'bg-white/95 backdrop-blur-md shadow-lg py-2'
+            : 'bg-white/98 backdrop-blur-sm py-3'
         } border-b border-slate-200/80`}
       >
         <div className="container mx-auto px-4 flex items-center justify-between">
           {/* Logo */}
           <motion.div
-            whileHover={{ scale: 1.01 }}
-            className="flex items-center gap-2 cursor-pointer"
-            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            className="flex items-center cursor-pointer"
+            onClick={() => router.push('/')}
           >
-            <Link href={'/'}>
-              <Image
-                src={'/logo.png'}
-                loading="eager"
-                width={300}
-                height={200}
-                alt="Center For Psychological Health logo"
-                className="object-contain h-auto w-auto"
-              />
-            </Link>
+            <Image
+              src={'/logo.png'}
+              loading="eager"
+              width={240}
+              height={160}
+              alt="Centre For Psychological Health"
+              className="object-contain h-auto w-auto max-w-[180px] sm:max-w-[220px] md:max-w-[260px]"
+              priority
+            />
           </motion.div>
 
           {/* Desktop Navigation Links */}
-          <div className="hidden md:flex items-center gap-8">
-            {navLinks.map((link) => (
-              <Link
-                key={link.name}
-                href={link.href}
-                className={`relative text-xl transition-all duration-300 hover:text-teal-600 tracking-tight ${
-                  activeSection === link.id
-                    ? 'text-teal-700 font-bold after:absolute after:bottom-[-6px] after:left-0 after:w-full after:h-[3px] after:bg-teal-600 after:rounded-full after:scale-x-100'
-                    : 'text-slate-800 font-semibold after:absolute after:bottom-[-6px] after:left-0 after:w-full after:h-[3px] after:bg-teal-600 after:rounded-full after:scale-x-0 after:transition-transform after:duration-300 hover:after:scale-x-100'
-                }`}
-              >
-                {link.name}
-              </Link>
-            ))}
+          <div className="hidden lg:flex items-center gap-1 xl:gap-8">
+            {navLinks.map((link) => {
+              const isActive = isActiveLink(link.href, link.id)
+              return (
+                <Link
+                  key={link.name}
+                  href={link.href}
+                  className={`relative px-3 py-2 text-base xl:text-lg transition-all duration-300 hover:text-teal-600 tracking-tight rounded-lg ${
+                    isActive
+                      ? 'text-teal-700 font-bold bg-teal-50/50'
+                      : 'text-slate-700 font-medium hover:bg-slate-50'
+                  }`}
+                >
+                  {link.name}
+                  {isActive && (
+                    <motion.span
+                      layoutId="activeNavIndicator"
+                      className="absolute bottom-0 left-1/2 -translate-x-1/2 w-6 h-0.5 bg-gradient-to-r from-teal-600 to-emerald-600 rounded-full"
+                      transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+                    />
+                  )}
+                </Link>
+              )
+            })}
           </div>
 
-          {/* Desktop Auth Buttons (More Dominant) */}
-          <div className="hidden md:flex items-center gap-4">
-            {/* Sign In button */}
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={() => handleAuth('signin')}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-full border-2 border-teal-600 text-teal-700 hover:bg-teal-50 transition-all font-semibold text-base shadow-sm"
-            >
-              <LogIn size={16} className="stroke-[2.5]" />
-              Sign In
-            </motion.button>
+          {/* Desktop Auth / User Menu */}
+          <div className="hidden lg:flex items-center gap-3">
+            {isAuthenticated ? (
+              <>
+                {/* Dashboard Button */}
+                <motion.button
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
+                  onClick={handleDashboard}
+                  className="flex items-center gap-2 px-4 py-2.5 rounded-full border-2 border-slate-200 text-slate-700 hover:border-teal-300 hover:bg-teal-50 transition-all font-semibold text-sm"
+                >
+                  <LayoutDashboard size={16} />
+                  Dashboard
+                </motion.button>
 
-            {/* Sign Up button (Primary CTA) */}
-            <motion.button
-              whileHover={{ scale: 1.02, y: -1 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={() => handleAuth('signup')}
-              /* 
-                FIX: 
-                - border এবং শ্যাডো বুস্ট করা হয়েছে (shadow-teal-100)।
-                - font-bold এবং টেক্সট ট্র্যাকিং ইমপ্রুভ করা হয়েছে।
-              */
-              className="flex items-center gap-2 px-5 py-[12px] rounded-full bg-gradient-to-r from-teal-600 to-emerald-600 text-white font-bold text-base shadow-md shadow-teal-600/10 hover:shadow-lg hover:shadow-teal-600/20 transition-all"
-            >
-              <UserPlus size={16} className="stroke-[2.5]" />
-              Sign Up
-            </motion.button>
+                {/* Profile Dropdown */}
+                <div className="relative" ref={dropdownRef}>
+                  <motion.button
+                    whileHover={{ scale: 1.03 }}
+                    whileTap={{ scale: 0.97 }}
+                    onClick={() => setDropdownOpen(!dropdownOpen)}
+                    className={`flex items-center gap-2 px-3 py-2 rounded-full border-2 transition-all ${
+                      dropdownOpen
+                        ? 'border-teal-500 bg-teal-50'
+                        : 'border-teal-200 bg-gradient-to-r from-teal-50 to-emerald-50 hover:border-teal-400'
+                    }`}
+                  >
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-teal-600 to-emerald-600 text-white flex items-center justify-center text-sm font-bold shadow-md">
+                      {getInitials(user?.full_name)}
+                    </div>
+                    <span className="text-sm font-semibold text-slate-700 max-w-[80px] truncate">
+                      {user?.full_name?.split(' ')[0]}
+                    </span>
+                    <ChevronDown size={14} className={`text-slate-400 transition-transform duration-200 ${dropdownOpen ? 'rotate-180' : ''}`} />
+                  </motion.button>
+
+                  {/* Dropdown Menu */}
+                  <AnimatePresence>
+                    {dropdownOpen && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                        transition={{ duration: 0.15 }}
+                        className="absolute right-0 mt-2 w-64 bg-white rounded-2xl shadow-2xl border border-slate-200/60 overflow-hidden"
+                      >
+                        {/* User Info */}
+                        <div className="p-4 border-b border-slate-100 bg-gradient-to-br from-slate-50 to-white">
+                          <div className="flex items-center gap-3">
+                            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-teal-600 to-emerald-600 text-white flex items-center justify-center text-lg font-bold shadow-md">
+                              {getInitials(user?.full_name)}
+                            </div>
+                            <div>
+                              <p className="text-sm font-bold text-slate-800">{user?.full_name}</p>
+                              <p className="text-xs text-slate-500 truncate max-w-[160px]">{user?.email}</p>
+                              <span className="inline-block mt-0.5 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-teal-50 text-teal-700 border border-teal-200 capitalize">
+                                {user?.role || 'User'}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Menu Items */}
+                        <div className="p-2 space-y-0.5">
+                          <button
+                            onClick={handleDashboard}
+                            className="flex items-center gap-3 w-full px-3 py-2.5 text-sm text-slate-700 hover:bg-teal-50 rounded-xl transition-all group"
+                          >
+                            <LayoutDashboard size={16} className="text-slate-400 group-hover:text-teal-600" />
+                            Dashboard
+                          </button>
+                          <button
+                            onClick={() => {
+                              router.push('/dashboard/profile')
+                              setDropdownOpen(false)
+                            }}
+                            className="flex items-center gap-3 w-full px-3 py-2.5 text-sm text-slate-700 hover:bg-teal-50 rounded-xl transition-all group"
+                          >
+                            <Settings size={16} className="text-slate-400 group-hover:text-teal-600" />
+                            Profile Settings
+                          </button>
+                          <button
+                            onClick={() => {
+                              router.push('/dashboard/bookings')
+                              setDropdownOpen(false)
+                            }}
+                            className="flex items-center gap-3 w-full px-3 py-2.5 text-sm text-slate-700 hover:bg-teal-50 rounded-xl transition-all group"
+                          >
+                            <Calendar size={16} className="text-slate-400 group-hover:text-teal-600" />
+                            My Appointments
+                          </button>
+                          <hr className="my-1 border-slate-100" />
+                          <button
+                            onClick={handleLogout}
+                            className="flex items-center gap-3 w-full px-3 py-2.5 text-sm text-rose-600 hover:bg-rose-50 rounded-xl transition-all group"
+                          >
+                            <LogOut size={16} className="text-rose-400 group-hover:text-rose-600" />
+                            Sign Out
+                          </button>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              </>
+            ) : (
+              <>
+                <motion.button
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
+                  onClick={() => handleAuth('signin')}
+                  className="flex items-center gap-2 px-5 py-2.5 rounded-full border-2 border-teal-600 text-teal-700 hover:bg-teal-50 transition-all font-semibold text-sm shadow-sm"
+                >
+                  <LogIn size={16} />
+                  Login
+                </motion.button>
+
+                <motion.button
+                  whileHover={{ scale: 1.03, y: -1 }}
+                  whileTap={{ scale: 0.97 }}
+                  onClick={() => handleAuth('signup')}
+                  className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-teal-600 to-emerald-600 text-white font-bold text-sm shadow-md shadow-teal-600/20 hover:shadow-lg hover:shadow-teal-600/30 transition-all"
+                >
+                  <UserPlus size={16} />
+                  Sign Up
+                </motion.button>
+              </>
+            )}
           </div>
 
           {/* Mobile Menu Toggle */}
           <button
-            className="md:hidden text-slate-800 focus:outline-none"
+            className="lg:hidden text-slate-700 focus:outline-none p-2 hover:bg-slate-50 rounded-xl transition-all"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label="Toggle menu"
           >
@@ -161,66 +306,108 @@ const handleAuth = (action) => {
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.3 }}
-              className="md:hidden bg-white border-t border-slate-100 shadow-xl overflow-hidden"
+              transition={{ duration: 0.3, ease: 'easeInOut' }}
+              className="lg:hidden bg-white border-t border-slate-100 shadow-2xl overflow-hidden"
             >
-              <div className="container mx-auto px-4 py-6 flex flex-col gap-4">
+              <div className="container mx-auto px-4 py-6 flex flex-col gap-3">
+                {/* User info if authenticated */}
+                {isAuthenticated && (
+                  <div className="flex items-center gap-3 pb-4 mb-2 border-b border-slate-100">
+                    <div className="w-14 h-14 rounded-full bg-gradient-to-br from-teal-600 to-emerald-600 text-white flex items-center justify-center text-xl font-bold shadow-md">
+                      {getInitials(user?.full_name)}
+                    </div>
+                    <div>
+                      <p className="font-bold text-slate-800 text-base">{user?.full_name}</p>
+                      <p className="text-xs text-slate-500">{user?.email}</p>
+                      <span className="inline-block mt-0.5 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-teal-50 text-teal-700 border border-teal-200 capitalize">
+                        {user?.role || 'User'}
+                      </span>
+                    </div>
+                  </div>
+                )}
+
+                {/* Navigation Links */}
                 {navLinks.map((link) => (
                   <Link
                     key={link.name}
                     href={link.href}
-                    // onClick={(e) => {
-                    //   e.preventDefault()
-                    //   handleLinkClick(link.href, link.id)
-                    // }}
-                    className={`text-lg font-semibold py-2 transition-all duration-200 ${
-                      activeSection === link.id
-                        ? 'text-teal-600 border-l-4 border-teal-500 pl-3'
-                        : 'text-slate-800 hover:text-teal-600 hover:pl-3'
+                    className={`text-base font-semibold py-2.5 px-3 rounded-xl transition-all duration-200 ${
+                      isActiveLink(link.href, link.id)
+                        ? 'text-teal-700 bg-teal-50 border-l-4 border-teal-500'
+                        : 'text-slate-700 hover:text-teal-600 hover:bg-slate-50'
                     }`}
+                    onClick={() => setMobileMenuOpen(false)}
                   >
                     {link.name}
                   </Link>
                 ))}
 
-                {/* Mobile Auth Buttons */}
-                <div className="flex flex-col sm:flex-row gap-3 mt-4 pt-4 border-t border-slate-100">
-                  <button
-                    onClick={() => handleAuth('signin')}
-                    className="flex items-center justify-center gap-2 w-full border-2 border-teal-600 text-teal-700 py-2.5 rounded-full hover:bg-teal-50 transition-all font-semibold"
-                  >
-                    <LogIn size={16} className="stroke-[2.5]" />
-                    Sign In
-                  </button>
-                  <button
-                    onClick={() => handleAuth('signup')}
-                    className="flex items-center justify-center gap-2 w-full bg-gradient-to-r from-teal-600 to-emerald-600 text-white py-2.5 rounded-full hover:shadow-lg transition-all font-bold"
-                  >
-                    <UserPlus size={16} className="stroke-[2.5]" />
-                    Sign Up
-                  </button>
+                {/* Mobile Auth / User Actions */}
+                <div className="flex flex-col gap-3 mt-4 pt-4 border-t border-slate-100">
+                  {isAuthenticated ? (
+                    <>
+                      <button
+                        onClick={handleDashboard}
+                        className="flex items-center justify-center gap-2 w-full bg-gradient-to-r from-teal-600 to-emerald-600 text-white py-3.5 rounded-xl hover:shadow-lg transition-all font-bold text-base"
+                      >
+                        <LayoutDashboard size={18} />
+                        Dashboard
+                      </button>
+                      <button
+                        onClick={handleLogout}
+                        className="flex items-center justify-center gap-2 w-full border-2 border-rose-600 text-rose-600 py-3.5 rounded-xl hover:bg-rose-50 transition-all font-semibold text-base"
+                      >
+                        <LogOut size={18} />
+                        Sign Out
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <button
+                        onClick={() => handleAuth('signin')}
+                        className="flex items-center justify-center gap-2 w-full border-2 border-teal-600 text-teal-700 py-3.5 rounded-xl hover:bg-teal-50 transition-all font-semibold text-base"
+                      >
+                        <LogIn size={18} />
+                        Login
+                      </button>
+                      <button
+                        onClick={() => handleAuth('signup')}
+                        className="flex items-center justify-center gap-2 w-full bg-gradient-to-r from-teal-600 to-emerald-600 text-white py-3.5 rounded-xl hover:shadow-lg transition-all font-bold text-base"
+                      >
+                        <UserPlus size={18} />
+                        Sign Up
+                      </button>
+                    </>
+                  )}
+                </div>
+
+                {/* Mobile Footer */}
+                <div className="mt-2 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-400">
+                  <span className="flex items-center gap-1">
+                    <Shield size={12} className="text-teal-400" />
+                    Secure
+                  </span>
+                  <span>© {new Date().getFullYear()} CPH</span>
                 </div>
               </div>
             </motion.div>
           )}
         </AnimatePresence>
 
-        
         <LoginDrawer
           isOpen={isLoginOpen}
           setIsOpen={setIsLoginOpen}
           onRedirect={() => {
-            setIsLoginOpen(false) // ১. লগইন ড্রয়ার বন্ধ করবে
-            setIsRegisterOpen(true) // ২. রেজিস্ট্রেশন ড্রয়ার খুলবে
+            setIsLoginOpen(false)
+            setIsRegisterOpen(true)
           }}
         />
-
         <RegisterDrawer
           isOpen={isRegisterOpen}
           setIsOpen={setIsRegisterOpen}
           onSuccessRedirect={() => {
-            setIsRegisterOpen(false) // ১. রেজিস্ট্রেশন ড্রয়ার বন্ধ করবে
-            setIsLoginOpen(true) // ২. লগইন ড্রয়ার খুলবে
+            setIsRegisterOpen(false)
+            setIsLoginOpen(true)
           }}
         />
       </nav>

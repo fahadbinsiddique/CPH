@@ -1,51 +1,74 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { Heart } from 'lucide-react'
+import { Phone, Mail, Clock, MapPin, Heart, Shield, Award } from 'lucide-react'
+import Link from 'next/link'
+import { useState } from 'react'
 
 const TopHeader = () => {
-  const [quoteIndex, setQuoteIndex] = useState(0)
-
-  const quotes = [
-    '"Your present circumstances don\'t determine where you can go; they merely determine where you start." — Nido Qubein',
-    '"Healing is a matter of time, but it is sometimes also a matter of opportunity." — Hippocrates',
-    '"You are not your thoughts. You are the observer of your thoughts." — Unknown',
-    '"Self-care is not selfish. You cannot serve from an empty vessel." — Eleanor Brown',
-  ]
-
-  // Rotate quotes every 6 seconds
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setQuoteIndex((prev) => (prev + 1) % quotes.length)
-    }, 6000)
-    return () => clearInterval(interval)
-  }, [quotes.length])
+  const [showFullAddress, setShowFullAddress] = useState(false)
 
   return (
-    /* 
-      FIXES: 
-      - bg-teal-800 থেকে পরিবর্তন করে bg-slate-50 (বা হালকা টিল bg-teal-50/50) করা হয়েছে।
-      - টেক্সট কালার text-slate-500 করে মনোযোগ কমানো হয়েছে।
-      - py-2.5 কমিয়ে py-1 (মাত্র ৪px) করা হয়েছে যাতে স্ট্রিপটি চিকন হয়।
-      - border-b যোগ করে মেইন নববার থেকে আলাদা করা হয়েছে।
-    */
-    <div className="bg-slate-50 text-slate-500 py-1 text-center text-xs font-normal border-b border-slate-100">
-      <div className="container mx-auto px-4 flex items-center justify-center gap-2">
-        {/* আইকনের সাইজ ছোট করা হয়েছে এবং পালস অ্যানিমেশন বাদ দেওয়া হয়েছে */}
-        <Heart size={12} className="text-slate-400" />
-        <AnimatePresence mode="wait">
-          <motion.span
-            key={quoteIndex}
-            initial={{ opacity: 0, y: 5 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -5 }}
-            transition={{ duration: 0.4 }}
-            className="inline-block tracking-wide italic"
+    <div className="relative bg-gradient-to-r from-teal-900 via-teal-800 to-emerald-800 text-white overflow-hidden">
+      {/* Subtle background pattern */}
+      <div className="absolute inset-0 opacity-5">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 left-0 w-64 h-64 bg-emerald-400/10 rounded-full blur-3xl" />
+      </div>
+
+      <div className="relative container mx-auto px-4 py-1.5 flex flex-wrap items-center justify-between gap-1 text-[11px] sm:text-xs md:text-sm">
+        {/* Left: Contact Info */}
+        <div className="flex items-center gap-3 sm:gap-5 flex-wrap">
+          {/* Phone */}
+          <Link 
+            href="tel:+8801762389523" 
+            className="flex items-center gap-1.5 hover:text-teal-200 transition-colors group"
           >
-            {quotes[quoteIndex]}
-          </motion.span>
-        </AnimatePresence>
+            <div className="p-1 rounded-full bg-white/10 group-hover:bg-white/20 transition-colors">
+              <Phone size={11} className="text-teal-300" />
+            </div>
+            <span className=" xs:inline font-medium">+880 1762-389523</span>
+          </Link>
+
+          {/* Email - Hidden on smallest screens */}
+          <Link 
+            href="mailto:cfphuk@gmail.com" 
+            className="hidden sm:flex items-center gap-1.5 hover:text-teal-200 transition-colors group"
+          >
+            <div className="p-1 rounded-full bg-white/10 group-hover:bg-white/20 transition-colors">
+              <Mail size={11} className="text-teal-300" />
+            </div>
+            <span className="font-medium">cfphuk@gmail.com</span>
+          </Link>
+
+          {/* Hours - Hidden on tablet */}
+          <div className="hidden lg:flex items-center gap-1.5 text-white/80">
+            <Clock size={11} className="text-teal-300" />
+            <span>Sun-Thu: 9:00 AM - 8:00 PM</span>
+          </div>
+        </div>
+
+        {/* Right: Location & Emergency */}
+        <div className="flex items-center gap-2 sm:gap-4">
+          {/* Location - Hidden on mobile */}
+          <div className="hidden md:flex items-center gap-1.5 text-white/70 max-w-[280px] lg:max-w-[400px]">
+            <MapPin size={11} className="text-teal-300 flex-shrink-0" />
+            <span className="truncate text-[10px] sm:text-xs">
+              28/1 Green Corner (5th floor), Green Road, Dhanmondi 1205
+            </span>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <span className="text-white/30">|</span>
+            
+            
+
+            {/* Trust Badge */}
+            <div className="hidden lg:flex items-center gap-1 bg-white/5 px-2 py-0.5 rounded-full">
+              <Shield size={10} className="text-emerald-300" />
+              <span className="text-[9px] text-white/60 font-medium">HIPAA Compliant</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   )
