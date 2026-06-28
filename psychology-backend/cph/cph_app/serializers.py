@@ -81,6 +81,7 @@ class UserSerializer(serializers.ModelSerializer):
             "id",
             "full_name",
             "email",
+            "phone_number",
             "role",
             "created_at",
         ]

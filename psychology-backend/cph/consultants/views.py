@@ -34,7 +34,10 @@ class ConsultantListView(generics.ListAPIView):
 
 class ConsultantDetailView(generics.RetrieveAPIView):
     
-    #যেকোনো সিঙ্গেল কনসালট্যান্টের ডিটেইলস (পাবলিক বা নিজের প্রোফাইল)।
+    """"
+    Details of any single consultant (public or own profile)
+    
+    """
 
     serializer_class = ConsultantDetailSerializer
     lookup_field = 'slug'
@@ -52,7 +55,7 @@ class SpecializationListView(generics.ListAPIView):
 
 class ConsultantMyAvailabilityView(APIView):
     """
-    ডক্টরের নিজের ড্যাশবোর্ডের জন্য ফ্রি টাইম স্লট ম্যানেজমেন্ট (Upsert লজিক)।
+    Free time slot management for the doctor's own dashboard (Upsert logic)
     """
     permission_classes = [IsAuthenticated]
 
@@ -94,8 +97,7 @@ class ConsultantMyAvailabilityView(APIView):
 class ConsultantCreateView(generics.CreateAPIView):
     """
     POST /api/therapists/create/
-    লগইন করা যেকোনো সাধারণ ইউজার (client) এখানে ডাটা পাঠালে তার রোল অটোমেটিক 
-    'consultant' হয়ে যাবে এবং ব্যাকঅ্যান্ডে প্রোফাইলটি তৈরি হবে।
+Any logged-in regular user (client) sending data here will have their role automatically changed to 'consultant', and their profile will be created in the backend.
     """
     serializer_class = ConsultantCreateSerializer
     permission_classes = [IsAuthenticated]
