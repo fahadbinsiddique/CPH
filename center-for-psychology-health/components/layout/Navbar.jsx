@@ -175,93 +175,62 @@ const Navbar = () => {
                 </motion.button>
 
                 {/* Profile Dropdown */}
-                <div className="relative" ref={dropdownRef}>
+                   <div className="relative group">
                   <motion.button
-                    whileHover={{ scale: 1.03 }}
-                    whileTap={{ scale: 0.97 }}
-                    onClick={() => setDropdownOpen(!dropdownOpen)}
-                    className={`flex items-center gap-2 px-3 py-2 rounded-full border-2 transition-all ${
-                      dropdownOpen
-                        ? 'border-teal-500 bg-teal-50'
-                        : 'border-teal-200 bg-gradient-to-r from-teal-50 to-emerald-50 hover:border-teal-400'
-                    }`}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="flex items-center gap-2 px-2 py-1 rounded-full bg-gradient-to-r from-teal-50 to-emerald-50 border-2 border-teal-200 hover:border-teal-400 transition-all"
                   >
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-teal-600 to-emerald-600 text-white flex items-center justify-center text-sm font-bold shadow-md">
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-teal-600 to-emerald-600 text-white flex items-center justify-center text-sm font-bold">
                       {getInitials(user?.full_name)}
                     </div>
-                    <span className="text-sm font-semibold text-slate-700 max-w-[80px] truncate">
+                    <span className="text-sm font-semibold text-slate-700 max-w-[100px] truncate">
                       {user?.full_name?.split(' ')[0]}
                     </span>
                     <ChevronDown size={14} className={`text-slate-400 transition-transform duration-200 ${dropdownOpen ? 'rotate-180' : ''}`} />
                   </motion.button>
 
                   {/* Dropdown Menu */}
-                  <AnimatePresence>
-                    {dropdownOpen && (
-                      <motion.div
-                        initial={{ opacity: 0, y: -10, scale: 0.95 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                        transition={{ duration: 0.15 }}
-                        className="absolute right-0 mt-2 w-64 bg-white rounded-2xl shadow-2xl border border-slate-200/60 overflow-hidden"
+                  <div className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-xl border border-slate-200/60 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 overflow-hidden">
+                    <div className="p-3 border-b border-slate-100">
+                      <p className="text-sm font-bold text-slate-800">{user?.full_name}</p>
+                      <p className="text-xs text-slate-500">{user?.email}</p>
+                      <span className="inline-block mt-1 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-teal-50 text-teal-700 border border-teal-200 capitalize">
+                        {user?.role || 'User'}
+                      </span>
+                    </div>
+                    <div className="p-2 space-y-1">
+                      <button
+                        onClick={handleDashboard}
+                        className="flex items-center gap-3 w-full px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 rounded-xl transition-all"
                       >
-                        {/* User Info */}
-                        <div className="p-4 border-b border-slate-100 bg-gradient-to-br from-slate-50 to-white">
-                          <div className="flex items-center gap-3">
-                            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-teal-600 to-emerald-600 text-white flex items-center justify-center text-lg font-bold shadow-md">
-                              {getInitials(user?.full_name)}
-                            </div>
-                            <div>
-                              <p className="text-sm font-bold text-slate-800">{user?.full_name}</p>
-                              <p className="text-xs text-slate-500 truncate max-w-[160px]">{user?.email}</p>
-                              <span className="inline-block mt-0.5 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-teal-50 text-teal-700 border border-teal-200 capitalize">
-                                {user?.role || 'User'}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Menu Items */}
-                        <div className="p-2 space-y-0.5">
-                          <button
-                            onClick={handleDashboard}
-                            className="flex items-center gap-3 w-full px-3 py-2.5 text-sm text-slate-700 hover:bg-teal-50 rounded-xl transition-all group"
-                          >
-                            <LayoutDashboard size={16} className="text-slate-400 group-hover:text-teal-600" />
-                            Dashboard
-                          </button>
-                          <button
-                            onClick={() => {
-                              router.push('/dashboard/profile')
-                              setDropdownOpen(false)
-                            }}
-                            className="flex items-center gap-3 w-full px-3 py-2.5 text-sm text-slate-700 hover:bg-teal-50 rounded-xl transition-all group"
-                          >
-                            <Settings size={16} className="text-slate-400 group-hover:text-teal-600" />
-                            Profile Settings
-                          </button>
-                          <button
-                            onClick={() => {
-                              router.push('/dashboard/bookings')
-                              setDropdownOpen(false)
-                            }}
-                            className="flex items-center gap-3 w-full px-3 py-2.5 text-sm text-slate-700 hover:bg-teal-50 rounded-xl transition-all group"
-                          >
-                            <Calendar size={16} className="text-slate-400 group-hover:text-teal-600" />
-                            My Appointments
-                          </button>
-                          <hr className="my-1 border-slate-100" />
-                          <button
-                            onClick={handleLogout}
-                            className="flex items-center gap-3 w-full px-3 py-2.5 text-sm text-rose-600 hover:bg-rose-50 rounded-xl transition-all group"
-                          >
-                            <LogOut size={16} className="text-rose-400 group-hover:text-rose-600" />
-                            Sign Out
-                          </button>
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
+                        <LayoutDashboard size={16} className="text-slate-400" />
+                        Dashboard
+                      </button>
+                      <button
+                        onClick={() => router.push('/dashboard/profile')}
+                        className="flex items-center gap-3 w-full px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 rounded-xl transition-all"
+                      >
+                        <Settings size={16} className="text-slate-400" />
+                        Profile Settings
+                      </button>
+                      <button
+                        onClick={() => router.push('/dashboard/bookings')}
+                        className="flex items-center gap-3 w-full px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 rounded-xl transition-all"
+                      >
+                        <Calendar size={16} className="text-slate-400" />
+                        My Appointments
+                      </button>
+                      <hr className="my-1 border-slate-100" />
+                      <button
+                        onClick={handleLogout}
+                        className="flex items-center gap-3 w-full px-3 py-2 text-sm text-rose-600 hover:bg-rose-50 rounded-xl transition-all"
+                      >
+                        <LogOut size={16} />
+                        Sign Out
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </>
             ) : (
