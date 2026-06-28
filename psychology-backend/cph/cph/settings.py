@@ -3,6 +3,7 @@ from pathlib import Path
 from datetime import timedelta
 import os
 from dotenv import load_dotenv
+import dj_database_url
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -15,7 +16,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.onrender.com']
 
 
 # Application definition
@@ -26,6 +27,7 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'whitenoise.runserver_nostatic',
     'django.contrib.staticfiles',
 
      # Third party
@@ -48,6 +50,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -78,14 +81,20 @@ WSGI_APPLICATION = 'cph.wsgi.application'
 
 # Database
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('DB_NAME', 'psychology_db'),
-        'USER': os.getenv('DB_USER', 'postgres'),
-        'PASSWORD': os.getenv('DB_PASSWORD', ''),
-        'HOST': os.getenv('DB_HOST', 'localhost'),
-        'PORT': os.getenv('DB_PORT', '5432'),
-    }
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.postgresql',
+    #     'NAME': os.getenv('DB_NAME', 'psychology_db'),
+    #     'USER': os.getenv('DB_USER', 'postgres'),
+    #     'PASSWORD': os.getenv('DB_PASSWORD', ''),
+    #     'HOST': os.getenv('DB_HOST', 'localhost'),
+    #     'PORT': os.getenv('DB_PORT', '5432'),
+    # }
+
+    'default': dj_database_url.config(
+        default=os.getenv('DATABASE_URL'),
+        conn_max_age=600,
+        ssl_require=True  # Supabase-এর জন্য SSL আবশ্যক
+    )
 }
 
 # REST Framework
@@ -106,7 +115,8 @@ SIMPLE_JWT = {
     'ROTATE_REFRESH_TOKENS': True,
     'BLACKLIST_AFTER_ROTATION': True,
     'AUTH_COOKIE': 'access_token',
-    'AUTH_COOKIE_SECURE': False, # in production True dite hobe
+    'AUTH_COOKIE_REFRESH': 'refresh_token',
+    'AUTH_COOKIE_SECURE': not DEBUG, # DEBUG=True হলে False (লোকাল), প্রোডাকশনে স্বয়ংক্রিয়ভাবে True হবে
     'AUTH_COOKIE_SAMESITE': 'None',
     'AUTH_COOKIE_HTTP_ONLY': True,
 }
@@ -115,6 +125,8 @@ CSRF_TRUSTED_ORIGINS = [
     #Production এ domain add hobe
     "http://localhost:3000",
     "http://localhost:5173",
+    "https://*.onrender.com",
+    "https://*.vercel.app",
 ]
 
 # Security Middleware Config
@@ -129,10 +141,10 @@ CSRF_TRUSTED_ORIGINS = [
 
 
 # CORS
-CORS_ALLOWED_ORIGINS = [
-    'http://localhost:3000',
-    "http://localhost:5173",
-    'http://127.0.0.1:3000',
+
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r"^https://.*\.vercel\.app$",  # যেকোনো Vercel সাবডোমেইন সাবমিট করতে পারবে
+    r"^http://localhost:\d+$",      # লোকালহোস্টের সব পোর্ট (3000, 5173 ইত্যাদি)
 ]
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_HEADERS = [
@@ -179,8 +191,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-# Internationalization
-# https://docs.djangoproject.com/en/6.0/topics/i18n/
+
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -202,5 +213,5 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 MEDIA_URL = '/media/'
-
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 AUTH_USER_MODEL = 'cph_app.User'

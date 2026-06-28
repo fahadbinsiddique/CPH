@@ -86,8 +86,4 @@ class UserSerializer(serializers.ModelSerializer):
         ]
 
 
-class StudentInfoSerializer(serializers.ModelSerializer):
 
-    class Meta:
-        model = StudentInfo
-        fields = "__all__"

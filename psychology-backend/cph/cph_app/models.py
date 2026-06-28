@@ -22,19 +22,4 @@ class User(AbstractUser):
         return self.email
     
 
-class StudentInfo(models.Model):
-    name=models.CharField(max_length=120,null=True)
-    adress=models.CharField(max_length=120,null=True)
-    department=models.CharField(max_length=120,null=True)
-    phone=models.CharField(max_length=120,null=True)
-    photos=CloudinaryField('image')
 
-    @property
-    def photo(self):
-        if self.photo:
-            return f"https://res.cloudinary.com/ds8pqfvld/{self.photos}"
-        return None
-
-    def __str__(self):
-        return f'{self.name}'
-    

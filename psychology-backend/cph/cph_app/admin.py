@@ -5,6 +5,5 @@ from cph_app.models import *
 admin.site.register(
     [
         User,
-        StudentInfo
     ]
 )
