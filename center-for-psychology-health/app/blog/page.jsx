@@ -1,165 +1,177 @@
-import { cookies } from 'next/headers'
-import React from 'react'
-import { User, Mail, ShieldAlert, GraduationCap, LogOut } from 'lucide-react'
-import { redirect } from 'next/navigation'
-import Image from 'next/image'
+'use client';
 
-// ১. স্টুডেন্ট ডেটা আনার ফাংশন
-async function getStudents() {
-  const cookieStore = await cookies()
-  const token = cookieStore.get('access_token')?.value
+import { useState, useEffect, useCallback } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Search, Tag, Loader2, BookOpen } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
+import BlogCard from '@/components/shared/BlogCard';
+import { blogService } from '@/services/blogService';
+import { useDebounce } from '@/hooks/useDebounce';
 
-  console.log('=== NEXT.JS COOKIE DEBUG ===')
-  console.log('Fetched Token from Cookie:', token ? 'Token Found! ✅' : 'Token is UNDEFINED ❌')
+export default function BlogListPage() {
+  const [blogs, setBlogs] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('');
 
-  if (!token) {
-    return null
-  }
+  const debouncedSearch = useDebounce(search, 400);
 
-  try {
-    // লোকালহোস্ট কুকি ইরর এড়াতে 127.0.0.1 এর বদলে localhost ব্যবহার করা হলো
-    const res = await fetch('http://127.0.0.1:8000/api/auth/student/', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-      next: { revalidate: 0 },
-    })
-
-    if (!res.ok) {
-      if (res.status === 401 || res.status === 403) {
-        console.error('Django rejected the token. 401 Unauthorized.')
-        return 'invalid_token'
-      }
-      throw new Error(`Failed to fetch data: ${res.status}`)
+  const fetchBlogs = useCallback(async () => {
+    setLoading(true);
+    try {
+      const params = {};
+      if (debouncedSearch) params.search = debouncedSearch;
+      if (selectedCategory) params['category__slug'] = selectedCategory;
+      const res = await blogService.getAll(params);
+      setBlogs(res.data.results || res.data);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
     }
+  }, [debouncedSearch, selectedCategory]);
 
-    return await res.json()
-  } catch (error) {
-    console.error('Error fetching students:', error)
-    return []
-  }
-}
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => { fetchBlogs(); }, [fetchBlogs]);
 
-// 🔴 ২. সার্ভার অ্যাকশন লগআউট ফাংশন (Server Action)
-async function handleLogout() {
-  'use server' // এটি নেক্সট জেএসকে বলে যে এই ফাংশনটি সার্ভারেই রান হবে
+  useEffect(() => {
+    blogService.getCategories()
+      .then(res => setCategories(res.data))
+      .catch(console.error);
+  }, []);
 
-  // localStorage.clear();
-  try {
-    await fetch('http://127.0.0.1:8000/api/auth/logout/', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include', //বানান ঠিক করা হলো
-    })
-  } catch (error) {
-    console.error('Backend logout failed', error)
-  }
-
-  // ৩. সফল হোক বা না হোক, নেক্সট জেএস সার্ভার থেকে কুকি ডিলিট করে লগইনে পাঠিয়ে দেব
-  const cookieStore = await cookies()
-  cookieStore.delete('access_token')
-  cookieStore.delete('refresh_token')
-
-  redirect('auth/login') // লগইন পেজে রিডাইরেক্ট
-}
-
-const BlogPage = async () => {
-  const datas = await getStudents()
-
-  // কন্ডিশনাল চেকিং: টোকেন একদমই না থাকলে বা টোকেন ইনভ্যালিড হলে
-  if (datas === null || datas === 'invalid_token') {
-    return (
-      <div className="flex items-center justify-center min-h-[60vh] px-4">
-        <div className="w-full max-w-md p-6 bg-red-50/60 backdrop-blur-md border border-red-200 rounded-2xl text-center shadow-xl shadow-red-900/5">
-          <div className="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center mx-auto mb-4">
-            <ShieldAlert className="w-6 h-6 text-red-600" />
-          </div>
-          <h3 className="text-lg font-bold text-red-900">
-            {datas === 'invalid_token' ? 'Session Expired' : 'Access Denied'}
-          </h3>
-          <p className="text-sm text-red-700/80 mt-1">
-            {datas === 'invalid_token'
-              ? 'Your token is invalid or expired. Please login again.'
-              : 'No active access_token found in your browser cookies.'}
-          </p>
-          <a
-            href="/login"
-            className="inline-flex items-center justify-center mt-5 px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white font-medium text-sm rounded-xl transition-all"
-          >
-            Go to Login
-          </a>
-        </div>
-      </div>
-    )
-  }
-
-  if (datas.length === 0) {
-    return (
-      <div className="flex items-center justify-center min-h-[60vh] px-4">
-        <div className="w-full max-w-sm p-6 bg-white border border-slate-200 rounded-2xl text-center shadow-md">
-          <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center mx-auto mb-4">
-            <GraduationCap className="w-6 h-6 text-slate-400" />
-          </div>
-          <p className="text-slate-600 font-medium">No student records discovered in the system.</p>
-        </div>
-      </div>
-    )
-  }
+  const featured = blogs.filter(b => b.is_featured);
+  const regular = blogs.filter(b => !b.is_featured);
 
   return (
-    <div className="w-full min-h-screen bg-[#FAFAFA] py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-5xl mx-auto">
-        {/* হেডার সেকশন */}
-        <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-slate-200/60 pb-5">
-          <h2 className="text-3xl font-extrabold tracking-tight text-slate-800 flex items-center gap-2">
-            <GraduationCap className="w-8 h-8 text-teal-600" />
-            Student Directory
-          </h2>
-
-          {/* 🔴 ৪. লগআউট ফর্ম (সার্ভার সাইড বাটন) */}
-          <form action={handleLogout}>
-            <button
-              type="submit"
-              className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-slate-600 hover:text-red-600 bg-white hover:bg-red-50 border border-slate-200 hover:border-red-200 rounded-xl transition-all duration-200 shadow-sm active:scale-95"
-            >
-              <LogOut className="w-4 h-4" />
-              <span>Logout</span>
-            </button>
-          </form>
-        </div>
-
-        {/* স্টুডেন্ট কার্ড গ্রিড */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {datas.map((item) => (
-            <div
-              key={item.id}
-              className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow duration-200"
-            >
-              <div className="flex items-start gap-3.5">
-                <div className="w-10 h-10 bg-slate-50 border border-slate-100 rounded-xl flex items-center justify-center text-slate-400">
-                  <User className="w-5 h-5" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <h3 className="text-base font-bold text-slate-800 truncate">{item.name}</h3>
-                  {item.photos && (
-                    <div className="flex items-center gap-1.5 mt-1.5 text-slate-500">
-                      <Mail className="w-3.5 h-3.5" />
-                      {/* <Image alt="f" src={`https://cloudinary.com/ds8pqfvld/${item.photos}`} height={50} width={50} /> */}
-                    </div>
-                  )}
-                  <p className="text-xs truncate font-medium">{item.phone}</p>
-                </div>
-              </div>
+    <div className="min-h-screen bg-slate-50">
+      {/* Header */}
+      <div className="bg-white border-b border-slate-100">
+        <div className="max-w-5xl mx-auto px-4 py-12 text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            <div className="w-12 h-12 bg-blue-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <BookOpen className="w-6 h-6 text-blue-600" />
             </div>
-          ))}
+            <h1 className="text-3xl font-bold text-slate-800 mb-2">Blog</h1>
+            <p className="text-slate-400">
+              Mental health insights, tips and research
+            </p>
+          </motion.div>
         </div>
       </div>
-    </div>
-  )
-}
 
-export default BlogPage
+      <div className="max-w-5xl mx-auto px-4 py-8">
+        {/* Search & Filter */}
+        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4 mb-8">
+          <div className="relative mb-3">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+            <Input
+              placeholder="Search articles..."
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              className="pl-9 h-10"
+            />
+          </div>
+
+          {categories.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              <Badge
+                variant={!selectedCategory ? 'default' : 'outline'}
+                className="cursor-pointer"
+                onClick={() => setSelectedCategory('')}
+              >
+                All
+              </Badge>
+              {categories.map(cat => (
+                <Badge
+                  key={cat.slug}
+                  variant={selectedCategory === cat.slug ? 'default' : 'outline'}
+                  className="cursor-pointer"
+                  onClick={() => setSelectedCategory(
+                    selectedCategory === cat.slug ? '' : cat.slug
+                  )}
+                >
+                  {cat.name}
+                  <span className="ml-1 text-xs opacity-60">({cat.blog_count})</span>
+                </Badge>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {loading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="bg-white rounded-2xl p-4 border border-slate-100">
+                <Skeleton className="h-44 w-full rounded-xl mb-4" />
+                <Skeleton className="h-4 w-3/4 mb-2" />
+                <Skeleton className="h-3 w-full mb-1" />
+                <Skeleton className="h-3 w-2/3" />
+              </div>
+            ))}
+          </div>
+        ) : (
+          <>
+            {/* Featured */}
+            {featured.length > 0 && !search && !selectedCategory && (
+              <div className="mb-8">
+                <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-4">
+                  Featured
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                  {featured.slice(0, 2).map((blog, i) => (
+                    <motion.div
+                      key={blog.id}
+                      initial={{ opacity: 0, y: 16 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: i * 0.05 }}
+                    >
+                      <BlogCard blog={blog} featured />
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* All posts */}
+            <div>
+              {(search || selectedCategory) ? null : (
+                <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-4">
+                  Latest Articles
+                </h2>
+              )}
+
+              {blogs.length > 0 ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                  <AnimatePresence>
+                    {(search || selectedCategory ? blogs : regular).map((blog, i) => (
+                      <motion.div
+                        key={blog.id}
+                        initial={{ opacity: 0, y: 16 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ delay: i * 0.04 }}
+                      >
+                        <BlogCard blog={blog} />
+                      </motion.div>
+                    ))}
+                  </AnimatePresence>
+                </div>
+              ) : (
+                <div className="text-center py-16 text-slate-400">
+                  No articles found
+                </div>
+              )}
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}

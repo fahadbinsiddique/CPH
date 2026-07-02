@@ -22,4 +22,5 @@ urlpatterns = [
     path('api/auth/',include('cph_app.urls')),
     path('api/consultants/', include('consultants.urls')),
     path('api/appointments/', include('appointments.urls')),
+    path('api/blogs/', include('blogs.urls')),
 ]
