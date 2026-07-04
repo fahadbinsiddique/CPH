@@ -9,18 +9,18 @@ from rest_framework_simplejwt.exceptions import TokenError
 from cph_app.serializers import *
 
 
-# Cookie Helper
+# Helper for authentication cookies.
 
 def set_auth_cookies(response, access_token, refresh_token):
     """
-    Set JWT tokens in HttpOnly cookies
+    Set JWT tokens in HttpOnly cookies.
     """
 
     response.set_cookie(
         key="access_token",
         value=str(access_token),
         httponly=True,
-        secure=True,  # Production এ True করবে
+        secure=True,
         samesite="None",
         max_age=60 * 60,  # 1 hour
     )
@@ -29,7 +29,7 @@ def set_auth_cookies(response, access_token, refresh_token):
         key="refresh_token",
         value=str(refresh_token),
         httponly=True,
-        secure=True,  # Production এ True করবে
+        secure=True,
         samesite="None",
         max_age=7 * 24 * 60 * 60,  # 7 days
     )
@@ -40,25 +40,25 @@ def set_auth_cookies(response, access_token, refresh_token):
 def clear_auth_cookies(response):
    
 
-    # ১। জ্যাঙ্গোর সেটিংসের কুকি কনফিগারেশন অনুযায়ী ডিলিট করুন
+    # Delete cookies according to the Django cookie configuration.
     response.delete_cookie(
         "access_token", 
-        path="/",          # 👈 এটিই আসল কালপ্রিট, ড্যাশবোর্ড ও মেইন রুট সব ক্লিয়ার করবে
+        path="/",
         samesite="None",
-        # secure=True,  # set_cookie তে True থাকলে এখানেও True থাকতে হবে 
+        # secure=True,
     )
     
     response.delete_cookie(
         "refresh_token", 
         path="/", 
         samesite="None",
-        # secure=True,  # set_cookie তে True থাকলে এখানেও True থাকতে হবে
+        # secure=True,
     )   
 
     return response
 
 
-# Register View
+# Register view.
 
 class RegisterView(generics.CreateAPIView):
     serializer_class = RegisterSerializer
@@ -69,7 +69,7 @@ class RegisterView(generics.CreateAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        # Create User
+        # Create the user.
         user = serializer.save()
 
         # Generate Tokens
@@ -90,7 +90,7 @@ class RegisterView(generics.CreateAPIView):
         return set_auth_cookies(response, access, refresh)
 
 
-# Login View
+# Login view.
 
 class LoginView(generics.GenericAPIView):
     serializer_class = LoginSerializer
@@ -123,7 +123,7 @@ class LoginView(generics.GenericAPIView):
         return set_auth_cookies(response, access, refresh)
 
 
-# Logout View
+# Logout view.
 class LogoutView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -139,23 +139,21 @@ class LogoutView(APIView):
         try:
             refresh_token = request.COOKIES.get("refresh_token")
 
-            # Blacklist Refresh Token
+            # Blacklist the refresh token.
             if refresh_token:
                 token = RefreshToken(refresh_token)
                 token.blacklist()
 
         except (TokenError, Exception) as e:
-            # 🚀 ক্রিশিয়াল ফিক্স: টোকেন যদি অলরেডি এক্সপায়ার বা ইনভ্যালিডও হয়,
-            # তাও আমরা ইউজারকে ৪০০ এরর দিয়ে আটকে রাখব না। বরং সাইলেন্টলি ক্যাচ করে
-            # ব্রাউজার থেকে কুকিগুলো ডিলিট করে দেব যাতে সেশন অন্তত ফ্রন্টএন্ডে ক্লিন হয়।
+            # If token blacklisting fails, continue gracefully and clear the browser cookies.
             print(f"Logout token blacklisting skipped/failed: {str(e)}")
             pass
 
-        # সবসময় কুকি ক্লিয়ার করা রেসপন্সটি রিটার্ন হবে
+        # Always return a response that clears the auth cookies.
         return clear_auth_cookies(response)
 
 
-# Refresh Access Token
+# Refresh access token view.
 
 class RefreshTokenView(APIView):
     permission_classes = [AllowAny]
@@ -206,7 +204,7 @@ class RefreshTokenView(APIView):
             )
 
 
-# Current Logged-in User
+# Current logged-in user view.
 
 class MeView(APIView):
     permission_classes = [IsAuthenticated]

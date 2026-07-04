@@ -17,7 +17,7 @@ from .serializers import (
 
 class ConsultantListView(generics.ListAPIView):
     
-   # পাবলিক ডিরেক্টরি: এখানে শুধু ভেরিফাইড কনসালট্যান্টরা দেখাবে।
+   # Public directory: only verified consultants are shown here.
    
     serializer_class = ConsultantListSerializer
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
@@ -78,7 +78,7 @@ class ConsultantMyAvailabilityView(APIView):
 
         availability_instance = ConsultantAvailability.objects.filter(consultant=consultant, day=day).first()
         
-        # সিরিয়ালাইজার ভ্যালিডেশন এবং সেভ ইন্টিগ্রেশন
+        # Validate the serializer and save the availability data.
         if availability_instance:
             serializer = AvailabilitySerializer(availability_instance, data=request.data, partial=True)
         else:
@@ -105,23 +105,23 @@ Any logged-in regular user (client) sending data here will have their role autom
     def perform_create(self, serializer):
         user = self.request.user
 
-        # ১. ডুপ্লিকেট রিকোয়েস্ট চেক
+        # Check for duplicate requests.
         if Consultant.objects.filter(user=user).exists():
             raise ValidationError({"detail": "A consultant profile already exists for this user."})
 
-        # ২. রোল আপগ্রেড লজিক
+        # Upgrade the user role when needed.
         if user.role == 'client':
             user.role = 'consultant'
             user.save(update_fields=['role'])
 
-        # ৩. প্রোফাইল ডাটা সেভ এবং অবজেক্ট রিটার্ন (যাতে create মেথডে রেসপন্স করা যায়)
+        # Save the profile data and return the created object for the response.
         self.instance = serializer.save()
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data, context={'request': request})
         if serializer.is_valid():
             
-            # perform_create মেথড রান করবে (ডাবল সেভ বাগ ফিক্সড)
+            # Run perform_create to avoid a double-save issue.
             self.perform_create(serializer) 
             
             return Response(

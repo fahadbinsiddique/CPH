@@ -159,7 +159,6 @@ export default function SettingsPage() {
           <div className="space-y-3 ">
             <ConsultantCreateModal
               onSuccess={(data) => {
-                // সফলভাবে ক্রিয়েট হওয়ার পর যদি লোকাল স্টেট আপডেট বা রিডাইরেক্ট করতে চান
                 console.log('Upgraded data:', data)
               }}
             />

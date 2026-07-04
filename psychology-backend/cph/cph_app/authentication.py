@@ -5,11 +5,11 @@ from rest_framework_simplejwt.tokens import AccessToken
 
 class CookieJWTAuthentication(JWTAuthentication):
     def authenticate(self, request):
-        # প্রথমে cookie থেকে token নেওয়ার চেষ্টা করো
+        # First, try to read the token from the cookie.
         access_token = request.COOKIES.get('access_token')
 
         if access_token is None:
-            # Cookie না থাকলে header থেকে নেওয়ার চেষ্টা করো
+            # If no cookie is present, fall back to the authorization header.
             return super().authenticate(request)
 
         try:
@@ -17,6 +17,5 @@ class CookieJWTAuthentication(JWTAuthentication):
             user = self.get_user(validated_token)
             return (user, validated_token)
         except (InvalidToken, TokenError) as e:
-            # যদি কুকি থাকে কিন্তু সেটা ইনভ্যালিড/এক্সপায়ারড হয়, তবে সরাসরি ৪০১ ইরর থ্রো করো
-            # যাতে ফ্রন্টএন্ডের Axios interceptor refresh token এর কাজ শুরু করতে পারে।
+            # If the cookie exists but is invalid or expired, raise an invalid-token error so the frontend can initiate refresh handling.
             raise InvalidToken(e)

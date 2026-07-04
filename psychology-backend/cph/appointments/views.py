@@ -65,14 +65,14 @@ class AppointmentStatusUpdateView(generics.UpdateAPIView):
         user = self.request.user
         if user.role == 'consultant':
             return Appointment.objects.filter(consultant__user=user)
-        # Client শুধু cancel করতে পারবে
+        # Clients can only cancel appointments.
         return Appointment.objects.filter(client=user, status='pending')
 
     def patch(self, request, *args, **kwargs):
         appointment = self.get_object()
         user = request.user
 
-        # Client শুধু cancel করতে পারবে
+        # Clients can only cancel appointments.
         if user.role == 'client':
             new_status = request.data.get('status')
             if new_status != 'cancelled':

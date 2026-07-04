@@ -1,10 +1,10 @@
-import { Geist, Geist_Mono, Plus_Jakarta_Sans } from 'next/font/google' // <- Plus_Jakarta_Sans ইমপোর্ট করা হলো
+import { Geist, Geist_Mono, Plus_Jakarta_Sans } from 'next/font/google'
 import './globals.css'
 import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
 import { Toaster } from 'sonner'
 
-// Geist Sans (বডি এবং সাধারণ টেক্সটের জন্য)
+// Geist Sans for body and general text.
 const geistSans = Geist({
   variable: '--font-geist-sans',
   subsets: ['latin'],
@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
   subsets: ['latin'],
 })
 
-// Plus Jakarta Sans
+// Plus Jakarta Sans for headings and UI accents.
 const plusJakartaSans = Plus_Jakarta_Sans({
   variable: '--font-plus-jakarta',
   subsets: ['latin'],

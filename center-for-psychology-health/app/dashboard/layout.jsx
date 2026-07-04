@@ -78,7 +78,7 @@ function Sidebar({ open, onClose }) {
   const handleLogout = async () => {
     try {
       await logout();
-      toast.success("Logout successfull") // এটি ভেতর থেকেই স্টোরেজ ক্লিয়ার করে '/' এ পাঠিয়ে দেবে
+      toast.success("Logout successful")
     } catch (error) {
       console.error("Component logout error:", error);
     }

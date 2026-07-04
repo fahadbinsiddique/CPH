@@ -30,7 +30,7 @@ INSTALLED_APPS = [
     'whitenoise.runserver_nostatic',
     'django.contrib.staticfiles',
 
-     # Third party
+     # Third-party apps
     'rest_framework',
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     'cloudinary',
     'django_filters',
 
-    # Local App
+    # Local apps
     'cph_app',
     'consultants',
     'appointments',
@@ -93,7 +93,7 @@ DATABASES = {
     'default': dj_database_url.config(
         default=os.getenv('DATABASE_URL'),
         conn_max_age=600,
-        ssl_require=True  # Supabase-এর জন্য SSL আবশ্যক
+        ssl_require=True
     )
 }
 
@@ -122,7 +122,6 @@ SIMPLE_JWT = {
 }
 
 CSRF_TRUSTED_ORIGINS = [
-    #Production এ domain add hobe
     "http://localhost:3000",
     "http://localhost:5173",
     "https://*.onrender.com",
@@ -143,8 +142,8 @@ CSRF_TRUSTED_ORIGINS = [
 # CORS
 
 CORS_ALLOWED_ORIGIN_REGEXES = [
-    r"^https://.*\.vercel\.app$",  # যেকোনো Vercel সাবডোমেইন সাবমিট করতে পারবে
-    r"^http://localhost:\d+$",      # লোকালহোস্টের সব পোর্ট (3000, 5173 ইত্যাদি)
+    r"^https://.*\.vercel\.app$",
+    r"^http://localhost:\d+$",
 ]
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_HEADERS = [

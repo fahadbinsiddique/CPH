@@ -36,7 +36,7 @@ class Consultant(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            # নামের সাথে uuid এর ছোট অংশ যোগ করে ইউনিক স্লাগ নিশ্চিত করা
+            # Append a short UUID suffix to the slug to keep it unique.
             base_slug = slugify(self.user.full_name or "consultant")
             unique_suffix = uuid.uuid4().hex[:6]
             self.slug = f"{base_slug}-{unique_suffix}"
@@ -71,7 +71,7 @@ class ConsultantAvailability(models.Model):
 
     class Meta:
         unique_together = ('consultant', 'day')
-        ordering = ['day', 'start_time'] # অর্ডারিং ঠিক রাখার জন্য
+        ordering = ['day', 'start_time']
         
     def __str__(self):
         return f"{self.consultant} — {self.day}"

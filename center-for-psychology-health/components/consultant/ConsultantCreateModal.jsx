@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { toast } from 'sonner'; // অথবা আপনার প্রজেক্টের টোস্ট হ্যান্ডলার
+import { toast } from 'sonner';
 import { Loader2, Plus } from 'lucide-react';
 
 import {
@@ -24,9 +24,9 @@ import {
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { consultantService } from '@/services/consultantService'; // আপনার সঠিক পাথ দিন
+import { consultantService } from '@/services/consultantService';
 
-// Zod Validation Schema
+// Zod validation schema
 const formSchema = z.object({
   bio: z.string().min(10, { message: 'Bio must be at least 10 characters long.' }),
   experience_years: z.coerce.number().min(0, { message: 'Experience must be a positive number.' }),
@@ -42,7 +42,7 @@ export function ConsultantCreateModal({ onSuccess }) {
   const [loading, setLoading] = useState(false);
   const [specializationsList, setSpecializationsList] = useState([]);
 
-  // ১. স্পেশালাইজেশন লিস্ট লোড করা
+  // Load the specialization list when the dialog opens.
   useEffect(() => {
     if (open) {
       consultantService.getSpecializations()
@@ -51,7 +51,7 @@ export function ConsultantCreateModal({ onSuccess }) {
     }
   }, [open]);
 
-  // ২. ফর্ম ইনিশিয়ালাইজেশন
+  // Initialize the form state.
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -65,7 +65,7 @@ export function ConsultantCreateModal({ onSuccess }) {
     },
   });
 
-  // ৩. সাবমিট হ্যান্ডলার (FormData তৈরি করা কারণ ইমেজ ফাইল আছে)
+  // Submit handler that builds FormData because the form includes an image file.
   const onSubmit = async (values) => {
     setLoading(true);
     try {
@@ -76,7 +76,7 @@ export function ConsultantCreateModal({ onSuccess }) {
       formData.append('location', values.location);
       formData.append('languages', values.languages);
       
-      // Array data হ্যান্ডেল করা DRF-এর জন্য
+      // Append array values for DRF handling.
       values.specializations.forEach((id) => {
         formData.append('specializations', id);
       });
@@ -101,7 +101,7 @@ export function ConsultantCreateModal({ onSuccess }) {
     }
   };
 
-  // স্পেশালাইজেশন সিলেক্ট/টগল লজিক
+  // Toggle specialization selection.
   const handleSpecializationToggle = (id, currentValues) => {
     if (currentValues.includes(id)) {
       form.setValue('specializations', currentValues.filter((item) => item !== id));

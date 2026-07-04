@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Plus, Minus, ArrowRight, ShieldCheck, MessageCircle, Sparkles } from 'lucide-react'
 import Image from 'next/image'
 
-/* FAQ DATA */
+// FAQ content for the final call-to-action section.
 const faqs = [
   {
     question: 'Is my data and conversation private?',

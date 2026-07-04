@@ -21,7 +21,6 @@ import Image from 'next/image';
 
 export default function RegisterDrawer({ isOpen, setIsOpen, onSuccessRedirect }) {
   const router = useRouter();
-//   const { toast } = useToast();
   const { register, isLoading, clearError } = useAuthStore();
 
   const [formData, setFormData] = useState({
@@ -45,7 +44,7 @@ export default function RegisterDrawer({ isOpen, setIsOpen, onSuccessRedirect })
     e.preventDefault();
     setFormError('');
 
-    // validation
+    // Validate the form before submission.
     if (!formData.full_name || !formData.email || !formData.password || !formData.confirm_password) {
       setFormError('Please fill in all the required fields.');
       return;
@@ -71,16 +70,16 @@ export default function RegisterDrawer({ isOpen, setIsOpen, onSuccessRedirect })
         );
 
         setTimeout(() => {
-        setIsOpen(false); // রেজিস্ট্রেশন ড্রয়ার বন্ধ হবে
+        setIsOpen(false);
         
         if (onSuccessRedirect) {
-          onSuccessRedirect(); // লগইন ড্রয়ার ওপেন হবে
+          onSuccessRedirect();
         }
       }, 200);
 
 
     } else {
-      // হ্যান্ডসাম এরর এক্সট্রাকশন
+      // Extract the relevant backend error message.
       const backendError = result?.error;
       if (typeof backendError === 'string') {
         setFormError(backendError);

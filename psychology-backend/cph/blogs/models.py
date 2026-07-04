@@ -75,11 +75,11 @@ class Blog(models.Model):
         if not self.slug:
             self.slug = slugify(self.title)
 
-        # Auto calculate read time (avg 200 words/min)
+        # Automatically calculate read time based on an average reading speed.
         word_count = len(self.content.split())
         self.read_time = max(1, word_count // 200)
 
-        # Set published_at
+        # Set the publication timestamp when the blog is published.
         from django.utils import timezone
         if self.status == 'published' and not self.published_at:
             self.published_at = timezone.now()

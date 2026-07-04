@@ -8,8 +8,7 @@ from cph_app.models import *
 User = get_user_model()
 
 
-  
-# Register Serializer
+# Register serializer.
   
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, )
@@ -43,8 +42,7 @@ class RegisterSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         validated_data.pop("confirm_password")
 
-        # ম্যাজিক ট্রিক: যেহেতু USERNAME_FIELD হলো email, তাই ব্যাকগ্রাউন্ডে
-        # ইমেইলের ভ্যালুটাকেই username হিসেবে সেট করে দেওয়া হলো। ফ্রন্টএন্ডের আর প্যারা নাই!
+        # Set the email address as the username because USERNAME_FIELD uses email.
         email = validated_data.get("email")
         validated_data["username"] = email
 
@@ -53,7 +51,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 
 
   
-# Login Serializer
+# Login serializer.
   
 class LoginSerializer(serializers.Serializer):
     username = serializers.CharField()
@@ -72,7 +70,7 @@ class LoginSerializer(serializers.Serializer):
 
 
   
-# User Serializer (Public Profile)
+# User serializer for public profile data.
   
 class UserSerializer(serializers.ModelSerializer):
     class Meta:

@@ -17,7 +17,7 @@ class AppointmentCreateSerializer(serializers.ModelSerializer):
         date = attrs['appointment_date']
         time = attrs['appointment_time']
 
-        # Same slot already booked কিনা check
+        # Check whether the same slot is already booked.
         if Appointment.objects.filter(
             consultant=consultant,
             appointment_date=date,
@@ -28,7 +28,7 @@ class AppointmentCreateSerializer(serializers.ModelSerializer):
                 'Already Booked a appointment at this datetime '
             )
 
-        # Past date check
+        # Prevent past dates from being booked.
         from django.utils import timezone
         import datetime
         today = timezone.now().date()

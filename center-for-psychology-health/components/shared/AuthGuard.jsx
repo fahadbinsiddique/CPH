@@ -11,7 +11,7 @@ export default function AuthGuard({ children, allowedRoles = [] }) {
   const [isHydrated, setIsHydrated] = useState(false);
   const hasFetched = useRef(false);
 
-  // ১. Zustand লোকাল স্টোরেজ রিড করা শেষ করেছে কি না তা নিশ্চিত করা
+  // Ensure the Zustand persisted state has finished hydrating.
   useEffect(() => {
     const unsub = useAuthStore.persist.onHydrate(() => setIsHydrated(false));
     const unsubFinish = useAuthStore.persist.onFinishHydration(() => setIsHydrated(true));
@@ -27,9 +27,9 @@ export default function AuthGuard({ children, allowedRoles = [] }) {
     };
   }, []);
 
-  // ২. সিকিউরড সেশন ভেরিফিকেশন লজিক
+  // Secure session verification logic.
   useEffect(() => {
-    if (!isHydrated) return; // স্টোরেজ রিড শেষ না হওয়া পর্যন্ত ব্যাকএন্ড কল হবে না
+    if (!isHydrated) return; // Wait until the persisted store is ready before calling the backend.
 
     const verify = async () => {
       if (hasFetched.current) return;
@@ -45,11 +45,11 @@ export default function AuthGuard({ children, allowedRoles = [] }) {
         }
 
         if (allowedRoles.length > 0 && !allowedRoles.includes(latest.user?.role)) {
-          // 🚀 ফিক্স: রোল না মিললে হোমপেজে পাঠিয়ে unauthorized টোস্ট দেখানো হবে
+          // Redirect to the home page when the role does not match the allowed set.
           window.location.href = '/?message=unauthorized';
         }
         } catch {
-          // 🚀 ফিক্স: এপিআই ফেল করলে বা সেশন আউট হলে লগইন করার মেসেজ যাবে
+          // Redirect to login when the request fails or the session has expired.
           router.replace('/?message=login_required');
         }
     };
@@ -57,7 +57,7 @@ export default function AuthGuard({ children, allowedRoles = [] }) {
     verify();
   }, [isHydrated, fetchMe, router, allowedRoles]);
 
-  // ৩. ডাটা পুরোপুরি রেডি হওয়ার আগ পর্যন্ত স্ক্রিন লক (লোডিং স্পিনার)
+  // Lock the screen with a loading spinner until the auth state is fully ready.
   // eslint-disable-next-line react-hooks/refs
   if (!isHydrated || (!isAuthenticated && hasFetched.current === false)) {
     return (

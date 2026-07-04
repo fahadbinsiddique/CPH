@@ -161,7 +161,7 @@ const Hero = () => {
                       ring: 'focus-visible:ring-emerald-500',
                       iconBg: 'bg-emerald-100 text-emerald-700',
                       tagBg: 'bg-emerald-50 text-emerald-700',
-                      lineBg: 'group-hover:bg-teal-500', // <- থিম অনুযায়ী লাইন কালার
+                      lineBg: 'group-hover:bg-teal-500',
                     },
                     rose: {
                       bg: 'from-rose-50 to-rose-100/50',
@@ -169,7 +169,7 @@ const Hero = () => {
                       ring: 'focus-visible:ring-rose-500',
                       iconBg: 'bg-rose-100 text-rose-700',
                       tagBg: 'bg-rose-50 text-rose-700',
-                      lineBg: 'group-hover:bg-rose-500', // <- থিম অনুযায়ী লাইন কালার
+                      lineBg: 'group-hover:bg-rose-500',
                     },
                     amber: {
                       bg: 'from-amber-50 to-amber-100/50',
@@ -177,7 +177,7 @@ const Hero = () => {
                       ring: 'focus-visible:ring-amber-500',
                       iconBg: 'bg-amber-100 text-amber-700',
                       tagBg: 'bg-amber-50 text-amber-700',
-                      lineBg: 'group-hover:bg-amber-500', // <- থিম অনুযায়ী লাইন কালার
+                      lineBg: 'group-hover:bg-amber-500',
                     },
                   }
                   const styles = colorMap[option.color] || colorMap.emerald

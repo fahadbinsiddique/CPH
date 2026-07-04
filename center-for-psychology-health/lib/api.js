@@ -1,11 +1,9 @@
 // lib/api.js
 
 import axios from 'axios'
-import useAuthStore from '@/store/authStore' // Zustand store
+import useAuthStore from '@/store/authStore'
 
-// ==========================================
-// অপশন ১: Chrome DevTools Console Watermark
-// ==========================================
+// Development console watermark.
 if (typeof window !== 'undefined') {
   console.log(
     '%c (◣ _ ◢) Developed By: Fahad Bin Siddique',
@@ -14,15 +12,15 @@ if (typeof window !== 'undefined') {
 }
 
 
-// Create Axios Instance
+// Create the Axios instance.
 
 const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
 
-  // Cookie automatically send/receive করবে
+  // Automatically send and receive cookies.
   withCredentials: true,
 
-  // Request timeout after 10 seconds
+  // Request timeout after 10 seconds.
   timeout: 10000,
 
   headers: {
@@ -32,25 +30,25 @@ const api = axios.create({
   },
 })
 
-// Response Interceptor
+// Response interceptor.
 
 api.interceptors.response.use(
-  // Success Response
+  // Successful response.
 
   (response) => response,
 
-  // Error Response
+  // Error response.
 
   async (error) => {
-    // Original request store করা হচ্ছে
+    // Preserve the original request before retrying.
     const originalRequest = error.config
 
     /**
-     * access token expire হলে backend 401 দিবে
+     * The backend returns 401 when the access token has expired.
      *
-     * তখন:
-     * 1. refresh token দিয়ে নতুন access token নিবে
-     * 2. old request আবার retry করবে
+     * In that case:
+     * 1. A refresh token is used to obtain a new access token.
+     * 2. The original request is retried.
      */
 
     if (
@@ -58,33 +56,32 @@ api.interceptors.response.use(
       !originalRequest._retry &&
       !originalRequest.url.includes('/api/auth/refresh/')
     ) {
-      // Infinite loop prevent
+      // Prevent retry loops.
       originalRequest._retry = true
 
       try {
-        // Get New Access Token
+        // Get a new access token.
 
         await api.post('/api/auth/refresh/')
 
-        // Retry Previous Request
+        // Retry the previous request.
 
         return api(originalRequest)
       } catch (refreshError) {
         /**
-         * যদি refresh token ও expire হয়ে যায়, তবে লুপ বন্ধ করতে হবে
+         * If the refresh token is also expired, stop the retry loop.
          */
         if (typeof window !== 'undefined') {
-          // ১. Zustand-এর মেমরি স্টেট ক্লিন করুন যাতে পুরোনো এরর আটকে না থাকে
+          // Clear the in-memory auth state so stale errors do not persist.
           useAuthStore.getState().clearError()
           
-          // ২. সরাসরি Zustand-এর logout না ডেকে ম্যানুয়ালি স্টেট রিসেট করুন 
-          // যাতে ব্যাকগ্রাউন্ডে বারবার /api/auth/logout/ এপিআই কল হয়ে লুপ না হয়
+          // Reset the auth state manually instead of calling logout repeatedly in the background.
           useAuthStore.setState({ user: null, isAuthenticated: false })
 
-          // ৩. লোকাল স্টোরেজ থেকে জোরপূর্বক কি-টি মুছে দিন যাতে AuthGuard আর ফলস ডাটা না পায়
+          // Remove the persisted auth data so the guard does not receive stale values.
           localStorage.removeItem('auth-storage');
 
-          // 4. ইউজারকে ধাক্কা দিয়ে মেইন হোমপেজে পাঠিয়ে দিন
+          // Send the user back to the home page.
           window.location.href = '/'
         }
 

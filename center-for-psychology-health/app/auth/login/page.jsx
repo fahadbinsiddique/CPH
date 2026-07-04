@@ -6,8 +6,7 @@ export default function LoginPage() {
   const router = useRouter();
 
   useEffect(() => {
-    // কেউ সরাসরি এই লিংকে ঢুকলে তাকে হোমপেজে পাঠিয়ে দিন
-    // এবং কুয়েরি প্যারামিটার হিসেবে ?login=true পাস করুন
+    // Redirect direct visits to the login route back to the home page with a query parameter.
     router.push('/?login=true');
   }, [router]);
 

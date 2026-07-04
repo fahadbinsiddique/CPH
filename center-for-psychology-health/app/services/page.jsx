@@ -42,7 +42,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
 
-// Animation variants
+// Animation variants for the service sections.
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
@@ -249,7 +249,7 @@ const services = [
   },
 ]
 
-// Stats data
+// Statistics displayed in the services overview.
 const stats = [
   { icon: Users, value: '500+', label: 'Happy Clients' },
   { icon: Star, value: '4.9', label: 'Average Rating' },
@@ -257,7 +257,7 @@ const stats = [
   { icon: Award, value: '100%', label: 'Confidential Care' },
 ]
 
-// Testimonials
+// Testimonials displayed on the services page.
 const testimonials = [
   {
     name: 'Sarah M.',

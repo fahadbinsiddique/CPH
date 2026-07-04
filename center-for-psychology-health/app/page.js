@@ -35,8 +35,7 @@ function ToastHandler() {
         });
       }
 
-      // 🚀 ফিক্স: টোস্ট ফায়ার হওয়ার পর সামান্য একটু পর ইউআরএল ক্লিন হবে
-      // এতে নেক্সট-জেএস টোস্টটি ড্রপ করার আগেই ইউআরএল ডিলিট করতে পারবে না
+      // Clear the URL after the toast is shown so the page state remains consistent.
       const timer = setTimeout(() => {
         router.replace('/');
       }, 500);
@@ -55,21 +54,12 @@ const Page = () => {
     <Suspense fallback={null}>
         <ToastHandler />
       </Suspense>
-      {/* <Navbar /> */}
       <main>
         <Hero />
         <FeaturesTrustSection />
-
-        {/* <FeaturesShowcase /> */}
-        {/* <TrustBenefitsSection /> */}
         <TherapistsSection />
-        {/* <ViewAllTherapistsCTA /> */}
-        {/* <Testimonials /> */}
-        {/* <Faq /> */}
-        {/* <BlogPreview /> */}
         <FinalCTA />
       </main>
-      {/* <Footer /> */}
     </>
   )
 }

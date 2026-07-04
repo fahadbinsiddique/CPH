@@ -2,7 +2,7 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 from django.contrib.auth import get_user_model
 from .models import Consultant, Specialization, ConsultantAvailability
-from cph_app.serializers import UserSerializer # আপনার মেইন অ্যাপের সিরিয়ালাইজার
+from cph_app.serializers import UserSerializer
 
 User = get_user_model()
 
@@ -17,8 +17,7 @@ class AvailabilitySerializer(serializers.ModelSerializer):
         model = ConsultantAvailability
         fields = ['id', 'day', 'start_time', 'end_time', 'session_type']
         
-        # নোট: ফ্রন্টএন্ড থেকে সাবমিট করা ডাটা ভিউ-এর মাধ্যমে ইউনিকনেস চেক হবে, 
-        # এখানে মডেল লেভেলের গ্লোবাল ভ্যালিডেটর ফ্রন্টএন্ড ডাটার অনুপস্থিতিতে ক্র্যাশ করে।
+        # Note: uniqueness is validated in the view layer when data is submitted from the frontend.
 
 
 class ConsultantListSerializer(serializers.ModelSerializer):
@@ -49,7 +48,7 @@ class ConsultantDetailSerializer(ConsultantListSerializer):
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
-    """ইউজারের বেসিক ডাটা দেখার প্রোফাইল সিরিয়ালাইজার"""
+    """Basic profile serializer for viewing user data."""
     class Meta:
         model = User
         fields = ['id', 'full_name', 'email', 'phone_number', 'role']
