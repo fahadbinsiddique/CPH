@@ -69,7 +69,7 @@ export default function LoginDrawer({ isOpen, setIsOpen, onRedirect }) {
           router.push('/dashboard/');
           break;
         default:
-          router.push('/dashboard/bookings');
+          router.push('/dashboard');
       }
     } else {
       setFormError(
