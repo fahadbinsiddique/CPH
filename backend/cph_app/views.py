@@ -1,3 +1,4 @@
+from django.conf import settings
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import generics, status
@@ -16,21 +17,23 @@ def set_auth_cookies(response, access_token, refresh_token):
     Set JWT tokens in HttpOnly cookies.
     """
 
+    jwt = settings.SIMPLE_JWT
+
     response.set_cookie(
         key="access_token",
         value=str(access_token),
-        httponly=True,
-        secure=True,
-        samesite="None",
+        httponly=jwt["AUTH_COOKIE_HTTP_ONLY"],
+        secure=jwt["AUTH_COOKIE_SECURE"],
+        samesite=jwt["AUTH_COOKIE_SAMESITE"],
         max_age=60 * 60,  # 1 hour
     )
 
     response.set_cookie(
         key="refresh_token",
         value=str(refresh_token),
-        httponly=True,
-        secure=True,
-        samesite="None",
+        httponly=jwt["AUTH_COOKIE_HTTP_ONLY"],
+        secure=jwt["AUTH_COOKIE_SECURE"],
+        samesite=jwt["AUTH_COOKIE_SAMESITE"],
         max_age=7 * 24 * 60 * 60,  # 7 days
     )
 
@@ -40,18 +43,20 @@ def set_auth_cookies(response, access_token, refresh_token):
 def clear_auth_cookies(response):
    
 
+    jwt = settings.SIMPLE_JWT
+
     # Delete cookies according to the Django cookie configuration.
     response.delete_cookie(
         "access_token", 
         path="/",
-        samesite="None",
+        samesite=jwt["AUTH_COOKIE_SAMESITE"],
         # secure=True,
     )
     
     response.delete_cookie(
         "refresh_token", 
         path="/", 
-        samesite="None",
+        samesite=jwt["AUTH_COOKIE_SAMESITE"],
         # secure=True,
     )   
 
@@ -160,6 +165,7 @@ class RefreshTokenView(APIView):
 
     def post(self, request):
 
+        jwt = settings.SIMPLE_JWT
         refresh_token = request.COOKIES.get("refresh_token")
 
         if not refresh_token:
@@ -186,9 +192,9 @@ class RefreshTokenView(APIView):
             response.set_cookie(
                 key="access_token",
                 value=str(access),
-                httponly=True,
-                secure=True,  # Production এ True করবে
-                samesite="None",
+                httponly=jwt["AUTH_COOKIE_HTTP_ONLY"],
+                secure=jwt["AUTH_COOKIE_SECURE"],
+                samesite=jwt["AUTH_COOKIE_SAMESITE"],
                 max_age=60 * 60,
             )
 

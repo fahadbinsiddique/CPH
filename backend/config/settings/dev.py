@@ -37,3 +37,4 @@ CORS_ALLOWED_ORIGIN_REGEXES = [
 
 # JWT/HttpOnly cookies must be readable over plain HTTP on localhost.
 SIMPLE_JWT['AUTH_COOKIE_SECURE'] = False
+SIMPLE_JWT['AUTH_COOKIE_SAMESITE'] = 'Lax'
