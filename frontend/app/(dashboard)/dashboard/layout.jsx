@@ -22,6 +22,8 @@ import {
   Sparkles,
   Heart,
   ChevronLeft,
+  ClipboardList
+  
 } from 'lucide-react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -35,6 +37,7 @@ const NAV_ITEMS = {
     { href: '/dashboard/bookings', label: 'Appointments', icon: Calendar, color: 'from-blue-400 to-indigo-500' },
     { href: '/dashboard/profile', label: 'Profile', icon: User, color: 'from-purple-400 to-pink-500' },
     { href: '/dashboard/settings', label: 'Settings', icon: Settings, color: 'from-slate-400 to-slate-500' },
+    { href: '/dashboard/assessments', label: 'Assessments', icon: ClipboardList , color: 'from-blue-400 to-indigo-500'},
   ],
   consultant: [
     { href: '/dashboard', label: 'Overview', icon: LayoutDashboard, color: 'from-teal-400 to-emerald-500' },
