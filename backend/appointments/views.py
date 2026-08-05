@@ -1,14 +1,19 @@
 from rest_framework import generics, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.permissions import IsAdminUser
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from .models import Appointment
 from cph_app.authentication import CookieJWTAuthentication
 from .serializers import (
     AppointmentCreateSerializer,
     AppointmentSerializer,
     AppointmentStatusUpdateSerializer,
+)
+
+from config.email_utils import (
+    booking_confirmation_email,
+    booking_status_update_email,
+    new_appointment_request_email,
 )
 
 
@@ -23,6 +28,10 @@ class AppointmentCreateView(generics.CreateAPIView):
         )
         serializer.is_valid(raise_exception=True)
         appointment = serializer.save()
+
+        # Email notifications
+        booking_confirmation_email(appointment)
+        new_appointment_request_email(appointment)
 
         return Response(
             AppointmentSerializer(appointment).data,
@@ -77,21 +86,28 @@ class AppointmentStatusUpdateView(generics.UpdateAPIView):
             new_status = request.data.get('status')
             if new_status != 'cancelled':
                 return Response(
-                    {'error': 'you can do only appointment cancel'},
+                    {'error': 'Clients can only cancel appointments.'},
                     status=status.HTTP_403_FORBIDDEN
                 )
 
-        return super().patch(request, *args, **kwargs)
+        response = super().patch(request, *args, **kwargs)
+
+        # Email notification only if update is successful
+        if response.status_code == status.HTTP_200_OK and 'status' in request.data:
+            appointment.refresh_from_db()
+            booking_status_update_email(appointment)
+
+        return response
 
 
 class BookedSlotsView(APIView):
-    
+    permission_classes = [IsAuthenticated]
 
     def get(self, request, consultant_id):
         date = request.query_params.get('date')
         if not date:
             return Response(
-                {'error': 'date parameter need'},
+                {'error': 'date parameter is required'},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
@@ -103,8 +119,8 @@ class BookedSlotsView(APIView):
 
         return Response({'booked_slots': list(booked)})
 
+
 class AdminStatsView(APIView):
-    # authentication_classes = [CookieJWTAuthentication]
     permission_classes = [IsAdminUser]
 
     def get(self, request):

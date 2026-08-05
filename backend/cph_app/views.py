@@ -6,6 +6,7 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.exceptions import TokenError
+from config.email_utils import welcome_email
 
 from cph_app.serializers import *
 
@@ -81,6 +82,8 @@ class RegisterView(generics.CreateAPIView):
         refresh = RefreshToken.for_user(user)
         access = refresh.access_token
 
+        welcome_email(user) 
+        
         # Response
         response = Response(
             {
