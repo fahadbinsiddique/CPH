@@ -1,5 +1,6 @@
 from rest_framework import generics, filters, status
 from rest_framework.permissions import IsAuthenticated
+from core.permissions import IsRoleAdmin
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.exceptions import ValidationError
@@ -12,7 +13,8 @@ from .serializers import (
     ConsultantDetailSerializer,
     SpecializationSerializer,
     AvailabilitySerializer,
-    ConsultantCreateSerializer
+    ConsultantCreateSerializer,
+    AdminConsultantCreateSerializer
 )
 
 class ConsultantListView(generics.ListAPIView):
@@ -142,11 +144,10 @@ class AvailabilityDeleteView(generics.DestroyAPIView):
             consultant__user=self.request.user
         )
 
-from rest_framework.permissions import IsAdminUser
 
 class AdminConsultantListView(generics.ListAPIView):
     serializer_class = ConsultantDetailSerializer
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsRoleAdmin]
 
     def get_queryset(self):
         return Consultant.objects.select_related('user').prefetch_related(
@@ -155,7 +156,7 @@ class AdminConsultantListView(generics.ListAPIView):
 
 
 class AdminConsultantVerifyView(APIView):
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsRoleAdmin]
 
     def patch(self, request, pk):
         try:
@@ -165,3 +166,20 @@ class AdminConsultantVerifyView(APIView):
             return Response({'status': 'updated'})
         except Consultant.DoesNotExist:
             return Response({'error': 'Not found'}, status=404)
+
+class AdminConsultantCreateView(generics.CreateAPIView):
+    serializer_class = AdminConsultantCreateSerializer
+    permission_classes = [IsRoleAdmin] 
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        consultant = serializer.save()
+
+        return Response(
+            {
+                "message": "Consultant account and profile created successfully.",
+                "data": ConsultantDetailSerializer(consultant).data
+            },
+            status=status.HTTP_201_CREATED
+        )

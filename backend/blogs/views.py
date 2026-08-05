@@ -1,7 +1,8 @@
 from rest_framework import generics, filters, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAdminUser, AllowAny
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, AllowAny
+from core.permissions import IsRoleAdmin
 from django_filters.rest_framework import DjangoFilterBackend
 from .models import Blog, Category, Tag
 from .serializers import (
@@ -67,7 +68,7 @@ class FeaturedBlogListView(generics.ListAPIView):
 
 # Admin blog management
 class AdminBlogListView(generics.ListCreateAPIView):
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsRoleAdmin]
     filter_backends = [filters.SearchFilter]
     search_fields = ['title', 'status']
 
@@ -86,7 +87,7 @@ class AdminBlogListView(generics.ListCreateAPIView):
 
 
 class AdminBlogDetailView(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsRoleAdmin]
     lookup_field = 'id'
 
     def get_serializer_class(self):

@@ -246,12 +246,12 @@ class UpdateProfileView(APIView):
 
         return Response(UserSerializer(user).data)
 
-from rest_framework.permissions import IsAdminUser
+from core.permissions import IsRoleAdmin
 from django.contrib.auth import get_user_model
 
 class AdminUserListView(generics.ListAPIView):
     serializer_class = UserSerializer
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsRoleAdmin]
 
     def get_queryset(self):
         return get_user_model().objects.all().order_by('-created_at')

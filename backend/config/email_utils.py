@@ -126,3 +126,31 @@ def welcome_email(user):
     </div>
     """
     send_email(user.email, "Welcome to Centre for Psychological Health", html)
+
+
+# consultants/services.py
+def send_consultant_welcome_email(to_email, full_name, temp_password):
+    subject = "Welcome to Centre for Psychological Health - Account Credentials"
+    
+    html = f"""
+    <div style="font-family: sans-serif; max-width: 500px; margin: 0 auto;">
+        <div style="background: #2563eb; padding: 24px; text-align: center; border-radius: 12px 12px 0 0;">
+            <h1 style="color: white; margin: 0; font-size: 20px;">Centre for Psychological Health</h1>
+        </div>
+        <div style="background: #f8fafc; padding: 24px; border-radius: 0 0 12px 12px;">
+            <h2 style="color: #1e293b; font-size: 18px;">Welcome to CPH Family! 🎉</h2>
+            <p style="color: #475569;">Dear <strong>{full_name or 'Consultant'}</strong>,</p>
+            <p style="color: #475569;">An administrator has created a Consultant account for you on our platform.</p>
+            
+            <div style="background: white; border-radius: 8px; padding: 16px; margin: 16px 0;">
+                <p style="margin: 4px 0; color: #1e293b;"><strong>Login Email:</strong> {to_email}</p>
+                <p style="margin: 4px 0; color: #1e293b;"><strong>Temporary Password:</strong> <code style="background: #e2e8f0; padding: 2px 6px; border-radius: 4px; font-weight: bold;">{temp_password}</code></p>
+            </div>
+
+            <p style="color: #475569; font-size: 14px;">Please log in to your dashboard and change your password as soon as possible.</p>
+        </div>
+    </div>
+    """
+    
+    
+    return send_email(to_email, subject, html)

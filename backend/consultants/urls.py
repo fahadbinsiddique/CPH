@@ -7,7 +7,8 @@ from .views import (
     ConsultantCreateView,
     AvailabilityDeleteView,
     AdminConsultantListView, 
-    AdminConsultantVerifyView
+    AdminConsultantVerifyView,
+    AdminConsultantCreateView
 )
 
 urlpatterns = [
@@ -26,4 +27,5 @@ urlpatterns = [
 
     path('admin/list/', AdminConsultantListView.as_view(), name='admin-consultant-list'),
     path('admin/<int:pk>/verify/', AdminConsultantVerifyView.as_view(), name='admin-consultant-verify'),
+    path('admin/create/', AdminConsultantCreateView.as_view(), name='admin-consultant-create'),
 ]

@@ -1,8 +1,9 @@
 from rest_framework import generics, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from rest_framework.permissions import IsAuthenticated
 from .models import Appointment
+from core.permissions import IsRoleAdmin
 from cph_app.authentication import CookieJWTAuthentication
 from .serializers import (
     AppointmentCreateSerializer,
@@ -121,7 +122,7 @@ class BookedSlotsView(APIView):
 
 
 class AdminStatsView(APIView):
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsRoleAdmin]
 
     def get(self, request):
         from django.contrib.auth import get_user_model
