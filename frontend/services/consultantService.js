@@ -1,7 +1,7 @@
-import api from '@/lib/api'
+import api from '@/lib/api';
 
 export const consultantService = {
-  // Public / General Consultants
+  // Public & Consultant Routes
   getAll: (params = {}) => api.get('/api/consultants/', { params }),
   getBySlug: (slug) => api.get(`/api/consultants/${slug}/`),
   getSpecializations: () => api.get('/api/consultants/specializations/'),
@@ -12,6 +12,10 @@ export const consultantService = {
         'Content-Type': 'multipart/form-data',
       },
     }),
+
+  // Availability Routes
+  getAvailability: () => api.get('/api/consultants/availability/'),
+  deleteAvailability: (id) => api.delete(`/api/consultants/availability/${id}/`),
 
   // Admin — Consultant Management
   adminGetAll: () => api.get('/api/consultants/admin/list/'),

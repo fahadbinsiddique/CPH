@@ -25,7 +25,7 @@ export default function SpecializationsPage() {
   const [error, setError] = useState('');
 
   const fetchData = () => {
-    consultantService.getSpecializations()
+    consultantService.adminGetSpecializations()
       .then(res => setSpecializations(res.data))
       .catch(console.error)
       .finally(() => setLoading(false));

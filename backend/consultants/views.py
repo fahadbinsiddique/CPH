@@ -14,7 +14,9 @@ from .serializers import (
     SpecializationSerializer,
     AvailabilitySerializer,
     ConsultantCreateSerializer,
-    AdminConsultantCreateSerializer
+    ConsultantCreateUpdateSerializer,
+    ConsultantDetailSerializer,
+    SpecializationSerializer,
 )
 
 class ConsultantListView(generics.ListAPIView):
@@ -167,8 +169,11 @@ class AdminConsultantVerifyView(APIView):
         except Consultant.DoesNotExist:
             return Response({'error': 'Not found'}, status=404)
 
+
+# Admin — Consultant Management Views
+
 class AdminConsultantCreateView(generics.CreateAPIView):
-    serializer_class = AdminConsultantCreateSerializer
+    serializer_class = ConsultantCreateUpdateSerializer
     permission_classes = [IsRoleAdmin] 
 
     def create(self, request, *args, **kwargs):
@@ -183,3 +188,38 @@ class AdminConsultantCreateView(generics.CreateAPIView):
             },
             status=status.HTTP_201_CREATED
         )
+
+
+class AdminConsultantUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [IsRoleAdmin]
+    queryset = Consultant.objects.all()
+
+    def get_serializer_class(self):
+        if self.request.method in ['GET']:
+            return ConsultantDetailSerializer
+        return ConsultantCreateUpdateSerializer
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        user = instance.user
+        response = super().destroy(request, *args, **kwargs)
+        
+        if user:
+            user.delete()
+        return response
+
+
+
+# Admin — Specialization CRUD Views
+
+
+class AdminSpecializationListCreateView(generics.ListCreateAPIView):
+    queryset = Specialization.objects.all()
+    serializer_class = SpecializationSerializer
+    permission_classes = [IsRoleAdmin]
+
+
+class AdminSpecializationDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Specialization.objects.all()
+    serializer_class = SpecializationSerializer
+    permission_classes = [IsRoleAdmin]

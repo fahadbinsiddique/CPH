@@ -3,15 +3,29 @@ from rest_framework.validators import UniqueTogetherValidator
 from django.contrib.auth import get_user_model
 from .models import Consultant, Specialization, ConsultantAvailability
 from cph_app.serializers import UserSerializer
+from django.utils.text import slugify
 from django.db import transaction
 from config.email_utils import send_consultant_welcome_email  # Resend function import
 
 User = get_user_model()
 
 class SpecializationSerializer(serializers.ModelSerializer):
+    slug = serializers.SlugField(read_only=True)
     class Meta:
         model = Specialization
         fields = ['id', 'name', 'slug']
+
+    def create(self, validated_data):
+        # auto slug generate from name 
+        name = validated_data.get('name')
+        validated_data['slug'] = slugify(name)
+        return super().create(validated_data)
+
+    def update(self, instance, validated_data):
+        # name update auto slug update
+        if 'name' in validated_data:
+            validated_data['slug'] = slugify(validated_data['name'])
+        return super().update(instance, validated_data)
 
 
 class AvailabilitySerializer(serializers.ModelSerializer):
@@ -80,10 +94,10 @@ class ConsultantCreateSerializer(serializers.ModelSerializer):
 
 
 
-class AdminConsultantCreateSerializer(serializers.ModelSerializer):
-    # creating user object neccesry fields
-    email = serializers.EmailField(write_only=True)
-    password = serializers.CharField(write_only=True, min_length=6)
+class ConsultantCreateUpdateSerializer(serializers.ModelSerializer):
+    
+    email = serializers.EmailField(write_only=True, required=False)
+    password = serializers.CharField(write_only=True, min_length=6, required=False)
     full_name = serializers.CharField(write_only=True, required=False)
 
     specializations = serializers.PrimaryKeyRelatedField(
@@ -93,26 +107,35 @@ class AdminConsultantCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Consultant
         fields = [
-            'email', 'password', 'full_name',
-            'bio', 'experience_years', 'consultation_fee', 
-            'profile_image', 'languages', 'location', 
-            'specializations', 'is_verified'
+            'id', 'email', 'password', 'full_name',
+            'specializations', 'bio', 'experience_years',
+            'consultation_fee', 'profile_image',
+            'is_verified', 'is_available',
+            'languages', 'location',
         ]
 
     def validate_email(self, value):
-        if User.objects.filter(email=value).exists():
+        
+        if not self.instance and User.objects.filter(email=value).exists():
             raise serializers.ValidationError("A user with this email already exists.")
         return value
 
+    def validate(self, attrs):
+        
+        if not self.instance:
+            if not attrs.get('email'):
+                raise serializers.ValidationError({'email': 'Email is required for creating a consultant.'})
+            if not attrs.get('password'):
+                raise serializers.ValidationError({'password': 'Password is required for creating a consultant.'})
+        return attrs
+
     @transaction.atomic
     def create(self, validated_data):
-        # save request.data to variable
         email = validated_data.pop('email')
         password = validated_data.pop('password')
         full_name = validated_data.pop('full_name', '')
         specializations = validated_data.pop('specializations', [])
 
-        # ২. User create (role = 'consultant')
         user = User.objects.create_user(
             username=email,
             email=email,
@@ -121,8 +144,13 @@ class AdminConsultantCreateSerializer(serializers.ModelSerializer):
             role='consultant'
         )
 
-        # ৩. Consultant Profile 
+        
         consultant = Consultant.objects.create(user=user, **validated_data)
+
+        
+        if specializations:
+            consultant.specializations.set(specializations)
+
         
         transaction.on_commit(
             lambda: send_consultant_welcome_email(
@@ -132,9 +160,22 @@ class AdminConsultantCreateSerializer(serializers.ModelSerializer):
             )
         )
 
-        if specializations:
-            consultant.specializations.set(specializations)
-
-        # 4. Send Welcome Email with temporary login credentials via Resend
-        
         return consultant
+
+    def update(self, instance, validated_data):
+       
+        validated_data.pop('full_name', None)
+        validated_data.pop('email', None)
+        validated_data.pop('password', None)
+        
+        specializations = validated_data.pop('specializations', None)
+
+        
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+
+        if specializations is not None:
+            instance.specializations.set(specializations)
+
+        return instance
