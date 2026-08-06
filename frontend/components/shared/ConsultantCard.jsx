@@ -148,10 +148,6 @@ export default function ConsultantCard({ consultant }) {
               </div>
             )}
 
-            <div className="flex items-center gap-2 text-xs text-slate-500">
-              <Shield className="w-3.5 h-3.5 text-teal-500 shrink-0" />
-              <span>Licensed</span>
-            </div>
           </div>
 
           {/* ================= PRICE & CTA ================= */}

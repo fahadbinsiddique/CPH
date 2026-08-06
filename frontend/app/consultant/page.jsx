@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import ConsultantCard from '@/components/shared/ConsultantCard';
+import Reveal from '@/components/ui/Reveal';
 
 import { consultantService } from '@/services/consultantService';
 import { useDebounce } from '@/hooks/useDebounce';
@@ -76,27 +77,34 @@ export default function ConsultantListPage() {
         <div className="max-w-6xl mx-auto px-4 py-16 relative z-10">
 
           {/* Badge */}
-          <div className="flex justify-center mb-5">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-teal-50 border border-teal-100 rounded-full text-teal-700 text-xs font-semibold shadow-sm">
-              <Sparkles className="w-3.5 h-3.5" />
-              Verified Mental Health Experts
+          <Reveal y={20} duration={0.7}>
+            <div className="flex justify-center mb-5">
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-teal-50 border border-teal-100 rounded-full text-teal-700 text-xs font-semibold shadow-sm">
+                <Sparkles className="w-3.5 h-3.5" />
+                Verified Mental Health Experts
+              </div>
             </div>
-          </div>
+          </Reveal>
 
           {/* Title */}
-          <h1 className="text-center text-4xl sm:text-5xl font-extrabold text-slate-900 tracking-tight">
-            Find Your Perfect{' '}
-            <span className="bg-gradient-to-r from-teal-600 to-emerald-600 bg-clip-text text-transparent">
-              Therapist
-            </span>
-          </h1>
+          <Reveal y={26} duration={0.8} delay={0.1}>
+            <h1 className="text-center text-4xl sm:text-5xl font-extrabold text-slate-900 tracking-tight">
+              Find Your Perfect{' '}
+              <span className="bg-gradient-to-r from-teal-600 to-emerald-600 bg-clip-text text-transparent">
+                Therapist
+              </span>
+            </h1>
+          </Reveal>
 
-          <p className="text-center text-sm sm:text-base text-slate-500 mt-4 max-w-2xl mx-auto">
-            Search, filter, and book licensed mental health professionals instantly with confidence.
-          </p>
+          <Reveal y={22} duration={0.8} delay={0.2}>
+            <p className="text-center text-sm sm:text-base text-slate-500 mt-4 max-w-2xl mx-auto">
+              Search, filter, and book licensed mental health professionals instantly with confidence.
+            </p>
+          </Reveal>
 
           {/* ================= SEARCH PANEL ================= */}
-          <div className="mt-10 bg-white/80 backdrop-blur-md border border-slate-200 rounded-3xl shadow-sm p-5 space-y-5">
+          <Reveal y={30} duration={0.9} delay={0.3} className="mt-10">
+            <div className="bg-white/80 backdrop-blur-md border border-slate-200 rounded-3xl shadow-sm p-5 space-y-5">
 
             {/* search row */}
             <div className="flex flex-col md:flex-row gap-3">
@@ -175,6 +183,7 @@ export default function ConsultantListPage() {
             </div>
 
           </div>
+          </Reveal>
         </div>
       </div>
 
