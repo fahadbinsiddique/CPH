@@ -19,6 +19,7 @@ pillow==12.2.0
 
 # Serving / deployment
 gunicorn==26.0.0
+resend
 
 # Transitive / standard libs
 asgiref==3.11.1
