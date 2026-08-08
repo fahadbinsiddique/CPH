@@ -72,6 +72,13 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
 
 class ConsultantCreateSerializer(serializers.ModelSerializer):
+    # User Model Fields
+    email = serializers.EmailField(write_only=True)
+    password = serializers.CharField(write_only=True, min_length=6)
+    full_name = serializers.CharField(write_only=True)
+    phone_number = serializers.CharField(write_only=True, required=False, allow_blank=True)
+
+    # Consultant Model Fields
     specializations = serializers.PrimaryKeyRelatedField(
         many=True, queryset=Specialization.objects.all(), required=False
     )
@@ -79,17 +86,51 @@ class ConsultantCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Consultant
         fields = [
+            'email', 'password', 'full_name', 'phone_number',
             'bio', 'experience_years', 'consultation_fee', 
             'profile_image', 'languages', 'location', 'specializations'
         ]
 
+    def validate_email(self, value):
+        if User.objects.filter(email=value).exists():
+            raise serializers.ValidationError("A user with this email address already exists.")
+        return value
+
+    @transaction.atomic
     def create(self, validated_data):
-        request = self.context.get('request')
-        validated_data['user'] = request.user
-        
+        # Extract User attributes
+        email = validated_data.pop('email')
+        password = validated_data.pop('password')
+        full_name = validated_data.pop('full_name')
+        phone_number = validated_data.pop('phone_number', '')
         specializations = validated_data.pop('specializations', [])
-        consultant = Consultant.objects.create(**validated_data)
-        consultant.specializations.set(specializations)
+
+        # 1. Create User with role 'consultant'
+        user = User.objects.create_user(
+            username=email,
+            email=email,
+            password=password,
+            full_name=full_name,
+            phone_number=phone_number,
+            role='consultant'
+        )
+
+        # 2. Create Consultant Profile
+        consultant = Consultant.objects.create(user=user, **validated_data)
+
+        # 3. Set Many-To-Many Specializations
+        if specializations:
+            consultant.specializations.set(specializations)
+
+        # 4. Trigger Email notification after DB commit
+        transaction.on_commit(
+            lambda: send_consultant_welcome_email(
+                to_email=email,
+                full_name=full_name,
+                temp_password=password
+            )
+        )
+
         return consultant
 
 

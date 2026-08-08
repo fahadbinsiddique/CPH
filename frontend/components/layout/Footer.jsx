@@ -5,24 +5,26 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
-  FiTwitter,
-  FiInstagram,
-  FiLinkedin,
-  FiMail,
-  FiShield,
-  FiHeart,
-  FiSend,
-  FiMapPin,
-  FiPhone,
-  FiFacebook,
-  FiYoutube,
-} from 'react-icons/fi'
-import {
   ChevronRight,
   Sparkles,
   Clock,
   Award,
+  Mail,
+  MapPin,
+  Phone,
+  Send,
+  ShieldCheck,
+  Heart,
+  ArrowUp,
+  CheckCircle2,
 } from 'lucide-react'
+import {
+  FiFacebook,
+  FiTwitter,
+  FiInstagram,
+  FiLinkedin,
+  FiYoutube,
+} from 'react-icons/fi'
 
 const Input = ({ type = 'text', placeholder, className, ...props }) => (
   <input
@@ -94,7 +96,7 @@ const Footer = () => {
   ]
 
   const trustBadges = [
-    { icon: FiShield, label: '100% Confidential' },
+    { icon: ShieldCheck, label: '100% Confidential' },
     { icon: Award, label: 'Licensed Experts' },
     { icon: Clock, label: '24/7 Support' },
   ]
@@ -173,8 +175,8 @@ const Footer = () => {
                   className="flex-1"
                   required
                 />
-                <Button type="submit" className="px-4">
-                  <FiSend className="w-4 h-4" />
+                <Button type="submit" className="px-4" aria-label="Subscribe to newsletter">
+                  <Send className="w-4 h-4" />
                 </Button>
               </form>
               <AnimatePresence>
@@ -183,9 +185,10 @@ const Footer = () => {
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
-                    className="text-xs text-teal-400 mt-2"
+                    className="flex items-center gap-1.5 text-xs text-teal-400 mt-2"
                   >
-                    ✅ Thanks! You are subscribed.
+                    <CheckCircle2 className="w-3.5 h-3.5" />
+                    Thanks! You are subscribed.
                   </motion.p>
                 )}
               </AnimatePresence>
@@ -251,19 +254,19 @@ const Footer = () => {
             <h3 className="text-white font-semibold mb-4 text-lg">Get in Touch</h3>
             <div className="space-y-3 text-sm">
               <div className="flex items-center gap-3 bg-white/5 rounded-xl px-3 py-2.5 border border-white/5 hover:border-teal-500/20 transition-colors group">
-                <FiMail className="w-4 h-4 text-teal-400 group-hover:scale-110 transition-transform" />
+                <Mail className="w-4 h-4 text-teal-400 group-hover:scale-110 transition-transform" />
                 <a href="mailto:info@cph.com" className="text-slate-300 hover:text-white transition">
                   info@cph.com
                 </a>
               </div>
               <div className="flex items-center gap-3 bg-white/5 rounded-xl px-3 py-2.5 border border-white/5 hover:border-teal-500/20 transition-colors group">
-                <FiPhone className="w-4 h-4 text-teal-400 group-hover:scale-110 transition-transform" />
+                <Phone className="w-4 h-4 text-teal-400 group-hover:scale-110 transition-transform" />
                 <a href="tel:+8801762389523" className="text-slate-300 hover:text-white transition">
                   +880 1762-389523
                 </a>
               </div>
               <div className="flex items-start gap-3 bg-white/5 rounded-xl px-3 py-2.5 border border-white/5 hover:border-teal-500/20 transition-colors group">
-                <FiMapPin className="w-4 h-4 text-teal-400 mt-0.5 group-hover:scale-110 transition-transform" />
+                <MapPin className="w-4 h-4 text-teal-400 mt-0.5 group-hover:scale-110 transition-transform" />
                 <span className="text-slate-300 text-xs leading-relaxed">
                   28/1 Green Corner (5th floor),<br />
                   Green Road, Dhanmondi 1205<br />
@@ -302,7 +305,7 @@ const Footer = () => {
         <div className="relative my-10">
           <div className="border-t border-slate-800" />
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-slate-900 px-4">
-            <span className="text-xs text-slate-600">✦</span>
+            <Heart className="w-3 h-3 text-teal-500" />
           </div>
         </div>
 
@@ -325,7 +328,7 @@ const Footer = () => {
             </Link>
             <span className="text-slate-700">|</span>
             <span className="flex items-center gap-1 text-slate-600">
-              <FiShield className="w-3 h-3 text-teal-500" />
+              <ShieldCheck className="w-3 h-3 text-teal-500" />
               Secure
             </span>
           </div>
@@ -336,10 +339,10 @@ const Footer = () => {
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          className="absolute bottom-8 right-8 p-3 rounded-full bg-teal-600/20 backdrop-blur-sm border border-teal-500/20 text-teal-400 hover:bg-teal-600/30 transition-all hover:border-teal-500/40 hidden lg:block"
+          className="absolute bottom-8 right-8 p-3 rounded-full bg-teal-600/20 backdrop-blur-sm border border-teal-500/20 text-teal-400 hover:bg-teal-600/30 transition-all hover:border-teal-500/40 hidden lg:block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900"
           aria-label="Back to top"
         >
-          <FiHeart className="w-4 h-4" />
+          <ArrowUp className="w-4 h-4" />
         </motion.button>
       </div>
     </footer>

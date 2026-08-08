@@ -2,6 +2,7 @@ import { Geist, Geist_Mono, Plus_Jakarta_Sans } from 'next/font/google'
 import './globals.css'
 import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
+import MotionProvider from '@/components/layout/MotionProvider'
 import { Toaster } from 'sonner'
 
 // Geist Sans for body and general text.
@@ -31,11 +32,12 @@ export default function RootLayout({ children }) {
   return (
     <html
       lang="en"
+      data-scroll-behavior="smooth"
       className={`${geistSans.variable} ${geistMono.variable} ${plusJakartaSans.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         <Navbar />
-        {children}
+        <MotionProvider>{children}</MotionProvider>
         <Toaster position="top-center" richColors closeButton />
         <Footer />
       </body>

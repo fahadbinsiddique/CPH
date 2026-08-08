@@ -1,177 +1,136 @@
-'use client';
+'use client'
 
-import { useEffect, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
-import {
-  CheckCircle2, Calendar, ArrowRight,
-  RotateCcw, Loader2, TrendingUp
-} from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import Link from 'next/link';
-import { assessmentService } from '@/services/assessmentService';
-
-const SEVERITY_CONFIG = {
-  minimal:  { color: 'text-green-600',  bg: 'bg-green-100',  bar: 'bg-green-500',  border: 'border-green-200' },
-  mild:     { color: 'text-yellow-600', bg: 'bg-yellow-100', bar: 'bg-yellow-500', border: 'border-yellow-200' },
-  moderate: { color: 'text-orange-600', bg: 'bg-orange-100', bar: 'bg-orange-500', border: 'border-orange-200' },
-  severe:   { color: 'text-red-600',    bg: 'bg-red-100',    bar: 'bg-red-500',    border: 'border-red-200' },
-};
+import { useEffect, useState } from 'react'
+import { useParams, useRouter } from 'next/navigation'
+import Link from 'next/link'
+import { motion } from 'framer-motion'
+import { ArrowRight, ScrollText, AlertCircle } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import ResultCard from '@/components/assessment/ResultCard'
+import AssessmentDisclaimer from '@/components/assessment/AssessmentDisclaimer'
+import { ResultSkeleton } from '@/components/assessment/AssessmentSkeleton'
+import { useHeaderHeight } from '@/hooks/useHeaderHeight'
+import { assessmentService } from '@/services/assessmentService'
 
 export default function ResultPage() {
-  const { id } = useParams();
-  const router = useRouter();
-  const [result, setResult] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const { id } = useParams()
+  const router = useRouter()
+  const headerOffset = useHeaderHeight()
+  const [result, setResult] = useState(null)
+  const [error, setError] = useState(false)
 
   useEffect(() => {
-    assessmentService.getResultById(id)
-      .then(res => setResult(res.data))
-      .catch(() => router.push('/assessment'))
-      .finally(() => setLoading(false));
-  }, [id]);
+    let cancelled = false
+    assessmentService
+      .getResultById(id)
+      .then((res) => {
+        if (!cancelled) setResult(res.data)
+      })
+      .catch(() => {
+        if (!cancelled) setError(true)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [id])
 
-  if (loading) return (
-    <div className="min-h-screen flex items-center justify-center">
-      <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
-    </div>
-  );
+  const isLoading = !result || String(result.id) !== String(id)
 
-  if (!result) return null;
+  if (isLoading) {
+    return (
+      <main
+        className="min-h-screen bg-gradient-to-b from-white via-white to-teal-50/40 pb-16"
+        style={{ paddingTop: headerOffset }}
+      >
+        <div className="mx-auto w-full max-w-2xl px-4 pt-10 sm:px-6">
+          <ResultSkeleton />
+        </div>
+      </main>
+    )
+  }
 
-  const { quiz, score, max_score, percentage, score_range, completed_at } = result;
-  const severity = score_range?.severity || 'minimal';
-  const config = SEVERITY_CONFIG[severity];
-  const date = new Date(completed_at).toLocaleDateString('en-US', {
-    year: 'numeric', month: 'long', day: 'numeric'
-  });
+  if (error || !result) {
+    return (
+      <main
+        className="flex min-h-screen items-center justify-center bg-gradient-to-b from-white via-white to-teal-50/40 px-4"
+        style={{ paddingTop: headerOffset }}
+      >
+        <div className="w-full max-w-md rounded-3xl border border-slate-200/70 bg-white p-10 text-center shadow-soft">
+          <AlertCircle className="mx-auto mb-3 h-10 w-10 text-slate-300" aria-hidden="true" />
+          <h1 className="font-heading text-lg font-semibold text-slate-800">
+            We couldn&apos;t find this result
+          </h1>
+          <p className="mt-1 text-sm text-slate-500">
+            It may have been removed, or the link is invalid.
+          </p>
+          <Link href="/assessment" className="mt-6 inline-block">
+            <Button className="rounded-2xl bg-teal-700 hover:bg-teal-800">
+              Back to assessments
+            </Button>
+          </Link>
+        </div>
+      </main>
+    )
+  }
+
+  const answers = result.answers && Object.keys(result.answers).length > 0
+    ? Object.entries(result.answers)
+    : []
 
   return (
-    <div className="min-h-screen bg-slate-50 py-10">
-      <div className="max-w-2xl mx-auto px-4">
+    <main className="min-h-screen bg-gradient-to-b from-white via-white to-teal-50/40 pb-16">
+      <div className="mx-auto w-full max-w-2xl px-4 sm:px-6" style={{ paddingTop: headerOffset }}>
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          className="space-y-5"
+          transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+          className="space-y-5 pt-8"
         >
-          {/* Result card */}
-          <Card className={`border-2 ${config.border} shadow-md rounded-2xl overflow-hidden`}>
-            {/* Top banner */}
-            <div className={`${config.bg} p-6 text-center`}>
-              <span className="text-5xl block mb-2">{quiz.icon}</span>
-              <h1 className="text-xl font-bold text-slate-800">{quiz.title}</h1>
-              <p className="text-sm text-slate-500 mt-0.5">{date}</p>
-            </div>
+          <ResultCard
+            result={result}
+            onRetake={() => router.push(`/assessment/${result.quiz.slug}`)}
+          />
 
-            <CardContent className="p-6">
-              {/* Score */}
-              <div className="text-center mb-6">
-                <div className={`text-5xl font-bold ${config.color} mb-1`}>
-                  {percentage}%
-                </div>
-                <p className="text-slate-400 text-sm">
-                  Score: {score} / {max_score}
-                </p>
-              </div>
-
-              {/* Progress bar */}
-              <div className="h-3 bg-slate-100 rounded-full overflow-hidden mb-6">
-                <motion.div
-                  className={`h-full rounded-full ${config.bar}`}
-                  initial={{ width: 0 }}
-                  animate={{ width: `${percentage}%` }}
-                  transition={{ duration: 0.8, delay: 0.3 }}
-                />
-              </div>
-
-              {/* Score range label */}
-              {score_range && (
-                <div className={`text-center mb-5`}>
-                  <Badge className={`${config.bg} ${config.color} border ${config.border} text-sm px-4 py-1`}>
-                    {score_range.label}
-                  </Badge>
-                </div>
-              )}
-
-              {/* Description */}
-              {score_range?.description && (
-                <p className="text-slate-600 text-sm text-center mb-5 leading-relaxed">
-                  {score_range.description}
-                </p>
-              )}
-
-              {/* Recommendation */}
-              {score_range?.recommendation && (
-                <div className={`${config.bg} border ${config.border} rounded-xl p-4 mb-5`}>
-                  <p className="text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1.5">
-                    Recommendation
-                  </p>
-                  <p className={`text-sm ${config.color} leading-relaxed`}>
-                    {score_range.recommendation}
-                  </p>
-                </div>
-              )}
-
-              {/* Actions */}
-              <div className="flex flex-col sm:flex-row gap-3">
-                <Link href="/consultant" className="flex-1">
-                  <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">
-                    <Calendar className="w-4 h-4 mr-2" />
-                    Book a Consultant
-                  </Button>
-                </Link>
-                <Button
-                  variant="outline"
-                  className="flex-1"
-                  onClick={() => router.push(`/assessment/${quiz.slug}`)}
-                >
-                  <RotateCcw className="w-4 h-4 mr-2" />
-                  Retake
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Answer review */}
-          {result.answers && Object.keys(result.answers).length > 0 && (
-            <Card className="border-0 shadow-sm rounded-2xl">
-              <CardContent className="p-6">
-                <h2 className="font-semibold text-slate-800 mb-4 flex items-center gap-2">
-                  <TrendingUp className="w-4 h-4 text-blue-600" />
-                  Your Responses
-                </h2>
-                <div className="space-y-3">
-                  {Object.entries(result.answers).map(([qId, ans], i) => (
-                    <div key={qId} className="flex gap-3 text-sm">
-                      <span className="w-5 h-5 rounded-full bg-slate-100 text-slate-500 text-xs font-medium flex items-center justify-center flex-shrink-0 mt-0.5">
-                        {i + 1}
-                      </span>
-                      <div className="flex-1">
-                        <p className="text-slate-600 mb-0.5">{ans.question}</p>
-                        <p className="text-slate-400 text-xs">
-                          {ans.answer}
-                          <span className="ml-2 text-slate-300">({ans.score} pts)</span>
-                        </p>
-                      </div>
+          {answers.length > 0 && (
+            <section className="overflow-hidden rounded-3xl border border-slate-200/70 bg-white p-6 shadow-soft sm:p-7">
+              <h2 className="mb-5 flex items-center gap-2 font-heading text-base font-bold text-slate-800">
+                <ScrollText className="h-4 w-4 text-teal-700" aria-hidden="true" />
+                Your responses
+              </h2>
+              <ul className="space-y-3">
+                {answers.map(([qId, ans], i) => (
+                  <li key={qId} className="flex gap-3 text-sm">
+                    <span className="mt-0.5 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-slate-100 text-xs font-semibold text-slate-500">
+                      {i + 1}
+                    </span>
+                    <div className="min-w-0">
+                      <p className="leading-relaxed text-slate-600">{ans.question}</p>
+                      <p className="mt-0.5 text-xs text-slate-400">
+                        {ans.answer}
+                        <span className="ml-2 text-slate-300">({ans.score} pts)</span>
+                      </p>
                     </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+                  </li>
+                ))}
+              </ul>
+            </section>
           )}
 
-          {/* Other assessments */}
-          <div className="text-center">
+          <AssessmentDisclaimer />
+
+          <div className="pt-1 text-center">
             <Link href="/assessment">
-              <Button variant="ghost" className="text-blue-600">
-                Take Another Assessment <ArrowRight className="w-4 h-4 ml-1" />
+              <Button
+                variant="ghost"
+                className="rounded-2xl text-base font-semibold text-teal-700 hover:bg-teal-50"
+              >
+                Take another assessment
+                <ArrowRight className="h-4 w-4" aria-hidden="true" />
               </Button>
             </Link>
           </div>
         </motion.div>
       </div>
-    </div>
-  );
+    </main>
+  )
 }

@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Plus, Minus } from 'lucide-react'
+import Reveal from '@/components/ui/Reveal'
 
 const faqs = [
   {
@@ -40,71 +41,79 @@ const Faq = () => {
   }
 
   return (
-    <section className="relative py-24 bg-slate-50 overflow-hidden">
-      {/* Background glow */}
-      <div className="absolute top-[-120px] left-[-100px] w-[300px] h-[300px] bg-emerald-100 blur-3xl rounded-full" />
-      <div className="absolute bottom-[-120px] right-[-100px] w-[300px] h-[300px] bg-blue-100 blur-3xl rounded-full" />
+    <section className="section-pad relative overflow-hidden bg-white">
+      <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+        <div className="absolute -top-24 -right-24 h-80 w-80 rounded-full bg-teal-50 blur-3xl" />
+        <div className="absolute -bottom-24 -left-24 h-80 w-80 rounded-full bg-emerald-50 blur-3xl" />
+      </div>
 
-      <div className="max-w-4xl mx-auto px-6 relative z-10">
-        {/* Heading */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-14"
-        >
-          <h2 className="text-3xl md:text-4xl font-semibold text-slate-900">
-            Frequently Asked Questions
-          </h2>
-          <p className="mt-4 text-slate-600">
+      <div className="section-shell relative z-10">
+        <Reveal className="section-head" y={24}>
+          <span className="eyebrow">Got questions?</span>
+          <h2 className="section-title">Frequently asked questions</h2>
+          <p className="section-sub">
             Everything you need to know about our platform, therapy sessions, and privacy.
           </p>
-        </motion.div>
+        </Reveal>
 
-        {/* Accordion */}
-        <div className="space-y-4">
+        <Reveal stagger={0.06} y={20} className="mx-auto max-w-3xl space-y-4">
           {faqs.map((item, index) => {
-            const isOpen = openIndex === index
-
-            return (
-              <div
-                key={index}
-                className="border border-slate-200 rounded-2xl bg-white shadow-sm overflow-hidden"
-              >
-                {/* Question */}
-                <button
-                  onClick={() => toggle(index)}
-                  className="w-full flex items-center justify-between p-5 text-left hover:bg-slate-50 transition"
+              const isOpen = openIndex === index
+              const panelId = `faq-panel-${index}`
+              const buttonId = `faq-trigger-${index}`
+              return (
+                <div
+                  key={index}
+                  className={`rounded-2xl border bg-white shadow-soft transition-colors duration-300 ${
+                    isOpen ? 'border-teal-200' : 'border-slate-200/70 hover:border-teal-200/60'
+                  }`}
                 >
-                  <span className="font-medium text-slate-900">{item.question}</span>
-
-                  {isOpen ? (
-                    <Minus className="w-5 h-5 text-emerald-600" />
-                  ) : (
-                    <Plus className="w-5 h-5 text-slate-500" />
-                  )}
-                </button>
-
-                {/* Answer */}
-                <AnimatePresence initial={false}>
-                  {isOpen && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: 'auto', opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.3 }}
+                  <h3>
+                    <button
+                      id={buttonId}
+                      type="button"
+                      aria-expanded={isOpen}
+                      aria-controls={panelId}
+                      onClick={() => toggle(index)}
+                      className="flex w-full items-center justify-between gap-4 p-5 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2"
                     >
-                      <div className="px-5 pb-5 text-sm text-slate-600 leading-relaxed">
-                        {item.answer}
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                      <span className="font-medium text-slate-900">{item.question}</span>
+                      <span
+                        className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition-colors duration-300 ${
+                          isOpen ? 'bg-teal-600 text-white' : 'bg-slate-100 text-slate-500'
+                        }`}
+                      >
+                        {isOpen ? (
+                          <Minus className="h-4 w-4" />
+                        ) : (
+                          <Plus className="h-4 w-4" />
+                        )}
+                      </span>
+                    </button>
+                  </h3>
+
+                  <AnimatePresence initial={false}>
+                    {isOpen && (
+                      <motion.div
+                        id={panelId}
+                        role="region"
+                        aria-labelledby={buttonId}
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.25, ease: 'easeOut' }}
+                        className="overflow-hidden"
+                      >
+                        <div className="px-5 pb-5 text-sm leading-relaxed text-slate-600">
+                          {item.answer}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
               </div>
             )
           })}
-        </div>
+        </Reveal>
       </div>
     </section>
   )

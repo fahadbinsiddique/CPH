@@ -29,12 +29,13 @@ class QuizDetailView(generics.RetrieveAPIView):
 
 
 class QuizSubmitView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     def post(self, request):
         serializer = QuizSubmitSerializer(data=request.data)
         if serializer.is_valid():
-            result = serializer.save(user=request.user)
+            user = request.user if request.user.is_authenticated else None
+            result = serializer.save(user=user)
             return Response(
                 QuizResultSerializer(result).data,
                 status=status.HTTP_201_CREATED
@@ -57,9 +58,7 @@ class QuizResultListView(generics.ListAPIView):
 
 class QuizResultDetailView(generics.RetrieveAPIView):
     serializer_class = QuizResultSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     def get_queryset(self):
-        return QuizResult.objects.filter(
-            user=self.request.user
-        ).select_related('quiz', 'score_range')
+        return QuizResult.objects.select_related('quiz', 'score_range')

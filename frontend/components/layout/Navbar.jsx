@@ -115,11 +115,10 @@ const Navbar = () => {
       >
         <div className="container mx-auto px-4 flex items-center justify-between">
           {/* Logo */}
-          <motion.div
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            className="flex items-center cursor-pointer"
-            onClick={() => router.push('/')}
+          <Link
+            href="/"
+            aria-label="Center For Psychological Health — Home"
+            className="flex items-center rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2"
           >
             <Image
               src={'/logo.png'}
@@ -130,7 +129,7 @@ const Navbar = () => {
               className="object-contain h-auto w-auto max-w-[180px] sm:max-w-[220px] md:max-w-[260px]"
               priority
             />
-          </motion.div>
+          </Link>
 
           {/* Desktop Navigation Links */}
           <div className="hidden lg:flex items-center gap-1 xl:gap-8">
@@ -140,7 +139,7 @@ const Navbar = () => {
                 <Link
                   key={link.name}
                   href={link.href}
-                  className={`relative px-3 py-2 text-base xl:text-lg transition-all duration-300 hover:text-teal-600 tracking-tight rounded-lg ${
+                  className={`relative px-3 py-2 text-base xl:text-lg transition-all duration-300 hover:text-teal-600 tracking-tight rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2 ${
                     isActive
                       ? 'text-teal-700 font-bold bg-teal-50/50'
                       : 'text-slate-700 font-medium hover:bg-slate-50'
@@ -260,9 +259,10 @@ const Navbar = () => {
 
           {/* Mobile Menu Toggle */}
           <button
-            className="lg:hidden text-slate-700 focus:outline-none p-2 hover:bg-slate-50 rounded-xl transition-all"
+            className="lg:hidden text-slate-700 focus:outline-none p-2 hover:bg-slate-50 rounded-xl transition-all focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label="Toggle menu"
+            aria-expanded={mobileMenuOpen}
           >
             {mobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
           </button>
@@ -300,7 +300,7 @@ const Navbar = () => {
                   <Link
                     key={link.name}
                     href={link.href}
-                    className={`text-base font-semibold py-2.5 px-3 rounded-xl transition-all duration-200 ${
+                    className={`text-base font-semibold py-2.5 px-3 rounded-xl transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 ${
                       isActiveLink(link.href, link.id)
                         ? 'text-teal-700 bg-teal-50 border-l-4 border-teal-500'
                         : 'text-slate-700 hover:text-teal-600 hover:bg-slate-50'

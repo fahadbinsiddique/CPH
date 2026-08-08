@@ -1,7 +1,7 @@
 'use client'
 
-import { motion } from 'framer-motion'
-import { Star } from 'lucide-react'
+import { Star, Quote } from 'lucide-react'
+import Reveal from '@/components/ui/Reveal'
 
 const testimonials = [
   {
@@ -36,57 +36,52 @@ const testimonials = [
 
 const Testimonials = () => {
   return (
-    <section className="relative py-24 bg-white overflow-hidden">
-      {/* Soft glow background */}
-      <div className="absolute top-[-120px] left-[-100px] w-[300px] h-[300px] bg-emerald-100 blur-3xl rounded-full" />
-      <div className="absolute bottom-[-120px] right-[-100px] w-[300px] h-[300px] bg-blue-100 blur-3xl rounded-full" />
+    <section className="section-pad relative overflow-hidden bg-white">
+      <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+        <div className="absolute -top-24 -right-24 h-80 w-80 rounded-full bg-teal-50 blur-3xl" />
+        <div className="absolute -bottom-24 -left-24 h-80 w-80 rounded-full bg-emerald-50 blur-3xl" />
+      </div>
 
-      <div className="max-w-7xl mx-auto px-6 relative z-10">
-        {/* Heading */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="text-center max-w-2xl mx-auto mb-14"
-        >
-          <h2 className="text-3xl md:text-4xl font-semibold text-slate-900">
-            What our users are saying
-          </h2>
-          <p className="mt-4 text-slate-600">
+      <div className="section-shell relative z-10">
+        <Reveal className="section-head" y={24}>
+          <span className="eyebrow">Testimonials</span>
+          <h2 className="section-title">What our users are saying</h2>
+          <p className="section-sub">
             Real stories from people who found support, healing, and balance through our platform.
           </p>
-        </motion.div>
+        </Reveal>
 
-        {/* Grid */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {testimonials.map((item, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 25 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.4, delay: index * 0.05 }}
-              className="bg-slate-50 border border-slate-200 rounded-2xl p-6 shadow-sm hover:shadow-md transition"
-            >
-              {/* Rating */}
-              <div className="flex items-center gap-1 text-amber-500">
-                {Array.from({ length: item.rating }).map((_, i) => (
-                  <Star key={i} className="w-4 h-4 fill-amber-400" />
-                ))}
-              </div>
+        <Reveal stagger={0.08} y={26} className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          {testimonials.map((item) => (
+              <figure
+                key={item.name}
+                className="flex flex-col rounded-2xl border border-slate-200/70 bg-slate-50/80 p-6 shadow-soft transition-all duration-300 hover:-translate-y-1 hover:border-teal-200 hover:shadow-card"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <Star
+                        key={i}
+                        className={`h-4 w-4 ${
+                          i < item.rating ? 'fill-amber-400 text-amber-400' : 'text-slate-300'
+                        }`}
+                      />
+                    ))}
+                  </div>
+                  <Quote className="h-5 w-5 text-teal-200" />
+                </div>
 
-              {/* Feedback */}
-              <p className="mt-4 text-sm text-slate-700 leading-relaxed">“{item.feedback}”</p>
+                <blockquote className="mt-4 flex-1 text-sm leading-relaxed text-slate-700">
+                  “{item.feedback}”
+                </blockquote>
 
-              {/* User info */}
-              <div className="mt-5">
-                <p className="font-semibold text-slate-900">{item.name}</p>
-                <p className="text-xs text-slate-500">{item.role}</p>
-              </div>
-            </motion.div>
-          ))}
-        </div>
+                <figcaption className="mt-5 border-t border-slate-100 pt-4">
+                  <p className="font-semibold text-slate-900">{item.name}</p>
+                  <p className="text-xs text-slate-500">{item.role}</p>
+                </figcaption>
+              </figure>
+            ))}
+        </Reveal>
       </div>
     </section>
   )

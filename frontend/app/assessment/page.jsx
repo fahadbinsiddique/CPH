@@ -1,125 +1,153 @@
-'use client';
+'use client'
 
-import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
-import { Clock, ChevronRight, Loader2, ClipboardList } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import Link from 'next/link';
-import { assessmentService } from '@/services/assessmentService';
+import { useEffect, useState, useCallback } from 'react'
+import Link from 'next/link'
+import { motion } from 'framer-motion'
+import { Lock, Gift, Brain, AlertCircle, ClipboardList, ShieldCheck } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import AssessmentCard from '@/components/assessment/AssessmentCard'
+import AssessmentDisclaimer from '@/components/assessment/AssessmentDisclaimer'
+import { AssessmentListSkeleton } from '@/components/assessment/AssessmentSkeleton'
+import { useHeaderHeight } from '@/hooks/useHeaderHeight'
+import { assessmentService } from '@/services/assessmentService'
 
-const CATEGORY_COLORS = {
-  stress:     'bg-orange-100 text-orange-700 border-orange-200',
-  anxiety:    'bg-yellow-100 text-yellow-700 border-yellow-200',
-  depression: 'bg-blue-100 text-blue-700 border-blue-200',
-  burnout:    'bg-red-100 text-red-700 border-red-200',
-};
-
-const CATEGORY_BG = {
-  stress:     'from-orange-50 to-amber-50',
-  anxiety:    'from-yellow-50 to-lime-50',
-  depression: 'from-blue-50 to-indigo-50',
-  burnout:    'from-red-50 to-pink-50',
-};
+const TRUST_POINTS = [
+  {
+    icon: Lock,
+    title: 'Private & confidential',
+    text: 'Your responses and results stay between you and our team.',
+  },
+  {
+    icon: Gift,
+    title: 'Free to complete',
+    text: 'No cost, no credit card — just a few quiet minutes.',
+  },
+  {
+    icon: Brain,
+    title: 'Informational only',
+    text: 'Results simply help you understand yourself. They are not a diagnosis.',
+  },
+]
 
 export default function AssessmentListPage() {
-  const [quizzes, setQuizzes] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const headerOffset = useHeaderHeight()
+  const [quizzes, setQuizzes] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(false)
+
+  const fetchQuizzes = useCallback(() => {
+    return assessmentService
+      .getAll()
+      .then((res) => setQuizzes(res.data))
+      .catch(() => setError(true))
+      .finally(() => setLoading(false))
+  }, [])
 
   useEffect(() => {
-    assessmentService.getAll()
-      .then(res => setQuizzes(res.data))
-      .catch(console.error)
-      .finally(() => setLoading(false));
-  }, []);
+    fetchQuizzes()
+  }, [fetchQuizzes])
+
+  const handleRetry = () => {
+    setLoading(true)
+    setError(false)
+    fetchQuizzes()
+  }
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      {/* Header */}
-      <div className="bg-white border-b border-slate-100">
-        <div className="max-w-4xl mx-auto px-4 py-12 text-center">
+    <main className="min-h-screen bg-gradient-to-b from-white via-white to-teal-50/40">
+      <div className="mx-auto w-full max-w-5xl px-4 sm:px-6" style={{ paddingTop: headerOffset }}>
+        {/* Intro */}
+        <div className="pt-12 pb-14 text-center sm:pt-16">
           <motion.div
-            initial={{ opacity: 0, y: 16 }}
+            initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
           >
-            <div className="w-14 h-14 bg-blue-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-              <ClipboardList className="w-7 h-7 text-blue-600" />
-            </div>
-            <h1 className="text-3xl font-bold text-slate-800 mb-2">
-              Mental Health Assessments
+            <span className="mb-5 inline-flex items-center gap-2 rounded-full border border-teal-200/70 bg-teal-50/80 px-3.5 py-1.5 text-xs font-semibold tracking-wide text-teal-700">
+              <ShieldCheck className="h-3.5 w-3.5" aria-hidden="true" />
+              Confidential screening
+            </span>
+            <h1 className="mx-auto max-w-2xl font-heading text-3xl font-bold tracking-tight text-slate-900 md:text-4xl">
+              Understand how you&apos;re doing, gently
             </h1>
-            <p className="text-slate-400 max-w-md mx-auto">
-              Take a confidential self-assessment to better understand your mental health. Results are for informational purposes only.
+            <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-slate-500 md:text-lg">
+              Take a short, private self-assessment to reflect on your mental
+              health. Your answers help you spot patterns — and give you a clear
+              next step.
             </p>
           </motion.div>
         </div>
-      </div>
 
-      <div className="max-w-4xl mx-auto px-4 py-10">
         {loading ? (
-          <div className="flex justify-center py-20">
-            <Loader2 className="w-7 h-7 animate-spin text-blue-600" />
+          <AssessmentListSkeleton />
+        ) : error ? (
+          <div className="rounded-3xl border border-slate-200/70 bg-white p-10 text-center shadow-soft">
+            <AlertCircle className="mx-auto mb-3 h-10 w-10 text-slate-300" aria-hidden="true" />
+            <h2 className="font-heading text-lg font-semibold text-slate-800">
+              We couldn&apos;t load the assessments
+            </h2>
+            <p className="mt-1 text-sm text-slate-500">
+              Please try again in a moment.
+            </p>
+            <Button onClick={handleRetry} className="mt-5 rounded-2xl bg-teal-700 hover:bg-teal-800">
+              Try again
+            </Button>
+          </div>
+        ) : quizzes.length === 0 ? (
+          <div className="rounded-3xl border border-slate-200/70 bg-white p-10 text-center shadow-soft">
+            <ClipboardList className="mx-auto mb-3 h-10 w-10 text-slate-300" aria-hidden="true" />
+            <h2 className="font-heading text-lg font-semibold text-slate-800">
+              No assessments available right now
+            </h2>
+            <p className="mt-1 text-sm text-slate-500">
+              Please check back soon.
+            </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          <div className="grid gap-5 sm:grid-cols-2 sm:gap-6">
             {quizzes.map((quiz, i) => (
-              <motion.div
-                key={quiz.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.08 }}
-              >
-                <Link href={`/assessment/${quiz.slug}`}>
-                  <Card className={`
-                    border border-slate-100 shadow-sm hover:shadow-md
-                    transition-all duration-200 rounded-2xl overflow-hidden
-                    cursor-pointer group h-full
-                  `}>
-                    <div className={`h-2 bg-gradient-to-r ${CATEGORY_BG[quiz.category]}`} />
-                    <CardContent className="p-5">
-                      <div className="flex items-start justify-between mb-3">
-                        <span className="text-4xl">{quiz.icon}</span>
-                        <Badge
-                          variant="outline"
-                          className={`text-xs capitalize ${CATEGORY_COLORS[quiz.category]}`}
-                        >
-                          {quiz.category}
-                        </Badge>
-                      </div>
-
-                      <h3 className="font-semibold text-slate-800 text-lg mb-1 group-hover:text-blue-600 transition-colors">
-                        {quiz.title}
-                      </h3>
-                      <p className="text-sm text-slate-400 mb-4 line-clamp-2">
-                        {quiz.description}
-                      </p>
-
-                      <div className="flex items-center justify-between text-xs text-slate-400">
-                        <div className="flex items-center gap-3">
-                          <span className="flex items-center gap-1">
-                            <ClipboardList className="w-3.5 h-3.5" />
-                            {quiz.question_count} questions
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <Clock className="w-3.5 h-3.5" />
-                            ~{quiz.duration_minutes} min
-                          </span>
-                        </div>
-                        <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform text-blue-400" />
-                      </div>
-                    </CardContent>
-                  </Card>
-                </Link>
-              </motion.div>
+              <AssessmentCard key={quiz.id} quiz={quiz} index={i} />
             ))}
           </div>
         )}
 
-        {/* Disclaimer */}
-        <div className="mt-10 p-4 bg-blue-50 rounded-2xl border border-blue-100 text-sm text-blue-700 text-center">
-          ⚠️ These assessments are for informational purposes only and do not constitute a medical diagnosis. Please consult a qualified professional for proper evaluation.
+        {/* Trust row */}
+        <motion.section
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+          className="mt-14 grid gap-4 sm:grid-cols-3"
+          aria-label="What to expect"
+        >
+          {TRUST_POINTS.map((point) => (
+            <div
+              key={point.title}
+              className="rounded-2xl border border-slate-200/70 bg-white/80 p-5 shadow-soft"
+            >
+              <div className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-teal-50 ring-1 ring-inset ring-teal-100">
+                <point.icon className="h-5 w-5 text-teal-700" aria-hidden="true" />
+              </div>
+              <p className="font-heading text-sm font-semibold text-slate-800">
+                {point.title}
+              </p>
+              <p className="mt-1 text-xs leading-relaxed text-slate-500">{point.text}</p>
+            </div>
+          ))}
+        </motion.section>
+
+        <div className="py-12">
+          <AssessmentDisclaimer />
+        </div>
+
+        <div className="pb-14 text-center">
+          <Link
+            href="/consultant"
+            className="text-sm font-semibold text-teal-700 underline-offset-4 hover:underline"
+          >
+            Prefer to talk to a professional directly? Meet our consultants
+          </Link>
         </div>
       </div>
-    </div>
-  );
+    </main>
+  )
 }

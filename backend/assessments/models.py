@@ -8,6 +8,10 @@ class Quiz(models.Model):
         ('anxiety', 'Anxiety'),
         ('depression', 'Depression'),
         ('burnout', 'Burnout'),
+        ('sleep', 'Sleep'),
+        ('wellbeing', 'Wellbeing'),
+        ('adhd', 'ADHD'),
+        ('social', 'Social'),
     ]
 
     title = models.CharField(max_length=255)
@@ -93,7 +97,9 @@ class ScoreRange(models.Model):
 class QuizResult(models.Model):
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
         related_name='quiz_results'
     )
     quiz = models.ForeignKey(
@@ -113,7 +119,8 @@ class QuizResult(models.Model):
         ordering = ['-completed_at']
 
     def __str__(self):
-        return f"{self.user.email} — {self.quiz.title} ({self.score})"
+        user = self.user.email if self.user else 'Guest'
+        return f"{user} — {self.quiz.title} ({self.score})"
 
     @property
     def percentage(self):

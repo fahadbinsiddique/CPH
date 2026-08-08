@@ -1,7 +1,7 @@
 'use client'
 
-import { motion } from 'framer-motion'
 import { Heart, Brain, ShieldCheck, Sparkles, MessageCircle, CalendarCheck } from 'lucide-react'
+import Reveal from '@/components/ui/Reveal'
 
 const features = [
   {
@@ -38,55 +38,39 @@ const features = [
 
 const FeaturesShowcase = () => {
   return (
-    <section className="relative py-24 bg-white overflow-hidden">
-      {/* Soft background glow */}
-      <div className="absolute top-[-120px] left-[-100px] w-[300px] h-[300px] bg-emerald-100 blur-3xl rounded-full" />
-      <div className="absolute bottom-[-120px] right-[-100px] w-[300px] h-[300px] bg-blue-100 blur-3xl rounded-full" />
+    <section className="section-pad relative overflow-hidden bg-slate-50/70">
+      <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+        <div className="absolute -left-24 top-1/3 h-80 w-80 rounded-full bg-teal-50 blur-3xl" />
+        <div className="absolute -right-20 -bottom-24 h-80 w-80 rounded-full bg-emerald-50 blur-3xl" />
+      </div>
 
-      <div className="max-w-7xl mx-auto px-6 relative z-10">
-        {/* Heading */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="text-center max-w-2xl mx-auto mb-14"
-        >
-          <h2 className="text-3xl md:text-4xl font-semibold text-slate-900">
-            Everything you need for a healthier mind
-          </h2>
-          <p className="mt-4 text-slate-600">
+      <div className="section-shell relative z-10">
+        <Reveal className="section-head" y={24}>
+          <span className="eyebrow">A complete toolkit</span>
+          <h2 className="section-title">Everything you need for a healthier mind</h2>
+          <p className="section-sub">
             A complete mental wellness toolkit designed to support your emotional balance, growth,
             and peace of mind.
           </p>
-        </motion.div>
+        </Reveal>
 
-        {/* Feature grid */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {features.map((item, index) => {
-            const Icon = item.icon
-
-            return (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: index * 0.05 }}
-                className="p-6 rounded-2xl bg-white border border-slate-200 shadow-sm hover:shadow-md transition group"
-              >
-                {/* Icon */}
-                <div className="w-12 h-12 rounded-xl bg-emerald-50 flex items-center justify-center group-hover:bg-emerald-100 transition">
-                  <Icon className="w-5 h-5 text-emerald-600" />
+        <Reveal stagger={0.07} y={26} className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {features.map((item) => {
+              const Icon = item.icon
+              return (
+                <div
+                  key={item.title}
+                  className="group rounded-2xl border border-slate-200/70 bg-white p-6 shadow-soft transition-all duration-300 hover:-translate-y-1 hover:border-teal-200 hover:shadow-card"
+                >
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-teal-50 transition-colors duration-300 group-hover:bg-teal-100">
+                    <Icon className="h-5 w-5 text-teal-600" />
+                  </div>
+                  <h3 className="mt-5 text-lg font-semibold text-slate-900">{item.title}</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-slate-600">{item.desc}</p>
                 </div>
-
-                {/* Content */}
-                <h3 className="mt-4 text-lg font-semibold text-slate-900">{item.title}</h3>
-                <p className="mt-2 text-sm text-slate-600 leading-relaxed">{item.desc}</p>
-              </motion.div>
-            )
-          })}
-        </div>
+              )
+            })}
+        </Reveal>
       </div>
     </section>
   )

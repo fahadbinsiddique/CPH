@@ -10,24 +10,68 @@
    PREMIUM BUTTON SYSTEM
 ========================= */
 
-
-
-/* Secondary Outline (Navbar Sign In style) */
-.btn-outline-soft {
-  @apply  border-2 border-teal-600 text-teal-700  hover:bg-teal-50 bg-white transition-all text-base shadow-sm;
+/* Primary solid CTA */
+@utility btn-primary {
+  @apply inline-flex items-center justify-center gap-2 rounded-2xl bg-teal-700 px-7 py-3.5 text-base font-semibold text-white shadow-md shadow-teal-900/10 transition-[background-color,border-color,color,box-shadow,scale] duration-300 hover:bg-teal-800 hover:shadow-lg hover:shadow-teal-900/15 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
 }
 
-/* Primary Gradient CTA (Navbar Sign Up style) */
-.btn-primary-gradient {
-  @apply  text-white font-bold 
-  bg-gradient-to-r from-teal-600 to-emerald-600 
-  shadow-md shadow-teal-600/10 
-  hover:shadow-lg hover:shadow-teal-600/20;
+/* Secondary soft outline CTA */
+@utility btn-outline {
+  @apply inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-7 py-3.5 text-base font-semibold text-slate-700 shadow-sm transition-[background-color,border-color,color,box-shadow,scale] duration-300 hover:border-teal-300 hover:bg-teal-50/60 hover:text-teal-800 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
 }
 
+/* =========================
+   SECTION SYSTEM
+========================= */
 
+@utility section-shell {
+  @apply mx-auto w-full max-w-7xl px-6 lg:px-8;
+}
+
+@utility section-pad {
+  @apply py-20 md:py-24 lg:py-28;
+}
+
+@utility section-head {
+  @apply mx-auto mb-12 max-w-2xl text-center md:mb-16;
+}
+
+@utility eyebrow {
+  @apply mb-4 inline-flex items-center gap-2 rounded-full border border-teal-200/70 bg-teal-50/80 px-3.5 py-1.5 text-xs font-semibold tracking-wide text-teal-700;
+}
+
+@utility section-title {
+  @apply text-3xl font-bold tracking-tight text-slate-900 md:text-4xl xl:text-[2.75rem] xl:leading-[1.12];
+}
+
+@utility section-sub {
+  @apply mt-4 text-base leading-relaxed text-slate-600 md:text-lg;
+}
+
+/* =========================
+   TYPE SCALE
+========================= */
+
+@utility text-hero {
+  font-size: clamp(2.625rem, 5vw + 0.75rem, 4.375rem);
+  line-height: 1.06;
+  letter-spacing: -0.02em;
+}
+
+@utility text-hero-lead {
+  font-size: clamp(1.0625rem, 0.8vw + 0.8rem, 1.25rem);
+  line-height: 1.7;
+}
+
+@utility text-meta {
+  @apply text-sm font-medium text-slate-500;
+}
 
 @theme inline {
+  /* Shadows */
+  --shadow-soft: 0 1px 2px rgb(15 23 42 / 0.04), 0 8px 24px -8px rgb(15 23 42 / 0.08);
+  --shadow-card: 0 1px 2px rgb(15 23 42 / 0.04), 0 16px 40px -16px rgb(15 118 110 / 0.16);
+  --shadow-float: 0 8px 24px -8px rgb(15 23 42 / 0.1), 0 24px 48px -16px rgb(15 118 110 / 0.18);
   /* 🎛️ ফন্ট কনফিগারেশন - এখানে layout.js এর ফন্টগুলো ম্যাপ করা হলো */
   --font-sans: var(--font-geist-sans), sans-serif;
   --font-mono: var(--font-geist-mono), monospace;
@@ -176,12 +220,16 @@
     background-color: oklch(0.91 0.096 181.4);
     color: oklch(0.29 0.04 190);
   }
-}
 
-/* 🎯 কার্ডের টাইটেলগুলোর ওভারল্যাপ ও টেক্সট কাটআউট ফিক্স */
-.care-card-title {
-  white-space: normal !important;
-  word-wrap: break-word;
-  overflow: visible !important;
-  text-overflow: clip !important;
+  /* Respect reduced-motion preferences globally (mental-health first accessibility) */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
 }

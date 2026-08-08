@@ -129,7 +129,7 @@ QUIZ_DATA = [
         ]
     },
     {
-        'title': 'Anxiety Assessment',
+        'title': 'GAD-7 Anxiety Assessment',
         'slug': 'anxiety-assessment',
         'category': 'anxiety',
         'icon': '😰',
@@ -217,7 +217,7 @@ QUIZ_DATA = [
         ]
     },
     {
-        'title': 'Depression Screening',
+        'title': 'PHQ-9 Depression Screening',
         'slug': 'depression-screening',
         'category': 'depression',
         'icon': '😔',
@@ -450,6 +450,431 @@ QUIZ_DATA = [
              'recommendation': 'Please seek professional support immediately. Severe burnout can have serious health consequences. Book an appointment with one of our consultants.'},
         ]
     },
+    {
+        'title': 'PSS-10 Perceived Stress',
+        'slug': 'pss-10-perceived-stress',
+        'category': 'stress',
+        'icon': '😮‍💨',
+        'description': 'The Perceived Stress Scale (PSS-10) measures how much you perceive life situations as stressful.',
+        'instructions': 'Over the last month, how often have you felt or thought the following way? Answer honestly for the most accurate result.',
+        'duration_minutes': 5,
+        'questions': [
+            {
+                'text': 'How often have you been upset because of something that happened unexpectedly?',
+                'options': [
+                    {'text': 'Never', 'score': 0},
+                    {'text': 'Almost Never', 'score': 1},
+                    {'text': 'Sometimes', 'score': 2},
+                    {'text': 'Fairly Often', 'score': 3},
+                    {'text': 'Very Often', 'score': 4},
+                ]
+            },
+            {
+                'text': 'How often have you felt that you were unable to control the important things in your life?',
+                'options': [
+                    {'text': 'Never', 'score': 0},
+                    {'text': 'Almost Never', 'score': 1},
+                    {'text': 'Sometimes', 'score': 2},
+                    {'text': 'Fairly Often', 'score': 3},
+                    {'text': 'Very Often', 'score': 4},
+                ]
+            },
+            {
+                'text': 'How often have you felt nervous and stressed?',
+                'options': [
+                    {'text': 'Never', 'score': 0},
+                    {'text': 'Almost Never', 'score': 1},
+                    {'text': 'Sometimes', 'score': 2},
+                    {'text': 'Fairly Often', 'score': 3},
+                    {'text': 'Very Often', 'score': 4},
+                ]
+            },
+            {
+                'text': 'How often have you felt confident about your ability to handle your personal problems?',
+                'options': [
+                    {'text': 'Very Often', 'score': 0},
+                    {'text': 'Fairly Often', 'score': 1},
+                    {'text': 'Sometimes', 'score': 2},
+                    {'text': 'Almost Never', 'score': 3},
+                    {'text': 'Never', 'score': 4},
+                ]
+            },
+            {
+                'text': 'How often have you felt that things were going your way?',
+                'options': [
+                    {'text': 'Very Often', 'score': 0},
+                    {'text': 'Fairly Often', 'score': 1},
+                    {'text': 'Sometimes', 'score': 2},
+                    {'text': 'Almost Never', 'score': 3},
+                    {'text': 'Never', 'score': 4},
+                ]
+            },
+            {
+                'text': 'How often have you found that you could not cope with all the things that you had to do?',
+                'options': [
+                    {'text': 'Never', 'score': 0},
+                    {'text': 'Almost Never', 'score': 1},
+                    {'text': 'Sometimes', 'score': 2},
+                    {'text': 'Fairly Often', 'score': 3},
+                    {'text': 'Very Often', 'score': 4},
+                ]
+            },
+            {
+                'text': 'How often have you been able to control irritations in your life?',
+                'options': [
+                    {'text': 'Very Often', 'score': 0},
+                    {'text': 'Fairly Often', 'score': 1},
+                    {'text': 'Sometimes', 'score': 2},
+                    {'text': 'Almost Never', 'score': 3},
+                    {'text': 'Never', 'score': 4},
+                ]
+            },
+            {
+                'text': 'How often have you felt that you were on top of things?',
+                'options': [
+                    {'text': 'Very Often', 'score': 0},
+                    {'text': 'Fairly Often', 'score': 1},
+                    {'text': 'Sometimes', 'score': 2},
+                    {'text': 'Almost Never', 'score': 3},
+                    {'text': 'Never', 'score': 4},
+                ]
+            },
+            {
+                'text': 'How often have you been angered because of things that were outside of your control?',
+                'options': [
+                    {'text': 'Never', 'score': 0},
+                    {'text': 'Almost Never', 'score': 1},
+                    {'text': 'Sometimes', 'score': 2},
+                    {'text': 'Fairly Often', 'score': 3},
+                    {'text': 'Very Often', 'score': 4},
+                ]
+            },
+            {
+                'text': 'How often have you felt difficulties were piling up so high that you could not overcome them?',
+                'options': [
+                    {'text': 'Never', 'score': 0},
+                    {'text': 'Almost Never', 'score': 1},
+                    {'text': 'Sometimes', 'score': 2},
+                    {'text': 'Fairly Often', 'score': 3},
+                    {'text': 'Very Often', 'score': 4},
+                ]
+            },
+        ],
+        'score_ranges': [
+            {'label': 'Low Stress', 'severity': 'minimal', 'min_score': 0, 'max_score': 13, 'color': 'green',
+             'description': 'You are handling daily pressures well.',
+             'recommendation': 'Keep up your balanced routines. Regular exercise, good sleep, and mindfulness help sustain this.'},
+            {'label': 'Moderate Stress', 'severity': 'mild', 'min_score': 14, 'max_score': 26, 'color': 'yellow',
+             'description': 'You are experiencing a moderate level of stress.',
+             'recommendation': 'Try relaxation techniques such as breathing exercises, journaling, and scheduling regular breaks.'},
+            {'label': 'High Stress', 'severity': 'moderate', 'min_score': 27, 'max_score': 33, 'color': 'orange',
+             'description': 'Your stress levels are high.',
+             'recommendation': 'It would be helpful to speak with a mental health professional about managing stress. Consider booking a session.'},
+            {'label': 'Severe Stress', 'severity': 'severe', 'min_score': 34, 'max_score': 40, 'color': 'red',
+             'description': 'You are experiencing severe stress that needs attention.',
+             'recommendation': 'We strongly recommend consulting a mental health professional as soon as possible. Book an appointment today.'},
+        ]
+    },
+    {
+        'title': 'Insomnia Severity Index (ISI)',
+        'slug': 'insomnia-severity-index',
+        'category': 'sleep',
+        'icon': '😴',
+        'description': 'The Insomnia Severity Index (ISI) screens for the severity of insomnia over the past 2 weeks.',
+        'instructions': 'For each question, choose the option that best describes your sleep over the last 2 weeks.',
+        'duration_minutes': 4,
+        'questions': [
+            {
+                'text': 'Difficulty falling asleep',
+                'options': [
+                    {'text': 'None', 'score': 0},
+                    {'text': 'Mild', 'score': 1},
+                    {'text': 'Moderate', 'score': 2},
+                    {'text': 'Severe', 'score': 3},
+                    {'text': 'Very severe', 'score': 4},
+                ]
+            },
+            {
+                'text': 'Difficulty staying asleep',
+                'options': [
+                    {'text': 'None', 'score': 0},
+                    {'text': 'Mild', 'score': 1},
+                    {'text': 'Moderate', 'score': 2},
+                    {'text': 'Severe', 'score': 3},
+                    {'text': 'Very severe', 'score': 4},
+                ]
+            },
+            {
+                'text': 'Problems waking up too early',
+                'options': [
+                    {'text': 'None', 'score': 0},
+                    {'text': 'Mild', 'score': 1},
+                    {'text': 'Moderate', 'score': 2},
+                    {'text': 'Severe', 'score': 3},
+                    {'text': 'Very severe', 'score': 4},
+                ]
+            },
+            {
+                'text': 'How SATISFIED/dissatisfied are you with your current sleep pattern?',
+                'options': [
+                    {'text': 'Very satisfied', 'score': 0},
+                    {'text': 'Satisfied', 'score': 1},
+                    {'text': 'Neutral', 'score': 2},
+                    {'text': 'Dissatisfied', 'score': 3},
+                    {'text': 'Very dissatisfied', 'score': 4},
+                ]
+            },
+            {
+                'text': 'To what extent do you consider your sleep problem to INTERFERE with your daily functioning?',
+                'options': [
+                    {'text': 'Not at all', 'score': 0},
+                    {'text': 'A little', 'score': 1},
+                    {'text': 'Somewhat', 'score': 2},
+                    {'text': 'Much', 'score': 3},
+                    {'text': 'Very much', 'score': 4},
+                ]
+            },
+            {
+                'text': 'How NOTICEABLE to others do you think your sleep problem is in terms of impairing the quality of your life?',
+                'options': [
+                    {'text': 'Not at all noticeable', 'score': 0},
+                    {'text': 'A little', 'score': 1},
+                    {'text': 'Somewhat', 'score': 2},
+                    {'text': 'Much', 'score': 3},
+                    {'text': 'Very much noticeable', 'score': 4},
+                ]
+            },
+            {
+                'text': 'How WORRIED/distressed are you about your current sleep problem?',
+                'options': [
+                    {'text': 'Not at all', 'score': 0},
+                    {'text': 'A little', 'score': 1},
+                    {'text': 'Somewhat', 'score': 2},
+                    {'text': 'Much', 'score': 3},
+                    {'text': 'Very much', 'score': 4},
+                ]
+            },
+        ],
+        'score_ranges': [
+            {'label': 'No Clinically Significant Insomnia', 'severity': 'minimal', 'min_score': 0, 'max_score': 7, 'color': 'green',
+             'description': 'Your sleep is generally healthy.',
+             'recommendation': 'Maintain a consistent sleep schedule, limit caffeine before bed, and keep a relaxing wind-down routine.'},
+            {'label': 'Subthreshold Insomnia', 'severity': 'mild', 'min_score': 8, 'max_score': 14, 'color': 'yellow',
+             'description': 'You show some signs of insomnia.',
+             'recommendation': 'Improve sleep hygiene: keep the bedroom dark and cool, avoid screens before bed, and try a consistent bedtime.'},
+            {'label': 'Clinical Insomnia (Moderate)', 'severity': 'moderate', 'min_score': 15, 'max_score': 21, 'color': 'orange',
+             'description': 'Your insomnia symptoms are clinically significant.',
+             'recommendation': 'Consider speaking with a healthcare professional about cognitive behavioural therapy for insomnia (CBT-I).'},
+            {'label': 'Clinical Insomnia (Severe)', 'severity': 'severe', 'min_score': 22, 'max_score': 28, 'color': 'red',
+             'description': 'Your insomnia is severe.',
+             'recommendation': 'Please consult a healthcare professional soon. Sleep problems of this level deserve proper evaluation and treatment.'},
+        ]
+    },
+    {
+        'title': 'WHO-5 Well-Being Index',
+        'slug': 'who-5-wellbeing-index',
+        'category': 'wellbeing',
+        'icon': '🌿',
+        'description': 'The WHO-5 measures general psychological well-being over the past 2 weeks.',
+        'instructions': 'Over the last 2 weeks, how much of the time have you felt the following?',
+        'duration_minutes': 2,
+        'questions': [
+            {
+                'text': 'I have felt cheerful and in good spirits',
+                'options': [
+                    {'text': 'At no time', 'score': 0},
+                    {'text': 'Some of the time', 'score': 1},
+                    {'text': 'Less than half of the time', 'score': 2},
+                    {'text': 'More than half of the time', 'score': 3},
+                    {'text': 'Most of the time', 'score': 4},
+                    {'text': 'All of the time', 'score': 5},
+                ]
+            },
+            {
+                'text': 'I have felt calm and relaxed',
+                'options': [
+                    {'text': 'At no time', 'score': 0},
+                    {'text': 'Some of the time', 'score': 1},
+                    {'text': 'Less than half of the time', 'score': 2},
+                    {'text': 'More than half of the time', 'score': 3},
+                    {'text': 'Most of the time', 'score': 4},
+                    {'text': 'All of the time', 'score': 5},
+                ]
+            },
+            {
+                'text': 'I have felt active and vigorous',
+                'options': [
+                    {'text': 'At no time', 'score': 0},
+                    {'text': 'Some of the time', 'score': 1},
+                    {'text': 'Less than half of the time', 'score': 2},
+                    {'text': 'More than half of the time', 'score': 3},
+                    {'text': 'Most of the time', 'score': 4},
+                    {'text': 'All of the time', 'score': 5},
+                ]
+            },
+            {
+                'text': 'I woke up feeling fresh and rested',
+                'options': [
+                    {'text': 'At no time', 'score': 0},
+                    {'text': 'Some of the time', 'score': 1},
+                    {'text': 'Less than half of the time', 'score': 2},
+                    {'text': 'More than half of the time', 'score': 3},
+                    {'text': 'Most of the time', 'score': 4},
+                    {'text': 'All of the time', 'score': 5},
+                ]
+            },
+            {
+                'text': 'My daily life has been filled with things that interest me',
+                'options': [
+                    {'text': 'At no time', 'score': 0},
+                    {'text': 'Some of the time', 'score': 1},
+                    {'text': 'Less than half of the time', 'score': 2},
+                    {'text': 'More than half of the time', 'score': 3},
+                    {'text': 'Most of the time', 'score': 4},
+                    {'text': 'All of the time', 'score': 5},
+                ]
+            },
+        ],
+        'score_ranges': [
+            {'label': 'Low Well-Being', 'severity': 'moderate', 'min_score': 0, 'max_score': 12, 'color': 'orange',
+             'description': 'Your well-being may be low.',
+             'recommendation': 'It is worth paying attention to how you feel. Consider reaching out to a mental health professional for support.'},
+            {'label': 'Moderate Well-Being', 'severity': 'mild', 'min_score': 13, 'max_score': 17, 'color': 'yellow',
+             'description': 'Your well-being is moderate.',
+             'recommendation': 'Nurture activities that energise you — time with loved ones, movement, rest, and small daily wins.'},
+            {'label': 'Good Well-Being', 'severity': 'minimal', 'min_score': 18, 'max_score': 25, 'color': 'green',
+             'description': 'Your psychological well-being is good.',
+             'recommendation': 'Great work. Keep prioritising the habits that keep you feeling balanced and connected.'},
+        ]
+    },
+    {
+        'title': 'Adult ADHD Self-Report (ASRS-6)',
+        'slug': 'adult-adhd-self-report',
+        'category': 'adhd',
+        'icon': '🧠',
+        'description': 'The ASRS-6 screens for adult ADHD symptoms over the past 6 months.',
+        'instructions': 'Over the past 6 months, how often have you experienced the following?',
+        'duration_minutes': 3,
+        'questions': [
+            {
+                'text': 'How often do you have trouble wrapping up the final details of a project once the challenging parts have been done?',
+                'options': [
+                    {'text': 'Never', 'score': 0},
+                    {'text': 'Rarely', 'score': 1},
+                    {'text': 'Sometimes', 'score': 2},
+                    {'text': 'Often', 'score': 3},
+                    {'text': 'Very often', 'score': 4},
+                ]
+            },
+            {
+                'text': 'How often do you have difficulty getting things in order when you have to do a task that requires organization?',
+                'options': [
+                    {'text': 'Never', 'score': 0},
+                    {'text': 'Rarely', 'score': 1},
+                    {'text': 'Sometimes', 'score': 2},
+                    {'text': 'Often', 'score': 3},
+                    {'text': 'Very often', 'score': 4},
+                ]
+            },
+            {
+                'text': 'How often do you have problems remembering appointments or obligations?',
+                'options': [
+                    {'text': 'Never', 'score': 0},
+                    {'text': 'Rarely', 'score': 1},
+                    {'text': 'Sometimes', 'score': 2},
+                    {'text': 'Often', 'score': 3},
+                    {'text': 'Very often', 'score': 4},
+                ]
+            },
+            {
+                'text': 'When you have a task that requires a lot of thought, how often do you avoid or delay getting started?',
+                'options': [
+                    {'text': 'Never', 'score': 0},
+                    {'text': 'Rarely', 'score': 1},
+                    {'text': 'Sometimes', 'score': 2},
+                    {'text': 'Often', 'score': 3},
+                    {'text': 'Very often', 'score': 4},
+                ]
+            },
+            {
+                'text': 'How often do you fidget or squirm with your hands or feet when you have to sit down for a long time?',
+                'options': [
+                    {'text': 'Never', 'score': 0},
+                    {'text': 'Rarely', 'score': 1},
+                    {'text': 'Sometimes', 'score': 2},
+                    {'text': 'Often', 'score': 3},
+                    {'text': 'Very often', 'score': 4},
+                ]
+            },
+            {
+                'text': 'How often do you feel overly active and compelled to do things, like you were driven by a motor?',
+                'options': [
+                    {'text': 'Never', 'score': 0},
+                    {'text': 'Rarely', 'score': 1},
+                    {'text': 'Sometimes', 'score': 2},
+                    {'text': 'Often', 'score': 3},
+                    {'text': 'Very often', 'score': 4},
+                ]
+            },
+        ],
+        'score_ranges': [
+            {'label': 'Low Likelihood of ADHD', 'severity': 'minimal', 'min_score': 0, 'max_score': 9, 'color': 'green',
+             'description': 'You report few ADHD-related symptoms.',
+             'recommendation': 'Continue using the organisational habits and routines that work for you.'},
+            {'label': 'Some Symptoms Present', 'severity': 'mild', 'min_score': 10, 'max_score': 13, 'color': 'yellow',
+             'description': 'You report some ADHD-related symptoms.',
+             'recommendation': 'Consider strategies like written checklists, reminders, and breaking tasks into smaller steps.'},
+            {'label': 'High Likelihood of ADHD', 'severity': 'moderate', 'min_score': 14, 'max_score': 24, 'color': 'orange',
+             'description': 'You report symptoms consistent with adult ADHD.',
+             'recommendation': 'This is a screening tool, not a diagnosis. Please discuss these symptoms with a qualified professional for a full evaluation.'},
+        ]
+    },
+    {
+        'title': 'UCLA Loneliness Scale (ULS-3)',
+        'slug': 'ucla-loneliness-scale',
+        'category': 'social',
+        'icon': '🤝',
+        'description': 'A short 3-item scale measuring feelings of loneliness and connection.',
+        'instructions': 'Answer how often you feel the following way.',
+        'duration_minutes': 1,
+        'questions': [
+            {
+                'text': 'How often do you feel that you lack companionship?',
+                'options': [
+                    {'text': 'Hardly ever', 'score': 1},
+                    {'text': 'Some of the time', 'score': 2},
+                    {'text': 'Often', 'score': 3},
+                ]
+            },
+            {
+                'text': 'How often do you feel left out?',
+                'options': [
+                    {'text': 'Hardly ever', 'score': 1},
+                    {'text': 'Some of the time', 'score': 2},
+                    {'text': 'Often', 'score': 3},
+                ]
+            },
+            {
+                'text': 'How often do you feel isolated from others?',
+                'options': [
+                    {'text': 'Hardly ever', 'score': 1},
+                    {'text': 'Some of the time', 'score': 2},
+                    {'text': 'Often', 'score': 3},
+                ]
+            },
+        ],
+        'score_ranges': [
+            {'label': 'Low Loneliness', 'severity': 'minimal', 'min_score': 3, 'max_score': 5, 'color': 'green',
+             'description': 'You feel generally connected to others.',
+             'recommendation': 'Keep nurturing your relationships — small regular check-ins make a big difference.'},
+            {'label': 'Moderate Loneliness', 'severity': 'mild', 'min_score': 6, 'max_score': 7, 'color': 'yellow',
+             'description': 'You sometimes feel lonely.',
+             'recommendation': 'Try reaching out to a friend or family member this week, or joining a group aligned with your interests.'},
+            {'label': 'High Loneliness', 'severity': 'severe', 'min_score': 8, 'max_score': 9, 'color': 'red',
+             'description': 'You frequently feel lonely.',
+             'recommendation': 'Loneliness is common and treatable. Consider speaking with a therapist to explore ways to rebuild connection.'},
+        ]
+    },
 ]
 
 
@@ -468,6 +893,16 @@ class Command(BaseCommand):
                     'icon': quiz_data['icon'],
                     'duration_minutes': quiz_data['duration_minutes'],
                 }
+            )
+
+            # Keep base fields in sync even for quizzes that already exist.
+            Quiz.objects.filter(pk=quiz.pk).update(
+                title=quiz_data['title'],
+                category=quiz_data['category'],
+                description=quiz_data['description'],
+                instructions=quiz_data['instructions'],
+                icon=quiz_data['icon'],
+                duration_minutes=quiz_data['duration_minutes'],
             )
 
             if created:

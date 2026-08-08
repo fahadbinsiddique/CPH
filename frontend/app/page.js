@@ -10,9 +10,6 @@ import Testimonials from '@/components/Landing/Testimonials'
 import TherapistsSection from '@/components/Landing/TherapistsSection'
 import TrustBenefitsSection from '@/components/Landing/TrustBenefitsSection'
 import ViewAllTherapistsCTA from '@/components/Landing/ViewAllTherapistsCTA'
-import Footer from '@/components/layout/Footer'
-import Navbar from '@/components/layout/Navbar'
-import TopHeader from '@/components/layout/TopHeader'
 import React, { Suspense, useEffect } from 'react'
 import { toast } from "sonner"
 import { useSearchParams, useRouter } from 'next/navigation';
@@ -56,8 +53,14 @@ const Page = () => {
       </Suspense>
       <main>
         <Hero />
+        <TrustBenefitsSection />
         <FeaturesTrustSection />
+        <FeaturesShowcase />
         <TherapistsSection />
+        <ViewAllTherapistsCTA />
+        <Testimonials />
+        <BlogPreview />
+        <Faq />
         <FinalCTA />
       </main>
     </>

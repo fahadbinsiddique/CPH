@@ -1,57 +1,44 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import Link from 'next/link'
 import { ArrowRight, Users, Search } from 'lucide-react'
+import Reveal from '@/components/ui/Reveal'
 
 const ViewAllTherapistsCTA = () => {
   return (
-    <section className="relative py-16 bg-white overflow-hidden">
-      {/* Soft background glow */}
-      <div className="absolute top-[-80px] left-[-80px] w-[250px] h-[250px] bg-emerald-100 blur-3xl rounded-full" />
-      <div className="absolute bottom-[-80px] right-[-80px] w-[250px] h-[250px] bg-blue-100 blur-3xl rounded-full" />
+    <section className="section-pad relative overflow-hidden bg-slate-50/70">
+      <div className="section-shell relative z-10">
+        <Reveal y={26} duration={0.7}>
+          <div className="mx-auto max-w-5xl rounded-[2rem] border border-slate-200/70 bg-white px-6 py-14 text-center shadow-soft md:px-12">
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-teal-50">
+              <Users className="h-6 w-6 text-teal-600" />
+            </div>
 
-      <div className="max-w-5xl mx-auto px-6 relative z-10">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="rounded-3xl border border-slate-200 bg-white/70 backdrop-blur-xl shadow-sm p-10 text-center"
-        >
-          {/* Icon */}
-          <div className="w-14 h-14 mx-auto rounded-2xl bg-emerald-50 flex items-center justify-center mb-5">
-            <Users className="w-6 h-6 text-emerald-600" />
+            <h2 className="mx-auto mt-6 max-w-2xl text-2xl font-bold tracking-tight text-slate-900 md:text-3xl">
+              Find the right therapist for your journey
+            </h2>
+
+            <p className="mx-auto mt-4 max-w-xl text-slate-600">
+              Explore our full network of licensed mental health professionals and choose someone
+              who truly understands your needs and goals.
+            </p>
+
+            <div className="mt-8 flex flex-col justify-center gap-4 sm:flex-row">
+              <Link href="/consultant" className="btn-primary w-full sm:w-auto">
+                <Search className="h-4 w-4" />
+                View All Therapists
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+              <Link href="/assessment" className="btn-outline w-full sm:w-auto">
+                Take Matching Quiz
+              </Link>
+            </div>
+
+            <p className="mt-6 text-xs text-slate-500">
+              Verified professionals &middot; Confidential sessions &middot; Personalized matching
+            </p>
           </div>
-
-          {/* Heading */}
-          <h2 className="text-2xl md:text-3xl font-semibold text-slate-900">
-            Find the right therapist for your journey
-          </h2>
-
-          {/* Subtext */}
-          <p className="mt-4 text-slate-600 max-w-xl mx-auto">
-            Explore our full network of licensed mental health professionals and choose someone who
-            truly understands your needs and goals.
-          </p>
-
-          {/* Buttons */}
-          <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-emerald-600 text-white font-medium hover:bg-emerald-700 transition">
-              <Search className="w-4 h-4" />
-              View All Therapists
-              <ArrowRight className="w-4 h-4" />
-            </button>
-
-            <button className="px-6 py-3 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50 transition">
-              Take Matching Quiz
-            </button>
-          </div>
-
-          {/* Trust note */}
-          <p className="mt-6 text-xs text-slate-500">
-            ✓ Verified professionals • ✓ Confidential sessions • ✓ Personalized matching
-          </p>
-        </motion.div>
+        </Reveal>
       </div>
     </section>
   )

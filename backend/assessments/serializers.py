@@ -72,7 +72,7 @@ class QuizSubmitSerializer(serializers.Serializer):
         attrs['quiz'] = quiz
         return attrs
 
-    def save(self, user):
+    def save(self, user=None):
         quiz = self.validated_data['quiz']
         answers = self.validated_data['answers']
 

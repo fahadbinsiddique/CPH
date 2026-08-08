@@ -15,7 +15,6 @@ from .serializers import (
     AvailabilitySerializer,
     ConsultantCreateSerializer,
     ConsultantCreateUpdateSerializer,
-    ConsultantDetailSerializer,
     SpecializationSerializer,
 )
 
@@ -100,38 +99,21 @@ class ConsultantMyAvailabilityView(APIView):
 
 class ConsultantCreateView(generics.CreateAPIView):
     """
-    POST /api/therapists/create/
-Any logged-in regular user (client) sending data here will have their role automatically changed to 'consultant', and their profile will be created in the backend.
+    POST /api/consultant/register/
+    Public Endpoint: Anyone can register directly as a Consultant along with user creation.
     """
     serializer_class = ConsultantCreateSerializer
-    permission_classes = [IsAuthenticated]
-
-    def perform_create(self, serializer):
-        user = self.request.user
-
-        # Check for duplicate requests.
-        if Consultant.objects.filter(user=user).exists():
-            raise ValidationError({"detail": "A consultant profile already exists for this user."})
-
-        # Upgrade the user role when needed.
-        if user.role == 'client':
-            user.role = 'consultant'
-            user.save(update_fields=['role'])
-
-        # Save the profile data and return the created object for the response.
-        self.instance = serializer.save()
+    permission_classes = []  # Publicly accessible endpoint for registration
 
     def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data, context={'request': request})
+        serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
-            
-            # Run perform_create to avoid a double-save issue.
-            self.perform_create(serializer) 
+            consultant = serializer.save()
             
             return Response(
                 {
-                    "message": "Your profile has been created and account role has been upgraded to Consultant. Awaiting admin approval.",
-                    "data": ConsultantDetailSerializer(self.instance).data
+                    "message": "Your consultant account and profile have been created successfully. Awaiting admin approval.",
+                    "data": ConsultantDetailSerializer(consultant).data
                 },
                 status=status.HTTP_201_CREATED
             )

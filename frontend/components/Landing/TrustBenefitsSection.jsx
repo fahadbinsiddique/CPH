@@ -1,7 +1,7 @@
 'use client'
 
-import { motion } from 'framer-motion'
 import { ShieldCheck, BadgeCheck, BookOpen, HeartHandshake } from 'lucide-react'
+import Reveal from '@/components/ui/Reveal'
 
 const benefits = [
   {
@@ -28,55 +28,41 @@ const benefits = [
 
 const TrustBenefitsSection = () => {
   return (
-    <section className="relative py-24 bg-slate-50 overflow-hidden">
-      {/* Soft background glow */}
-      <div className="absolute top-[-120px] left-[-100px] w-[300px] h-[300px] bg-emerald-100 blur-3xl rounded-full" />
-      <div className="absolute bottom-[-120px] right-[-100px] w-[300px] h-[300px] bg-blue-100 blur-3xl rounded-full" />
+    <section className="section-pad relative overflow-hidden bg-slate-50">
+      <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+        <div className="absolute -right-24 -top-24 h-80 w-80 rounded-full bg-teal-100/40 blur-3xl" />
+        <div className="absolute -bottom-28 -left-24 h-80 w-80 rounded-full bg-emerald-100/50 blur-3xl" />
+      </div>
 
-      <div className="max-w-6xl mx-auto px-6 relative z-10">
-        {/* Heading */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="text-center max-w-2xl mx-auto mb-14"
-        >
-          <h2 className="text-3xl md:text-4xl font-semibold text-slate-900">
+      <div className="section-shell relative z-10">
+        <Reveal className="section-head" y={24}>
+          <span className="eyebrow">Why people trust us</span>
+          <h2 className="section-title">
             Care you can trust, support you can rely on
           </h2>
-          <p className="mt-4 text-slate-600">
+          <p className="section-sub">
             We prioritize safety, professionalism, and emotional well-being in every step of your
             journey.
           </p>
-        </motion.div>
+        </Reveal>
 
-        {/* Grid */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {benefits.map((item, index) => {
-            const Icon = item.icon
-
-            return (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 25 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: index * 0.05 }}
-                className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm hover:shadow-md transition group"
-              >
-                {/* Icon */}
-                <div className="w-12 h-12 rounded-xl bg-emerald-50 flex items-center justify-center group-hover:bg-emerald-100 transition">
-                  <Icon className="w-5 h-5 text-emerald-600" />
+        <Reveal stagger={0.08} y={26} className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          {benefits.map((item) => {
+              const Icon = item.icon
+              return (
+                <div
+                  key={item.title}
+                  className="group rounded-2xl border border-slate-200/70 bg-white p-6 shadow-soft transition-all duration-300 hover:-translate-y-1 hover:border-teal-200 hover:shadow-card"
+                >
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-teal-50 transition-colors duration-300 group-hover:bg-teal-100">
+                    <Icon className="h-5 w-5 text-teal-600" />
+                  </div>
+                  <h3 className="mt-5 text-lg font-semibold text-slate-900">{item.title}</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-slate-600">{item.desc}</p>
                 </div>
-
-                {/* Content */}
-                <h3 className="mt-4 text-lg font-semibold text-slate-900">{item.title}</h3>
-                <p className="mt-2 text-sm text-slate-600 leading-relaxed">{item.desc}</p>
-              </motion.div>
-            )
-          })}
-        </div>
+              )
+            })}
+        </Reveal>
       </div>
     </section>
   )

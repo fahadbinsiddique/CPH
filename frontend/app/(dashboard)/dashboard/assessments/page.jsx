@@ -1,128 +1,185 @@
-'use client';
+'use client'
 
-import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
+import { useEffect, useState, useCallback } from 'react'
+import Link from 'next/link'
+import { motion } from 'framer-motion'
 import {
-  ClipboardList, TrendingUp, RotateCcw,
-  Loader2, ArrowRight
-} from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import Link from 'next/link';
-import AuthGuard from '@/components/shared/AuthGuard';
-import { assessmentService } from '@/services/assessmentService';
-
-const SEVERITY_CONFIG = {
-  minimal:  { color: 'text-green-600',  bg: 'bg-green-100',  label: 'Minimal' },
-  mild:     { color: 'text-yellow-600', bg: 'bg-yellow-100', label: 'Mild' },
-  moderate: { color: 'text-orange-600', bg: 'bg-orange-100', label: 'Moderate' },
-  severe:   { color: 'text-red-600',    bg: 'bg-red-100',    label: 'Severe' },
-};
+  ClipboardList,
+  TrendingUp,
+  RotateCcw,
+  ArrowRight,
+  CalendarDays,
+  AlertCircle,
+} from 'lucide-react'
+import { Card, CardContent } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import AuthGuard from '@/components/shared/AuthGuard'
+import {
+  getSeverityMeta,
+  getCategoryMeta,
+  formatCompactDate,
+} from '@/components/assessment/assessmentConfig'
+import { assessmentService } from '@/services/assessmentService'
 
 export default function AssessmentHistoryPage() {
-  const [results, setResults] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [results, setResults] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(false)
+
+  const fetchResults = useCallback(() => {
+    return assessmentService
+      .getResults()
+      .then((res) => setResults(res.data.results || res.data))
+      .catch(() => setError(true))
+      .finally(() => setLoading(false))
+  }, [])
 
   useEffect(() => {
-    assessmentService.getResults()
-      .then(res => setResults(res.data.results || res.data))
-      .catch(console.error)
-      .finally(() => setLoading(false));
-  }, []);
+    fetchResults()
+  }, [fetchResults])
+
+  const handleRetry = () => {
+    setLoading(true)
+    setError(false)
+    fetchResults()
+  }
 
   return (
     <AuthGuard>
       <div className="max-w-3xl">
-        <div className="flex items-center justify-between mb-6">
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-slate-800">Assessment History</h1>
-            <p className="text-slate-400 text-sm">{results.length} assessments taken</p>
+            <h1 className="font-heading text-2xl font-bold text-slate-800">
+              Assessment History
+            </h1>
+            <p className="mt-1 text-sm text-slate-400">
+              {results.length} {results.length === 1 ? 'assessment' : 'assessments'} taken
+            </p>
           </div>
           <Link href="/assessment">
-            <Button className="bg-blue-600 hover:bg-blue-700 text-white">
-              <ClipboardList className="w-4 h-4 mr-2" />
+            <Button className="rounded-2xl bg-teal-700 text-white shadow-md shadow-teal-900/10 hover:bg-teal-800">
+              <ClipboardList className="h-4 w-4" aria-hidden="true" />
               Take New
             </Button>
           </Link>
         </div>
 
         {loading ? (
-          <div className="flex justify-center py-20">
-            <Loader2 className="w-7 h-7 animate-spin text-blue-600" />
+          <div className="space-y-3" aria-hidden="true">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div
+                key={i}
+                className="animate-pulse rounded-2xl border border-slate-200/70 bg-white p-5 shadow-soft"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="h-12 w-12 shrink-0 rounded-xl bg-slate-100" />
+                  <div className="flex-1 space-y-2">
+                    <div className="h-4 w-2/3 rounded bg-slate-100" />
+                    <div className="h-3 w-1/3 rounded bg-slate-100" />
+                  </div>
+                  <div className="hidden h-9 w-24 rounded-lg bg-slate-100 sm:block" />
+                </div>
+              </div>
+            ))}
           </div>
+        ) : error ? (
+          <Card className="rounded-2xl border-0 shadow-soft">
+            <CardContent className="p-12 text-center">
+              <AlertCircle className="mx-auto mb-3 h-12 w-12 text-slate-200" aria-hidden="true" />
+              <p className="text-slate-500 mb-4">We couldn&apos;t load your history.</p>
+              <Button
+                onClick={handleRetry}
+                className="rounded-2xl bg-teal-700 hover:bg-teal-800"
+              >
+                Try again
+              </Button>
+            </CardContent>
+          </Card>
         ) : results.length > 0 ? (
           <div className="space-y-3">
             {results.map((result, i) => {
-              const severity = result.score_range?.severity || 'minimal';
-              const config = SEVERITY_CONFIG[severity];
-              const date = new Date(result.completed_at).toLocaleDateString('en-US', {
-                year: 'numeric', month: 'short', day: 'numeric'
-              });
+              const severity = result.score_range?.severity || 'minimal'
+              const meta = getSeverityMeta(severity)
+              const category = getCategoryMeta(result.quiz?.category)
+              const date = formatCompactDate(result.completed_at)
 
               return (
                 <motion.div
                   key={result.id}
                   initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.05 }}
+                  transition={{ duration: 0.4, delay: Math.min(i * 0.05, 0.3) }}
                 >
-                  <Card className="border border-slate-100 shadow-sm rounded-2xl hover:shadow-md transition-shadow">
-                    <CardContent className="p-4 flex items-center gap-4">
-                      {/* Icon */}
-                      <div className={`w-12 h-12 rounded-xl ${config.bg} flex items-center justify-center text-2xl flex-shrink-0`}>
-                        {result.quiz.icon}
-                      </div>
+                  <div className="flex items-center gap-4 rounded-2xl border border-slate-200/70 bg-white p-4 shadow-soft transition-shadow hover:shadow-card sm:p-5">
+                    <div
+                      className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br text-2xl ring-1 ring-inset ${category.tile}`}
+                      aria-hidden="true"
+                    >
+                      {result.quiz?.icon}
+                    </div>
 
-                      {/* Info */}
-                      <div className="flex-1 min-w-0">
-                        <p className="font-medium text-slate-800">{result.quiz.title}</p>
-                        <div className="flex items-center gap-3 mt-1">
-                          <span className={`text-xs font-medium ${config.color}`}>
-                            {result.score_range?.label || 'Completed'}
-                          </span>
-                          <span className="text-xs text-slate-400">{date}</span>
-                        </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate font-heading text-sm font-semibold text-slate-800">
+                        {result.quiz?.title}
+                      </p>
+                      <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-0.5">
+                        <span className={`text-xs font-semibold ${meta.text}`}>
+                          {result.score_range?.label || 'Completed'}
+                        </span>
+                        <span className="flex items-center gap-1 text-xs text-slate-400">
+                          <CalendarDays className="h-3 w-3" aria-hidden="true" />
+                          {date}
+                        </span>
                       </div>
+                    </div>
 
-                      {/* Score */}
-                      <div className="text-right flex-shrink-0">
-                        <p className={`text-xl font-bold ${config.color}`}>
-                          {result.percentage}%
-                        </p>
-                        <p className="text-xs text-slate-400">
-                          {result.score}/{result.max_score}
-                        </p>
-                      </div>
+                    <div className="hidden shrink-0 text-right sm:block">
+                      <p className={`font-heading text-xl font-bold ${meta.text}`}>
+                        {result.percentage}%
+                      </p>
+                      <p className="text-xs text-slate-400">
+                        {result.score}/{result.max_score}
+                      </p>
+                    </div>
 
-                      {/* Actions */}
-                      <div className="flex gap-1.5 flex-shrink-0">
-                        <Link href={`/assessment/result/${result.id}`}>
-                          <Button size="sm" variant="ghost" className="h-8 w-8 p-0 text-slate-400 hover:text-blue-600">
-                            <TrendingUp className="w-4 h-4" />
-                          </Button>
-                        </Link>
-                        <Link href={`/assessment/${result.quiz.slug}`}>
-                          <Button size="sm" variant="ghost" className="h-8 w-8 p-0 text-slate-400 hover:text-blue-600">
-                            <RotateCcw className="w-4 h-4" />
-                          </Button>
-                        </Link>
-                      </div>
-                    </CardContent>
-                  </Card>
+                    <div className="flex shrink-0 gap-1.5">
+                      <Link
+                        href={`/assessment/result/${result.id}`}
+                        aria-label={`View ${result.quiz?.title} result`}
+                        className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 text-slate-400 transition-colors hover:border-teal-300 hover:bg-teal-50 hover:text-teal-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2"
+                      >
+                        <TrendingUp className="h-4 w-4" aria-hidden="true" />
+                      </Link>
+                      <Link
+                        href={`/assessment/${result.quiz?.slug}`}
+                        aria-label={`Retake ${result.quiz?.title}`}
+                        className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 text-slate-400 transition-colors hover:border-teal-300 hover:bg-teal-50 hover:text-teal-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2"
+                      >
+                        <RotateCcw className="h-4 w-4" aria-hidden="true" />
+                      </Link>
+                    </div>
+                  </div>
                 </motion.div>
-              );
+              )
             })}
           </div>
         ) : (
-          <Card className="border-0 shadow-sm rounded-2xl">
+          <Card className="border-0 shadow-soft">
             <CardContent className="p-12 text-center">
-              <ClipboardList className="w-12 h-12 text-slate-200 mx-auto mb-3" />
-              <p className="text-slate-400 mb-4">No assessments taken yet</p>
+              <ClipboardList
+                className="mx-auto mb-3 h-12 w-12 text-slate-200"
+                aria-hidden="true"
+              />
+              <p className="font-heading text-base font-semibold text-slate-800">
+                No assessments taken yet
+              </p>
+              <p className="mt-1 mb-4 text-sm text-slate-400">
+                Completing your first assessment takes about five minutes.
+              </p>
               <Link href="/assessment">
-                <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+                <Button className="rounded-2xl bg-teal-700 hover:bg-teal-800">
                   Take Your First Assessment
-                  <ArrowRight className="w-4 h-4 ml-2" />
+                  <ArrowRight className="h-4 w-4" aria-hidden="true" />
                 </Button>
               </Link>
             </CardContent>
@@ -130,5 +187,5 @@ export default function AssessmentHistoryPage() {
         )}
       </div>
     </AuthGuard>
-  );
+  )
 }
