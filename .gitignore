@@ -75,6 +75,7 @@ backend/.env
 frontend/.env.local
 frontend/.env*.local
 PROJECT_SUMMARY.md
+.dockerignore
 # ---------------------------------------------------------------------------
 # Tooling / cache
 # ---------------------------------------------------------------------------

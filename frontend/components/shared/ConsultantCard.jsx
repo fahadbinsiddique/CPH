@@ -1,20 +1,16 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
-import { 
-  MapPin, 
-  Clock, 
-  Star, 
-  CheckCircle2, 
-  Calendar, 
-  Heart,
+import {
+  MapPin,
+  Clock,
+  CheckCircle2,
+  Languages,
   ChevronRight,
-  Sparkles,
-  Shield
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 
 export default function ConsultantCard({ consultant }) {
   const {
@@ -27,131 +23,106 @@ export default function ConsultantCard({ consultant }) {
     is_verified,
     is_available,
     location,
-    rating = 4.9,
-    total_sessions = 0,
+    languages,
   } = consultant;
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      whileHover={{ y: -6 }}
       transition={{ duration: 0.3, ease: 'easeOut' }}
+      className="h-full"
     >
-      <Card className="group relative border border-slate-200/60 shadow-sm hover:shadow-xl hover:border-teal-500/20 transition-all duration-500 rounded-2xl overflow-hidden bg-white/80 backdrop-blur-sm h-full">
-        
-        {/* Decorative gradient overlay on hover */}
-        <div className="absolute inset-0 bg-gradient-to-br from-teal-50/0 via-transparent to-teal-50/0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
-        
-        {/* Top accent line */}
-        <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-teal-400 via-emerald-400 to-teal-400 scale-x-0 group-hover:scale-x-100 transition-transform duration-700 origin-left" />
+      <Card className="group relative flex h-full flex-col gap-0 overflow-hidden rounded-2xl border border-slate-200/60 bg-white p-0 py-0 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-teal-500/30 hover:shadow-xl">
 
-        <CardContent className="p-5 sm:p-6 relative z-10">
-          
-          {/* ================= TOP SECTION ================= */}
-          <div className="flex items-start gap-4 mb-5">
-            
-            {/* Avatar - Premium with glow effect */}
-            <div className="relative flex-shrink-0">
-              <div className="relative w-24 h-24 sm:w-28 sm:h-28 rounded-2xl overflow-hidden bg-gradient-to-br from-teal-50 to-emerald-50 border-2 border-slate-100/80 shadow-md group-hover:shadow-teal-500/20 transition-all duration-300">
-                {profile_image ? (
-                  <Image
-                    src={profile_image}
-                    alt={user?.full_name || "Consultant"}
-                    width={112}
-                    height={112}
-                    className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-500"
-                    priority
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-teal-600 font-bold text-3xl bg-gradient-to-br from-teal-100 to-emerald-100">
-                    {user?.full_name?.charAt(0)}
-                  </div>
-                )}
-                
-                {/* Avatar glow ring */}
-                <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-white/20 group-hover:ring-teal-400/30 transition-all duration-300" />
-              </div>
-              
-              {/* Availability Dot - Enhanced */}
-              <div className="absolute -bottom-1 -right-1">
-                <div className={`relative ${is_available ? 'animate-pulse' : ''}`}>
-                  <span
-                    className={`block w-4 h-4 rounded-full border-2 border-white shadow-lg ${
-                      is_available 
-                        ? 'bg-emerald-500 ring-2 ring-emerald-400/30' 
-                        : 'bg-slate-300 ring-2 ring-slate-200/30'
-                    }`}
-                  />
-                </div>
-              </div>
-
-             
-            </div>
-
-            {/* Name & Info */}
-            <div className="flex-1 min-w-0 pt-1">
-              
-              {/* Name + Verified */}
-              <div className="flex items-center gap-2 flex-wrap">
-                <h3 className="font-bold text-slate-900 group-hover:text-teal-600 transition-colors truncate text-base sm:text-lg">
-                  {user?.full_name}
-                </h3>
-                {is_verified && (
-                  <CheckCircle2 className="w-4 h-4 text-teal-600 fill-teal-50 shrink-0" />
-                )}
-              </div>
-
-              {/* Title / Specialty */}
-              <p className="text-xs text-slate-500 truncate mt-0.5">
-                {specializations?.[0]?.name || 'Mental Health Professional'}
-              </p>
-
-              {/* Specializations Chips */}
-              <div className="flex flex-wrap gap-1 mt-1.5">
-                {specializations?.slice(0, 2).map((s) => (
-                  <Badge
-                    key={s.id}
-                    className="text-[10px] font-medium bg-slate-100/80 text-slate-600 px-2 py-0 border-none rounded-full"
-                  >
-                    {s.name}
-                  </Badge>
-                ))}
-                {specializations?.length > 2 && (
-                  <Badge className="text-[10px] font-medium bg-slate-100/80 text-slate-400 px-2 py-0 border-none rounded-full">
-                    +{specializations.length - 2}
-                  </Badge>
-                )}
+        <div className="relative h-52 w-full overflow-hidden bg-gradient-to-br from-teal-50 via-emerald-50 to-slate-100 sm:h-56">
+          {profile_image ? (
+            <Image
+              src={profile_image}
+              alt={user?.full_name ? `Portrait of ${user.full_name}` : 'Consultant portrait'}
+              fill
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              className="object-cover object-top transition-transform duration-700 group-hover:scale-105"
+              priority
+            />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-teal-100/60 to-emerald-100/60">
+              <div className="flex h-20 w-20 items-center justify-center rounded-full border border-teal-200/50 bg-white/80 shadow-inner backdrop-blur-sm">
+                <span className="text-3xl font-extrabold text-teal-600">
+                  {user?.full_name?.charAt(0) || 'C'}
+                </span>
               </div>
             </div>
+          )}
+
+          {/* Bottom fade into body */}
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-white via-white/40 to-transparent" />
+              {/* Availability chip */}
+          <div className="absolute left-3 top-3 z-10">
+            <span
+              className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[10px] font-semibold shadow-sm backdrop-blur-md ${
+                is_available
+                  ? 'border-emerald-200/60 bg-white/90 text-emerald-700'
+                  : 'border-slate-200/60 bg-white/80 text-slate-600'
+              }`}
+            >
+              <span
+                className={`h-1.5 w-1.5 rounded-full ${
+                  is_available ? 'animate-pulse bg-emerald-500' : 'bg-slate-400'
+                }`}
+              />
+              {is_available ? 'Available' : 'Unavailable'}
+            </span>
+          </div>
+        </div>
+
+        {/* ================= BODY ================= */}
+        <div className="flex flex-1 flex-col p-5 pt-0 sm:p-6 sm:pt-0">
+          {/* Name + Title */}
+          <div className="relative -mt-5">
+            <div className="flex flex-wrap items-center gap-2">
+              <h3 className="text-lg font-bold leading-tight text-slate-900 transition-colors group-hover:text-teal-600">
+                {user?.full_name}
+              </h3>
+              {is_verified && (
+                <CheckCircle2 className="h-4 w-4 shrink-0 text-teal-600" />
+              )}
+            </div>
+            <p className="mt-0.5 truncate text-xs text-slate-500">
+              {specializations?.[0]?.name || 'Mental Health Professional'}
+            </p>
           </div>
 
-          {/* ================= META INFO ================= */}
-          <div className="grid grid-cols-2 gap-2 border-t border-b border-slate-100/80 py-3 mb-4">
-            
-            <div className="flex items-center gap-2 text-xs text-slate-500">
-              <Clock className="w-3.5 h-3.5 text-teal-500 shrink-0" />
-              <span className="truncate">{experience_years}+ Years</span>
+          {/* Specialization chips */}
+          {specializations?.length > 0 && (
+            <div className="mt-3 flex flex-wrap gap-1">
+              {specializations.slice(0, 2).map((s) => (
+                <Badge
+                  key={s.id}
+                  className="rounded-full border-none bg-slate-100 px-2 py-0 text-[10px] font-medium text-slate-600"
+                >
+                  {s.name}
+                </Badge>
+              ))}
+              {specializations.length > 2 && (
+                <Badge className="rounded-full border-none bg-slate-100 px-2 py-0 text-[10px] font-medium text-slate-400">
+                  +{specializations.length - 2}
+                </Badge>
+              )}
             </div>
+          )}
 
-            {location && (
-              <div className="flex items-center gap-2 text-xs text-slate-500">
-                <MapPin className="w-3.5 h-3.5 text-teal-500 shrink-0" />
-                <span className="truncate">{location}</span>
-              </div>
-            )}
-
-            {total_sessions > 0 && (
-              <div className="flex items-center gap-2 text-xs text-slate-500">
-                <Calendar className="w-3.5 h-3.5 text-teal-500 shrink-0" />
-                <span>{total_sessions}+ Sessions</span>
-              </div>
-            )}
+          {/* Meta strip */}
+          <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1.5 border-t border-slate-100 pt-4 text-xs text-slate-500">
+            <span className="flex min-w-0 items-center gap-1.5">
+              <Clock className="h-3.5 w-3.5 shrink-0 text-teal-500" />
+              <span className="truncate">{experience_years} yrs</span>
+            </span>
 
           </div>
 
-          {/* ================= PRICE & CTA ================= */}
-          <div className="flex items-center justify-between mb-4">
+          {/* Price */}
+          <div className="mt-4 flex items-center justify-between">
             <div className="flex items-baseline gap-1">
               <span className="text-xl font-bold text-slate-900">
                 ৳{consultation_fee}
@@ -160,57 +131,38 @@ export default function ConsultantCard({ consultant }) {
                 / session
               </span>
             </div>
-            
-            {/* Availability Badge */}
-            <Badge
-              variant={is_available ? 'success' : 'secondary'}
-              className={`text-[10px] font-medium rounded-full px-2.5 py-0.5 ${
-                is_available
-                  ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                  : 'bg-slate-100 text-slate-500'
+            <span
+              className={`text-[10px] font-semibold ${
+                is_available ? 'text-emerald-600' : 'text-slate-400'
               }`}
             >
-              {is_available ? (
-                <span className="flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
-                  Available
-                </span>
-              ) : (
-                'Unavailable'
-              )}
-            </Badge>
+              {is_available ? 'Accepting bookings' : 'Not available'}
+            </span>
           </div>
 
-          {/* ================= BUTTONS ================= */}
-          <div className="flex gap-3">
-            {/* View Profile - Outline */}
+          {/* Buttons — pushed to bottom so uneven content doesn't misalign cards in a grid */}
+          <div className="mt-auto flex gap-3 pt-4">
             <Link href={`/consultant/${slug}`} className="flex-1">
-              <Button 
-                variant="outline" 
-                className="w-full rounded-xl border-slate-200 text-slate-600 hover:bg-slate-50 hover:border-teal-300 hover:text-teal-700 transition-all duration-300 text-sm font-medium h-11"
+              <Button
+                variant="outline"
+                className="h-11 w-full rounded-xl border-slate-200 text-sm font-medium text-slate-600 transition-all duration-300 hover:border-teal-300 hover:bg-slate-50 hover:text-teal-700"
               >
                 View Profile
               </Button>
             </Link>
-
-            {/* Book Now - Primary Gradient */}
             <Link href={`/booking/${slug}`} className="flex-1">
-              <Button 
-                className="w-full rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 text-white shadow-md shadow-teal-600/20 hover:shadow-lg hover:shadow-teal-600/30 transition-all duration-300 text-sm font-medium h-11 group/btn"
+              <Button
+                disabled={!is_available}
+                className="group/btn h-11 w-full rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 text-sm font-medium text-white shadow-md shadow-teal-600/20 transition-all duration-300 hover:from-teal-700 hover:to-emerald-700 hover:shadow-lg hover:shadow-teal-600/30 disabled:cursor-not-allowed disabled:from-slate-200 disabled:to-slate-200 disabled:text-slate-400 disabled:shadow-none"
               >
-                <span>Book Now</span>
-                <ChevronRight className="w-4 h-4 ml-1 transition-transform group-hover/btn:translate-x-1" />
+                <span>{is_available ? 'Book Now' : 'Fully Booked'}</span>
+                {is_available && (
+                  <ChevronRight className="ml-1 h-4 w-4 transition-transform group-hover/btn:translate-x-1" />
+                )}
               </Button>
             </Link>
           </div>
-
-          {/* Trust micro-badge */}
-          <div className="mt-3 flex items-center justify-center gap-1 text-[10px] text-slate-400">
-            <Sparkles className="w-3 h-3 text-teal-400" />
-            <span>Secure booking • 100% confidential</span>
-          </div>
-
-        </CardContent>
+        </div>
       </Card>
     </motion.div>
   );
