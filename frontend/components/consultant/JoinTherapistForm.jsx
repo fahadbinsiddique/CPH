@@ -118,6 +118,9 @@ export default function JoinTherapistForm({ mode = 'modal' }) {
   const [submitted, setSubmitted] = useState(false)
   const [successMessage, setSuccessMessage] = useState('')
   const [specializationsList, setSpecializationsList] = useState([])
+  const [specLoading, setSpecLoading] = useState(true)
+  const [specError, setSpecError] = useState('')
+  const [specRetry, setSpecRetry] = useState(0)
   const [showPassword, setShowPassword] = useState(false)
 
   useEffect(() => {
@@ -128,12 +131,15 @@ export default function JoinTherapistForm({ mode = 'modal' }) {
         if (active) setSpecializationsList(res.data || res || [])
       })
       .catch(() => {
-        if (active) setSpecializationsList([])
+        if (active) setSpecError('Could not load specializations. Please retry.')
+      })
+      .finally(() => {
+        if (active) setSpecLoading(false)
       })
     return () => {
       active = false
     }
-  }, [])
+  }, [specRetry])
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: 0 })
@@ -636,9 +642,28 @@ export default function JoinTherapistForm({ mode = 'modal' }) {
                             aria-label="Specializations"
                             className="cph-scroll max-h-52 overflow-y-auto rounded-xl border border-slate-200 bg-white"
                           >
-                            {specializationsList.length === 0 ? (
+                            {specLoading ? (
                               <span className="flex items-center justify-center px-4 py-6 text-sm text-slate-400">
                                 Loading specializations...
+                              </span>
+                            ) : specError ? (
+                              <div className="flex flex-col items-center justify-center gap-2 px-4 py-6 text-center">
+                                <span className="text-sm text-red-600">{specError}</span>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setSpecLoading(true)
+                                    setSpecError('')
+                                    setSpecRetry((n) => n + 1)
+                                  }}
+                                  className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 transition-colors hover:border-teal-300 hover:bg-teal-50 hover:text-teal-700"
+                                >
+                                  Retry
+                                </button>
+                              </div>
+                            ) : specializationsList.length === 0 ? (
+                              <span className="flex items-center justify-center px-4 py-6 text-sm text-slate-400">
+                                No specializations available yet. Please try again later.
                               </span>
                             ) : (
                               specializationsList.map((spec) => {

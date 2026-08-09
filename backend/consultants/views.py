@@ -15,6 +15,7 @@ from .serializers import (
     AvailabilitySerializer,
     ConsultantCreateSerializer,
     ConsultantCreateUpdateSerializer,
+    ConsultantMeSerializer,
     SpecializationSerializer,
 )
 
@@ -48,6 +49,55 @@ class ConsultantDetailView(generics.RetrieveAPIView):
     def get_queryset(self):
         return Consultant.objects.select_related('user').prefetch_related(
             'specializations', 'availability'
+        )
+
+
+class ConsultantMeView(APIView):
+    """
+    Authenticated "become a consultant" flow.
+
+    GET  /api/consultants/me/  -> whether the current user has a profile.
+    POST /api/consultants/me/  -> create or update the current user's consultant
+                                  profile (upsert). Never creates a second user;
+                                  a 'client' role is upgraded to 'consultant'.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        consultant = Consultant.objects.filter(user=request.user).first()
+        if consultant is None:
+            return Response({'has_profile': False, 'data': None})
+        serializer = ConsultantDetailSerializer(consultant)
+        return Response({'has_profile': True, 'data': serializer.data})
+
+    def post(self, request):
+        consultant = Consultant.objects.filter(user=request.user).first()
+        created = consultant is None
+
+        serializer = ConsultantMeSerializer(
+            instance=consultant,
+            data=request.data,
+            partial=True,
+            context={'user': request.user},
+        )
+        serializer.is_valid(raise_exception=True)
+        consultant = serializer.save()
+
+        # Upgrade a plain client account to consultant on first profile creation.
+        if request.user.role == 'client':
+            request.user.role = 'consultant'
+            request.user.save(update_fields=['role'])
+
+        return Response(
+            {
+                "message": (
+                    "Your consultant profile has been created. Awaiting admin approval."
+                    if created
+                    else "Your consultant profile has been updated."
+                ),
+                "data": ConsultantDetailSerializer(consultant).data,
+            },
+            status=status.HTTP_201_CREATED if created else status.HTTP_200_OK,
         )
 
 

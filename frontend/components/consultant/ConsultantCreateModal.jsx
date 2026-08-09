@@ -25,6 +25,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { consultantService } from '@/services/consultantService';
+import useAuthStore from '@/store/authStore';
 
 // Zod validation schema
 const formSchema = z.object({
@@ -85,12 +86,16 @@ export function ConsultantCreateModal({ onSuccess }) {
         formData.append('profile_image', values.profile_image);
       }
 
-      const response = await consultantService.create(formData);
-      
+      const response = await consultantService.meCreate(formData);
+
       toast.success(response.data?.message || 'Profile created successfully!');
       setOpen(false);
       form.reset();
-      
+
+      // Refresh the stored user so the new consultant role applies immediately
+      // to the dashboard navigation without needing a re-login.
+      useAuthStore.getState().fetchMe();
+
       if (onSuccess) onSuccess(response.data);
     } catch (error) {
       console.error(error);
@@ -121,7 +126,8 @@ export function ConsultantCreateModal({ onSuccess }) {
         <DialogHeader>
           <DialogTitle>Create Consultant Profile</DialogTitle>
           <DialogDescription>
-            Fill up your professional details. Your account will be upgraded automatically.
+            Fill in your professional details to join as a therapist. Your current
+            account is upgraded to a consultant role — no second account is created.
           </DialogDescription>
         </DialogHeader>
 

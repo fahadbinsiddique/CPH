@@ -4,6 +4,7 @@ from .views import (
     ConsultantListView,
     ConsultantDetailView,
     ConsultantCreateView,
+    ConsultantMeView,
     SpecializationListView,
     ConsultantMyAvailabilityView,
     AvailabilityDeleteView,
@@ -26,6 +27,7 @@ urlpatterns = [
     path('specializations/', SpecializationListView.as_view(), name='specialization-list'),
     path('availability/', ConsultantMyAvailabilityView.as_view(), name='availability'),
     path('availability/<int:pk>/', AvailabilityDeleteView.as_view(), name='availability-delete'),
+    path('me/', ConsultantMeView.as_view(), name='consultant-me'),
 
     # Admin — Consultant Management Routes
     

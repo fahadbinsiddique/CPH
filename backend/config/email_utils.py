@@ -1,5 +1,6 @@
 import resend
 import os
+import threading
 from django.conf import settings
 
 resend.api_key = os.getenv('RESEND_API_KEY')
@@ -19,6 +20,17 @@ def send_email(to, subject, html):
     except Exception as e:
         print(f"Email send failed: {e}")
         return False
+
+
+def send_email_async(to, subject, html):
+    """
+    Fire-and-forget email send so the HTTP response is never blocked by the
+    external Resend call. Errors are logged inside the worker thread only.
+    """
+    def _worker():
+        send_email(to, subject, html)
+
+    threading.Thread(target=_worker, daemon=True).start()
 
 
 def booking_confirmation_email(appointment):
@@ -129,7 +141,9 @@ def welcome_email(user):
 
 
 # consultants/services.py
+
 def send_consultant_welcome_email(to_email, full_name, temp_password):
+    """Credentials email sent when an ADMIN creates a consultant account."""
     subject = "Welcome to Centre for Psychological Health - Account Credentials"
     
     html = f"""
@@ -152,5 +166,54 @@ def send_consultant_welcome_email(to_email, full_name, temp_password):
     </div>
     """
     
+    return send_email(to_email, subject, html)
+
+
+def send_consultant_welcome_email_async(to_email, full_name, temp_password):
+    """Non-blocking variant used by the admin create flow."""
+    send_email_async(
+        to_email,
+        "Welcome to Centre for Psychological Health - Account Credentials",
+        (
+            f"Dear <strong>{full_name or 'Consultant'}</strong>,<br/><br/>"
+            f"An administrator has created a Consultant account for you.<br/>"
+            f"<strong>Login Email:</strong> {to_email}<br/>"
+            f"<strong>Temporary Password:</strong> {temp_password}<br/><br/>"
+            f"Please log in and change your password as soon as possible."
+        ),
+    )
+
+
+def send_consultant_application_received_email(to_email, full_name):
+    """Confirmation email for SELF-REGISTERED consultants (no password included)."""
+    subject = "Application Received - Centre for Psychological Health"
+    
+    html = f"""
+    <div style="font-family: sans-serif; max-width: 500px; margin: 0 auto;">
+        <div style="background: #2563eb; padding: 24px; text-align: center; border-radius: 12px 12px 0 0;">
+            <h1 style="color: white; margin: 0; font-size: 20px;">Centre for Psychological Health</h1>
+        </div>
+        <div style="background: #f8fafc; padding: 24px; border-radius: 0 0 12px 12px;">
+            <h2 style="color: #1e293b; font-size: 18px;">Application Received 🎉</h2>
+            <p style="color: #475569;">Dear <strong>{full_name or 'Therapist'}</strong>,</p>
+            <p style="color: #475569;">
+                Thank you for applying to join our therapist network. Your information has been received
+                and our team will review it shortly.
+            </p>
+            <p style="color: #475569; font-size: 14px;">
+                You can log in with the email and password you provided. Once your application is approved,
+                your profile will become visible to patients.
+            </p>
+        </div>
+    </div>
+    """
     
     return send_email(to_email, subject, html)
+
+
+def send_consultant_application_received_email_async(to_email, full_name):
+    """Non-blocking variant used by the public self-registration flow."""
+    def _worker():
+        send_consultant_application_received_email(to_email, full_name)
+
+    threading.Thread(target=_worker, daemon=True).start()

@@ -55,6 +55,21 @@ export default function SettingsPage() {
     <div className="max-w-2xl space-y-5">
       <h1 className="text-2xl font-bold text-slate-800">Settings</h1>
 
+      {/* Consultant account — create/update the current user's therapist profile */}
+      <Card className="border-0 shadow-sm rounded-2xl">
+        <CardContent className="p-6">
+          <div className="flex items-center gap-2 mb-2">
+            <Shield className="w-4 h-4 text-slate-500" />
+            <h2 className="font-semibold text-slate-800">Consultant Account</h2>
+          </div>
+          <p className="text-xs text-slate-400 mb-4">
+            Fill in your professional details to join as a therapist. Your current
+            account is upgraded to a consultant role — no second account is created.
+          </p>
+          <ConsultantCreateModal />
+        </CardContent>
+      </Card>
+
       {/* Change password */}
       <Card className="border-0 shadow-sm rounded-2xl">
         <CardContent className="p-6">
@@ -148,7 +163,6 @@ export default function SettingsPage() {
         </CardContent>
       </Card>
 
-      {/* Notification preferences — UI only */}
       <Card className="border-0 shadow-sm rounded-2xl">
         <CardContent className="p-6">
           <div className="flex items-center gap-2 mb-5">
@@ -157,11 +171,22 @@ export default function SettingsPage() {
           </div>
 
           <div className="space-y-3 ">
-            <ConsultantCreateModal
-              onSuccess={(data) => {
-                console.log('Upgraded data:', data)
-              }}
-            />
+            {[
+              { label: 'Appointment reminders', desc: 'Get notified 1 hour before sessions' },
+              { label: 'Booking confirmations', desc: 'Email when appointments are confirmed' },
+              { label: 'New messages', desc: 'Notify on new consultant messages' },
+            ].map(({ label, desc }) => (
+              <div key={label} className="flex items-center justify-between py-2">
+                <div>
+                  <p className="text-sm font-medium text-slate-700">{label}</p>
+                  <p className="text-xs text-slate-400">{desc}</p>
+                </div>
+                <label className="relative inline-flex cursor-pointer">
+                  <input type="checkbox" defaultChecked className="sr-only peer" />
+                  <div className="w-9 h-5 bg-slate-200 peer-focus:ring-2 peer-focus:ring-blue-300 rounded-full peer peer-checked:bg-blue-600 after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-4" />
+                </label>
+              </div>
+            ))}
           </div>
         </CardContent>
       </Card>

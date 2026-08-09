@@ -38,7 +38,7 @@ class Consultant(models.Model):
         if not self.slug:
             # Append a short UUID suffix to the slug to keep it unique.
             base_slug = slugify(self.user.full_name or "consultant")
-            unique_suffix = uuid.uuid4().hex[:6]
+            unique_suffix = uuid.uuid4().hex[:8]
             self.slug = f"{base_slug}-{unique_suffix}"
         super().save(*args, **kwargs)
 

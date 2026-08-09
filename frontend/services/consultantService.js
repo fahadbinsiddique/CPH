@@ -13,6 +13,13 @@ export const consultantService = {
       },
     }),
 
+  // Authenticated "become a consultant" flow (upsert on the current user).
+  meGet: () => api.get('/api/consultants/me/'),
+  meCreate: (data) =>
+    api.post('/api/consultants/me/', data, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    }),
+
   // Availability Routes
   getAvailability: () => api.get('/api/consultants/availability/'),
   deleteAvailability: (id) => api.delete(`/api/consultants/availability/${id}/`),
