@@ -28,7 +28,7 @@ export const metadata = {
   description: 'A modern mental wellness platform',
 }
 
-export default function RootLayout({ children }) {
+export default function RootLayout({ children, modal }) {
   return (
     <html
       lang="en"
@@ -37,7 +37,10 @@ export default function RootLayout({ children }) {
     >
       <body className="min-h-full flex flex-col">
         <Navbar />
-        <MotionProvider>{children}</MotionProvider>
+        <MotionProvider>
+          {children}
+          {modal}
+        </MotionProvider>
         <Toaster position="top-center" richColors closeButton />
         <Footer />
       </body>

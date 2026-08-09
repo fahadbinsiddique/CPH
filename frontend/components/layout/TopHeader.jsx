@@ -2,10 +2,20 @@
 
 import { Phone, Mail, Clock, MapPin, UserPlus, ChevronDown, ChevronUp } from 'lucide-react'
 import Link from 'next/link'
+import { usePathname, useRouter } from 'next/navigation'
 import { useState } from 'react'
 
 const TopHeader = () => {
   const [showDetails, setShowDetails] = useState(false)
+  const router = useRouter()
+  const pathname = usePathname()
+
+  // Opens the route-aware "Join as a Therapist" modal over the current page
+  // without a full page navigation (the intercepting route renders the modal).
+  const handleJoinAsTherapist = () => {
+    if (pathname === '/join-as-therapist') return
+    router.push('/join-as-therapist', { scroll: false })
+  }
 
   return (
     <div className="relative bg-gradient-to-r from-teal-900 via-teal-800 to-emerald-800 text-white overflow-hidden">
@@ -73,15 +83,16 @@ const TopHeader = () => {
             <span className="text-white/30 hidden sm:inline">|</span>
 
             {/* Join as Therapist Link */}
-            <Link
-              href="/join-as-therapist"
-              className="flex items-center gap-1.5 bg-emerald-600/60 hover:bg-emerald-600/80 px-2.5 py-1 rounded-full transition-colors border border-emerald-400/30"
+            <button
+              type="button"
+              onClick={handleJoinAsTherapist}
+              className="flex items-center gap-1.5 bg-emerald-600/60 hover:bg-emerald-600/80 px-2.5 py-1 rounded-full transition-colors border border-emerald-400/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-teal-900"
             >
               <UserPlus size={12} className="text-emerald-200" />
               <span className="text-[11px] sm:text-xs text-white font-medium whitespace-nowrap">
                 Join as Therapist
               </span>
-            </Link>
+            </button>
           </div>
         </div>
 
