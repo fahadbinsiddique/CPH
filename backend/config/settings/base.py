@@ -137,6 +137,8 @@ SIMPLE_JWT = {
     'AUTH_COOKIE_HTTP_ONLY': True,
 }
 
+GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID')
+
 CSRF_TRUSTED_ORIGINS = [
     origin.strip()
     for origin in os.getenv(

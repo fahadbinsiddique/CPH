@@ -4,6 +4,7 @@ import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
 import MotionProvider from '@/components/layout/MotionProvider'
 import { Toaster } from 'sonner'
+import GoogleOneTap from '@/components/auth/GoogleOneTap'
 
 // Geist Sans for body and general text.
 const geistSans = Geist({
@@ -38,6 +39,7 @@ export default function RootLayout({ children, modal }) {
       <body className="min-h-full flex flex-col">
         <Navbar />
         <MotionProvider>
+          <GoogleOneTap />
           {children}
           {modal}
         </MotionProvider>

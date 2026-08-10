@@ -280,3 +280,57 @@ class ChangePasswordView(APIView):
         user.set_password(new_password)
         user.save()
         return Response({'message': 'Password updated successfully.'})
+
+
+from google.oauth2 import id_token
+from google.auth.transport import requests
+
+
+User = get_user_model()
+
+class GoogleOneTapLoginView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        token = request.data.get('token')
+        if not token:
+            return Response({'error': 'Google token is required'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            
+            id_info = id_token.verify_oauth2_token(
+                token, 
+                requests.Request(), 
+                settings.GOOGLE_CLIENT_ID
+            )
+
+            email = id_info.get('email')
+            first_name = id_info.get('given_name', '')
+            last_name = id_info.get('family_name', '')
+            full_name = f"{first_name} {last_name}".strip()
+
+            
+            user, created = User.objects.get_or_create(email=email, defaults={
+                'username': email,
+                'first_name': first_name,
+                'last_name': last_name,
+                'full_name': full_name or email.split('@')[0],
+                'is_active': True
+            })
+
+            
+            refresh = RefreshToken.for_user(user)
+            access = refresh.access_token
+
+            
+            response = Response({
+                "success": True,
+                "message": "Google login successful",
+                "user": UserSerializer(user).data,
+            }, status=status.HTTP_200_OK)
+
+            
+            return set_auth_cookies(response, access, refresh)
+
+        except ValueError:
+            return Response({'error': 'Invalid or expired Google token'}, status=status.HTTP_400_BAD_REQUEST)

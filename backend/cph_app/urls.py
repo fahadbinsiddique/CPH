@@ -13,6 +13,8 @@ urlpatterns = [
     path('logout/',LogoutView.as_view(),name="LogoutView"),
     path('refresh/', RefreshTokenView.as_view(), name='token_refresh'),
 
+    path('google/', GoogleOneTapLoginView.as_view(), name='google_one_tap_login'),
+
     path('me/', MeView.as_view(), name='me'),
     path('me/update/', UpdateProfileView.as_view(), name='profile-update'),
 
