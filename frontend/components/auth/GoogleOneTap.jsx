@@ -1,10 +1,13 @@
 'use client'
-import { useEffect, useCallback } from 'react'
+import { useEffect, useCallback, useRef } from 'react'
 import axios from 'axios'
+import useAuthStore from '@/store/authStore'
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000'
 
 export default function GoogleOneTap({ onLoginSuccess }) {
+  const nonceRef = useRef(null)
+
   const handleGoogleResponse = useCallback(
     async (response) => {
       try {
@@ -12,11 +15,16 @@ export default function GoogleOneTap({ onLoginSuccess }) {
           `${API_BASE_URL}/api/auth/google/`,
           {
             token: response.credential,
+            nonce: nonceRef.current,
           },
           { withCredentials: true },
         )
 
         if (res.status === 200 && res.data.success) {
+          // Keep the auth store in sync so the Navbar / guards reflect the session
+          // without requiring a full page reload.
+          await useAuthStore.getState().fetchMe()
+
           if (onLoginSuccess) {
             onLoginSuccess(res.data.user)
           } else {
@@ -49,9 +57,12 @@ export default function GoogleOneTap({ onLoginSuccess }) {
 
         script.onload = () => {
           if (window.google) {
+            nonceRef.current = crypto.randomUUID()
+
             window.google.accounts.id.initialize({
               client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
               callback: handleGoogleResponse,
+              nonce: nonceRef.current,
             })
 
             window.google.accounts.id.prompt()
@@ -64,6 +75,9 @@ export default function GoogleOneTap({ onLoginSuccess }) {
 
     return () => {
       isMounted = false
+      if (window.google?.accounts?.id) {
+        window.google.accounts.id.cancel()
+      }
     }
   }, [handleGoogleResponse])
 

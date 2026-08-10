@@ -120,8 +120,6 @@ class LoginView(generics.GenericAPIView):
             {
                 "success": True,
                 "message": "Login successful",
-                'access': str(refresh.access_token),
-                'refresh': str(refresh),
                 "user": UserSerializer(user).data,
             },
             status=status.HTTP_200_OK,
@@ -182,6 +180,14 @@ class RefreshTokenView(APIView):
 
         try:
             refresh = RefreshToken(refresh_token)
+
+            # Rotate the refresh token: blacklist the old one and mint a fresh
+            # refresh token, honoring ROTATE_REFRESH_TOKENS / BLACKLIST_AFTER_ROTATION.
+            if settings.SIMPLE_JWT.get('ROTATE_REFRESH_TOKENS', False):
+                old_refresh = RefreshToken(refresh_token)
+                old_refresh.blacklist()
+                refresh = RefreshToken.for_user(old_refresh.user)
+
             access = refresh.access_token
 
             response = Response(
@@ -199,6 +205,16 @@ class RefreshTokenView(APIView):
                 secure=jwt["AUTH_COOKIE_SECURE"],
                 samesite=jwt["AUTH_COOKIE_SAMESITE"],
                 max_age=60 * 60,
+            )
+
+            # Persist the rotated refresh token cookie so the next refresh works.
+            response.set_cookie(
+                key="refresh_token",
+                value=str(refresh),
+                httponly=jwt["AUTH_COOKIE_HTTP_ONLY"],
+                secure=jwt["AUTH_COOKIE_SECURE"],
+                samesite=jwt["AUTH_COOKIE_SAMESITE"],
+                max_age=7 * 24 * 60 * 60,
             )
 
             return response
@@ -284,6 +300,7 @@ class ChangePasswordView(APIView):
 
 from google.oauth2 import id_token
 from google.auth.transport import requests
+from google.auth.exceptions import GoogleAuthError
 
 
 User = get_user_model()
@@ -293,44 +310,61 @@ class GoogleOneTapLoginView(APIView):
 
     def post(self, request):
         token = request.data.get('token')
+        nonce = request.data.get('nonce')
+
         if not token:
             return Response({'error': 'Google token is required'}, status=status.HTTP_400_BAD_REQUEST)
 
+        if not nonce:
+            return Response({'error': 'Nonce is required'}, status=status.HTTP_400_BAD_REQUEST)
+
         try:
-            
             id_info = id_token.verify_oauth2_token(
-                token, 
-                requests.Request(), 
-                settings.GOOGLE_CLIENT_ID
+                token,
+                requests.Request(),
+                settings.GOOGLE_CLIENT_ID,
             )
+        except (ValueError, GoogleAuthError):
+            return Response({'error': 'Invalid or expired Google token'}, status=status.HTTP_400_BAD_REQUEST)
 
-            email = id_info.get('email')
-            first_name = id_info.get('given_name', '')
-            last_name = id_info.get('family_name', '')
-            full_name = f"{first_name} {last_name}".strip()
+        if id_info.get('iss') not in ('accounts.google.com', 'https://accounts.google.com'):
+            return Response({'error': 'Invalid token issuer'}, status=status.HTTP_400_BAD_REQUEST)
 
-            
-            user, created = User.objects.get_or_create(email=email, defaults={
+        if id_info.get('aud') != settings.GOOGLE_CLIENT_ID:
+            return Response({'error': 'Invalid token audience'}, status=status.HTTP_400_BAD_REQUEST)
+
+        if id_info.get('nonce') != nonce:
+            return Response({'error': 'Nonce mismatch'}, status=status.HTTP_400_BAD_REQUEST)
+
+        if not id_info.get('email'):
+            return Response({'error': 'Email is required'}, status=status.HTTP_400_BAD_REQUEST)
+
+        if not id_info.get('email_verified'):
+            return Response({'error': 'Unverified Google email'}, status=status.HTTP_400_BAD_REQUEST)
+
+        email = id_info.get('email')
+        first_name = id_info.get('given_name', '')
+        last_name = id_info.get('family_name', '')
+        full_name = f"{first_name} {last_name}".strip() or email.split('@')[0]
+
+        user, created = User.objects.get_or_create(
+            email=email,
+            defaults={
                 'username': email,
                 'first_name': first_name,
                 'last_name': last_name,
-                'full_name': full_name or email.split('@')[0],
-                'is_active': True
-            })
+                'full_name': full_name,
+                'is_active': True,
+            },
+        )
 
-            
-            refresh = RefreshToken.for_user(user)
-            access = refresh.access_token
+        refresh = RefreshToken.for_user(user)
+        access = refresh.access_token
 
-            
-            response = Response({
-                "success": True,
-                "message": "Google login successful",
-                "user": UserSerializer(user).data,
-            }, status=status.HTTP_200_OK)
+        response = Response({
+            "success": True,
+            "message": "Google login successful",
+            "user": UserSerializer(user).data,
+        }, status=status.HTTP_200_OK)
 
-            
-            return set_auth_cookies(response, access, refresh)
-
-        except ValueError:
-            return Response({'error': 'Invalid or expired Google token'}, status=status.HTTP_400_BAD_REQUEST)
+        return set_auth_cookies(response, access, refresh)
