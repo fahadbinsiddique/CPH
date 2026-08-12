@@ -267,11 +267,7 @@ export default function ConsultantProfilePage() {
                     <ChevronRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
                   </Button>
 
-                  {/* Trust badge */}
-                  <div className="mt-4 flex items-center justify-center gap-1.5 text-[11px] text-slate-400">
-                    <Sparkles className="w-3 h-3 text-teal-400" />
-                    <span>100% confidential & secure</span>
-                  </div>
+                 
                 </CardContent>
               </Card>
             </div>
@@ -324,21 +320,7 @@ export default function ConsultantProfilePage() {
                           {bio || 'No biography has been provided yet.'}
                         </p>
                       </div>
-                      {/* Quick trust indicators */}
-                      <div className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-3 pt-6 border-t border-slate-100">
-                        <div className="flex items-center gap-2 text-sm text-slate-600">
-                          <CheckCircle2 className="w-4 h-4 text-teal-500" />
-                          <span>Licensed professional</span>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm text-slate-600">
-                          <Shield className="w-4 h-4 text-teal-500" />
-                          <span>Verified credentials</span>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm text-slate-600">
-                          <Heart className="w-4 h-4 text-teal-500" />
-                          <span>Compassionate care</span>
-                        </div>
-                      </div>
+                     
                     </CardContent>
                   </Card>
                 </motion.div>

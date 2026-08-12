@@ -126,9 +126,7 @@ export default function RegisterDrawer({ isOpen, setIsOpen, onSuccessRedirect })
             <SheetTitle className="text-2xl font-bold tracking-tight text-slate-900 font-sans">
               Create Account
             </SheetTitle>
-            <SheetDescription className="mt-1.5 text-sm text-slate-500 max-w-xs leading-relaxed">
-              Join Center for Psychological Health to begin your mental wellness journey.
-            </SheetDescription>
+          
           </div>
 
           {/* Decorative Divider */}

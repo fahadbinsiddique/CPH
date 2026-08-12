@@ -105,9 +105,7 @@ export default function LoginDrawer({ isOpen, setIsOpen, onRedirect }) {
             <SheetTitle className="text-2xl font-bold tracking-tight text-slate-900 font-sans">
               Centre for Psychological Health
             </SheetTitle>
-            <SheetDescription className="mt-1.5 text-sm text-slate-500 max-w-xs leading-relaxed">
-              Your secure space for mental wellness, professional guidance, and self-care.
-            </SheetDescription>
+            
           </div>
 
           {/* Decorative Divider */}
@@ -122,10 +120,7 @@ export default function LoginDrawer({ isOpen, setIsOpen, onRedirect }) {
 
           {/* Form Area */}
           <div className="mt-6">
-            <div className="mb-6">
-              <h2 className="text-xl font-bold text-slate-800 tracking-tight">Welcome</h2>
-              <p className="text-sm text-slate-500 mt-0.5">Please enter your details to access your dashboard.</p>
-            </div>
+           
 
             <form onSubmit={handleSubmit} className="space-y-5">
               {/* Email Input */}
