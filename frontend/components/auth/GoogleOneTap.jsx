@@ -2,6 +2,7 @@
 import { useEffect, useCallback, useRef } from 'react'
 import axios from 'axios'
 import useAuthStore from '@/store/authStore'
+import useUiStore from '@/store/uiStore'
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000'
 
@@ -24,6 +25,9 @@ export default function GoogleOneTap({ onLoginSuccess }) {
           // Keep the auth store in sync so the Navbar / guards reflect the session
           // without requiring a full page reload.
           await useAuthStore.getState().fetchMe()
+
+          // Close the login drawer in case the user was prompted to log in in-place.
+          useUiStore.getState().closeLoginDrawer()
 
           if (onLoginSuccess) {
             onLoginSuccess(res.data.user)

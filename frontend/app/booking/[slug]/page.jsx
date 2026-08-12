@@ -28,6 +28,7 @@ import { Label } from '@/components/ui/label';
 import { consultantService } from '@/services/consultantService';
 import { appointmentService } from '@/services/appointmentService';
 import useAuthStore from '@/store/authStore';
+import { requireLogin } from '@/lib/authGate';
 
 // Extended time slots
 const ALL_SLOTS = [
@@ -102,7 +103,7 @@ export default function BookingPage() {
 
   useEffect(() => {
     if (!isAuthenticated) {
-      router.push('/');
+      requireLogin();
       return;
     }
     consultantService.getBySlug(slug)

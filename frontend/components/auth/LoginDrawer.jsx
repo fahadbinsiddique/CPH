@@ -19,10 +19,13 @@ import {
 
 import useAuthStore from '@/store/authStore';
 import Image from 'next/image';
+import { consumeResumePath } from '@/lib/authGate';
+import useUiStore from '@/store/uiStore';
 
 export default function LoginDrawer({ isOpen, setIsOpen, onRedirect }) {
   const router = useRouter();
   const { login, isLoading, error, clearError } = useAuthStore();
+  const closeLoginDrawer = useUiStore((s) => s.closeLoginDrawer);
 
   const [formData, setFormData] = useState({
     username: '',
@@ -56,20 +59,15 @@ export default function LoginDrawer({ isOpen, setIsOpen, onRedirect }) {
     if (result?.success) {
       toast.success("Login successfully!", 
             { description: "successfully Login with your secure credentials.",position: "top-right"}
-              
+               
         );
-      setIsOpen(false);
-      const role = result?.user?.role;
+      closeLoginDrawer();
 
-      switch (role) {
-        case 'admin':
-          router.push('/dashboard/');
-          break;
-        case 'consultant':
-          router.push('/dashboard/');
-          break;
-        default:
-          router.push('/dashboard');
+      // Seamlessly resume the action the user intended to perform (e.g. booking).
+      const resumePath = consumeResumePath();
+      if (resumePath) {
+        router.push(resumePath);
+        return;
       }
     } else {
       setFormError(

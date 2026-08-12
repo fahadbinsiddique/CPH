@@ -1,13 +1,14 @@
 'use client';
 
 import { useEffect, useState, useRef } from 'react';
-import { useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
 import useAuthStore from '@/store/authStore';
+import useUiStore from '@/store/uiStore';
 
 export default function AuthGuard({ children, allowedRoles = [] }) {
-  const router = useRouter();
   const { isAuthenticated, user, fetchMe } = useAuthStore();
+  const openLoginDrawer = useUiStore((s) => s.openLoginDrawer);
   const [isHydrated, setIsHydrated] = useState(false);
   const hasFetched = useRef(false);
 
@@ -38,24 +39,28 @@ export default function AuthGuard({ children, allowedRoles = [] }) {
       try {
         await fetchMe();
         const latest = useAuthStore.getState();
-        
+
         if (!latest.isAuthenticated) {
-          window.location.href = '/?message=login_required';
+          // Stay on the current page and prompt the user to log in in-place.
+          toast.error('Please log in to proceed', { id: 'auth-toast' });
+          openLoginDrawer();
           return;
         }
 
         if (allowedRoles.length > 0 && !allowedRoles.includes(latest.user?.role)) {
-          // Redirect to the home page when the role does not match the allowed set.
-          window.location.href = '/?message=unauthorized';
+          toast.error("You don't have permission to view this page!", {
+            id: 'auth-toast',
+          });
         }
         } catch {
-          // Redirect to login when the request fails or the session has expired.
-          router.replace('/?message=login_required');
+          // Prompt the user to log back in when the session check fails or expired.
+          toast.error('Please log in to proceed', { id: 'auth-toast' });
+          openLoginDrawer();
         }
     };
 
     verify();
-  }, [isHydrated, fetchMe, router, allowedRoles]);
+  }, [isHydrated, fetchMe, openLoginDrawer, allowedRoles]);
 
   // Lock the screen with a loading spinner until the auth state is fully ready.
   // eslint-disable-next-line react-hooks/refs

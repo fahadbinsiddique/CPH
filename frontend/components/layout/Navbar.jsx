@@ -15,14 +15,15 @@ import Link from 'next/link'
 import LoginDrawer from '../auth/LoginDrawer'
 import RegisterDrawer from '../auth/RegisterDrawer'
 import useAuthStore from '@/store/authStore'
+import useUiStore from '@/store/uiStore'
 
 const Navbar = () => {
   const router = useRouter()
   const pathname = usePathname()
   const { user, logout, isAuthenticated } = useAuthStore()
+  const { isLoginOpen, openLoginDrawer, closeLoginDrawer } = useUiStore()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
-  const [isLoginOpen, setIsLoginOpen] = useState(false)
   const [isRegisterOpen, setIsRegisterOpen] = useState(false)
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const dropdownRef = useRef(null)
@@ -65,7 +66,7 @@ const Navbar = () => {
 
   const handleAuth = (action) => {
     if (action === 'signin') {
-      setIsLoginOpen(true)
+      openLoginDrawer()
       setMobileMenuOpen(false)
     } else if (action === 'signup') {
       setIsRegisterOpen(true)
@@ -365,9 +366,9 @@ const Navbar = () => {
 
         <LoginDrawer
           isOpen={isLoginOpen}
-          setIsOpen={setIsLoginOpen}
+          setIsOpen={closeLoginDrawer}
           onRedirect={() => {
-            setIsLoginOpen(false)
+            closeLoginDrawer()
             setIsRegisterOpen(true)
           }}
         />
@@ -375,8 +376,7 @@ const Navbar = () => {
           isOpen={isRegisterOpen}
           setIsOpen={setIsRegisterOpen}
           onSuccessRedirect={() => {
-            setIsRegisterOpen(false)
-            setIsLoginOpen(true)
+            openLoginDrawer()
           }}
         />
       </nav>

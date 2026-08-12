@@ -1,3 +1,5 @@
+'use client';
+
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
@@ -11,8 +13,11 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import useAuthStore from '@/store/authStore';
+import { requireLogin } from '@/lib/authGate';
 
 export default function ConsultantCard({ consultant }) {
+  const { isAuthenticated } = useAuthStore();
   const {
     slug,
     user,
@@ -150,7 +155,16 @@ export default function ConsultantCard({ consultant }) {
                 View Profile
               </Button>
             </Link>
-            <Link href={`/booking/${slug}`} className="flex-1">
+            <Link
+              href={`/booking/${slug}`}
+              className="flex-1"
+              onClick={(e) => {
+                if (!isAuthenticated) {
+                  e.preventDefault();
+                  requireLogin({ resumePath: `/booking/${slug}` });
+                }
+              }}
+            >
               <Button
                 disabled={!is_available}
                 className="group/btn h-11 w-full rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 text-sm font-medium text-white shadow-md shadow-teal-600/20 transition-all duration-300 hover:from-teal-700 hover:to-emerald-700 hover:shadow-lg hover:shadow-teal-600/30 disabled:cursor-not-allowed disabled:from-slate-200 disabled:to-slate-200 disabled:text-slate-400 disabled:shadow-none"

@@ -28,6 +28,8 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { consultantService } from '@/services/consultantService';
+import useAuthStore from '@/store/authStore';
+import { requireLogin } from '@/lib/authGate';
 
 // Premium Animation Variants
 const containerVariants = {
@@ -51,6 +53,7 @@ const fadeInUp = {
 export default function ConsultantProfilePage() {
   const { slug } = useParams();
   const router = useRouter();
+  const { isAuthenticated } = useAuthStore();
   const [consultant, setConsultant] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('bio'); // bio | schedule | research
@@ -251,7 +254,13 @@ export default function ConsultantProfilePage() {
                   {/* CTA Button */}
                   <Button
                     className="w-full mt-6 bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 text-white rounded-xl shadow-lg shadow-teal-600/20 transition-all duration-300 group"
-                    onClick={() => router.push(`/booking/${slug}`)}
+                    onClick={() => {
+                      if (!isAuthenticated) {
+                        requireLogin({ resumePath: `/booking/${slug}` });
+                        return;
+                      }
+                      router.push(`/booking/${slug}`);
+                    }}
                   >
                     <Calendar className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform" />
                     Book an Appointment
