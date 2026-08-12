@@ -5,7 +5,8 @@ from .views import (
     AppointmentDetailView,
     AppointmentStatusUpdateView,
     BookedSlotsView,
-    AdminStatsView
+    AdminStatsView,
+    AdminAnalyticsView,
 )
 
 urlpatterns = [
@@ -16,4 +17,5 @@ urlpatterns = [
     path('booked-slots/<int:consultant_id>/', BookedSlotsView.as_view(), name='booked-slots'),
 
      path('admin/stats/', AdminStatsView.as_view(), name='admin-stats'),
+     path('admin/analytics/', AdminAnalyticsView.as_view(), name='admin-analytics'),
 ]

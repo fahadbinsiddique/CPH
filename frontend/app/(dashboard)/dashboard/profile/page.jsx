@@ -2,21 +2,19 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Loader2, 
-  Save, 
-  User, 
-  Mail, 
-  CheckCircle, 
+import {
+  Loader2,
+  Save,
+  User,
+  Mail,
+  CheckCircle,
   AlertCircle,
   Sparkles,
   Shield,
   Heart,
   Camera,
   Edit2,
-  ChevronRight,
   Calendar,
-  Clock,
   Award,
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
@@ -25,25 +23,11 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import PageHeader from '@/components/dashboard/ui/PageHeader';
 import useAuthStore from '@/store/authStore';
 import api from '@/lib/api';
-
-const containerVariants = {
-  hidden: { opacity: 0 },
-  show: {
-    opacity: 1,
-    transition: { staggerChildren: 0.06, delayChildren: 0.1 },
-  },
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 15 },
-  show: {
-    opacity: 1,
-    y: 0,
-    transition: { type: 'spring', stiffness: 300, damping: 24 },
-  },
-};
+import { containerVariants, itemVariants } from '@/lib/motion';
+import { getRoleStyle, getInitials, ROLE_LABEL } from '@/lib/roles';
 
 export default function ProfilePage() {
   const { user, fetchMe } = useAuthStore();
@@ -62,6 +46,8 @@ export default function ProfilePage() {
       });
     }
   }, [user]);
+
+  const roleStyle = getRoleStyle(user?.role);
 
   const handleChange = (e) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -92,65 +78,22 @@ export default function ProfilePage() {
     }
   };
 
-  // Get role color
-  const roleColors = {
-    admin: 'from-purple-500 to-violet-600',
-    consultant: 'from-indigo-500 to-blue-600',
-    client: 'from-teal-500 to-emerald-600',
-  };
-
-  const roleBadgeColors = {
-    admin: 'bg-purple-50 text-purple-700 border-purple-200',
-    consultant: 'bg-indigo-50 text-indigo-700 border-indigo-200',
-    client: 'bg-teal-50 text-teal-700 border-teal-200',
-  };
-
-  const roleColor = roleColors[user?.role] || roleColors.client;
-  const roleBadge = roleBadgeColors[user?.role] || roleBadgeColors.client;
-
-  // Get initials
-  const getInitials = (name) => {
-    if (!name) return 'U';
-    return name
-      .split(' ')
-      .map((n) => n[0])
-      .join('')
-      .toUpperCase()
-      .slice(0, 2);
-  };
-
   return (
-    <motion.div
-      variants={containerVariants}
-      initial="hidden"
-      animate="show"
-      className="max-w-3xl"
-    >
-      {/* Header */}
-      <motion.div variants={itemVariants} className="mb-6">
-        <div className="flex items-center gap-2 mb-1">
-          <Badge className="bg-teal-50 text-teal-700 border-teal-200">
-            <Sparkles className="w-3 h-3 mr-1" />
-            My Profile
-          </Badge>
-        </div>
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
-          Account Settings
-        </h1>
-        <p className="text-sm text-slate-500 font-medium mt-0.5">
-          Manage your personal information and account preferences.
-        </p>
-      </motion.div>
+    <motion.div variants={containerVariants} initial="hidden" animate="show" className="max-w-3xl space-y-6">
+      <PageHeader
+        badge="My Profile"
+        badgeIcon={Sparkles}
+        title="Account Settings"
+        subtitle="Manage your personal information and account preferences."
+      />
 
       <motion.div variants={itemVariants}>
-        <Card className="border border-slate-200/60 bg-white/80 backdrop-blur-sm shadow-sm hover:shadow-xl hover:border-teal-500/20 rounded-2xl overflow-hidden transition-all duration-500">
-          {/* Top gradient accent */}
-          <div className={`h-1 bg-gradient-to-r ${roleColor} scale-x-0 group-hover:scale-x-100 transition-transform duration-700 origin-left`} />
+        <Card className="group dash-card dash-card-hover relative overflow-hidden">
+          <div className="dash-accent" />
 
           <CardContent className="p-6 sm:p-8">
             {/* Profile Header */}
-            <div className="flex flex-col sm:flex-row items-center gap-6 pb-8 border-b border-slate-200/60">
-              {/* Avatar with edit overlay */}
+            <div className="flex flex-col items-center gap-6 border-b border-slate-200/60 pb-8 sm:flex-row">
               <div className="relative">
                 <motion.div
                   whileHover={{ scale: 1.05 }}
@@ -159,40 +102,38 @@ export default function ProfilePage() {
                   onHoverEnd={() => setIsHoveringAvatar(false)}
                   className="relative"
                 >
-                  <Avatar className="w-24 h-24 shadow-lg ring-4 ring-teal-50/80">
+                  <Avatar className="h-24 w-24 shadow-lg ring-4 ring-teal-50/80">
                     <AvatarFallback
-                      className={`bg-gradient-to-br ${roleColor} text-white font-bold text-3xl shadow-inner`}
+                      className={`bg-gradient-to-br text-3xl font-bold text-white shadow-inner ${roleStyle.gradient}`}
                     >
                       {getInitials(user?.full_name)}
                     </AvatarFallback>
                   </Avatar>
                   {isHoveringAvatar && (
-                    <div className="absolute inset-0 bg-black/30 rounded-full flex items-center justify-center transition-opacity duration-300">
-                      <Camera className="w-6 h-6 text-white" />
+                    <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/30 transition-opacity duration-300">
+                      <Camera className="h-6 w-6 text-white" />
                     </div>
                   )}
                 </motion.div>
-                <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 rounded-full border-2 border-white shadow-sm animate-pulse" />
+                <div className="absolute -right-1 -bottom-1 h-4 w-4 animate-pulse rounded-full border-2 border-white bg-emerald-500 shadow-sm" />
               </div>
 
               <div className="flex-1 text-center sm:text-left">
-                <div className="flex items-center gap-2 flex-wrap justify-center sm:justify-start">
-                  <h2 className="text-2xl font-bold text-slate-900">
-                    {user?.full_name || 'User'}
-                  </h2>
-                  <Badge className={`${roleBadge} capitalize font-semibold`}>
-                    {user?.role || 'Guest'}
+                <div className="flex flex-wrap items-center justify-center gap-2 sm:justify-start">
+                  <h2 className="text-2xl font-bold text-slate-900">{user?.full_name || 'User'}</h2>
+                  <Badge className={`${roleStyle.badge} font-semibold capitalize`}>
+                    {ROLE_LABEL[user?.role] || user?.role || 'Guest'}
                   </Badge>
                 </div>
-                <p className="text-sm text-slate-500 mt-1">{user?.email}</p>
-                <div className="flex items-center gap-4 mt-2 text-xs text-slate-400">
+                <p className="mt-1 text-sm text-slate-500">{user?.email}</p>
+                <div className="mt-2 flex items-center justify-center gap-4 text-xs text-slate-400 sm:justify-start">
                   <span className="flex items-center gap-1">
-                    <Calendar className="w-3 h-3 text-teal-400" />
+                    <Calendar className="h-3 w-3 text-teal-400" />
                     Joined {new Date(user?.created_at).toLocaleDateString()}
                   </span>
                   <span className="text-slate-200">|</span>
                   <span className="flex items-center gap-1">
-                    <Shield className="w-3 h-3 text-teal-400" />
+                    <Shield className="h-3 w-3 text-teal-400" />
                     Verified Account
                   </span>
                 </div>
@@ -202,8 +143,8 @@ export default function ProfilePage() {
             {/* Form */}
             <form onSubmit={handleSave} className="space-y-6 pt-6">
               <div className="space-y-2">
-                <Label className="text-xs font-semibold uppercase tracking-wider text-slate-500 flex items-center gap-2">
-                  <User className="w-3.5 h-3.5 text-teal-500" />
+                <Label className="flex items-center gap-2 text-xs font-semibold tracking-wider text-slate-500 uppercase">
+                  <User className="h-3.5 w-3.5 text-teal-500" />
                   Full Name
                 </Label>
                 <Input
@@ -211,13 +152,13 @@ export default function ProfilePage() {
                   value={formData.full_name}
                   onChange={handleChange}
                   placeholder="Enter your full name"
-                  className="h-12 rounded-xl border-slate-200 focus-visible:ring-teal-500/20 focus-visible:border-teal-500 transition-all bg-white/50 shadow-sm text-base"
+                  className="h-12 rounded-xl border-slate-200 bg-white/50 text-base shadow-sm transition-all focus-visible:border-teal-500 focus-visible:ring-teal-500/20"
                 />
               </div>
 
               <div className="space-y-2 opacity-75">
-                <Label className="text-xs font-semibold uppercase tracking-wider text-slate-500 flex items-center gap-2">
-                  <Mail className="w-3.5 h-3.5 text-teal-500" />
+                <Label className="flex items-center gap-2 text-xs font-semibold tracking-wider text-slate-500 uppercase">
+                  <Mail className="h-3.5 w-3.5 text-teal-500" />
                   Email Address
                 </Label>
                 <Input
@@ -226,10 +167,10 @@ export default function ProfilePage() {
                   value={formData.email}
                   placeholder="name@example.com"
                   disabled
-                  className="h-12 rounded-xl border-slate-200 bg-slate-50/50 text-slate-600 shadow-sm text-base"
+                  className="h-12 rounded-xl border-slate-200 bg-slate-50/50 text-base text-slate-600 shadow-sm"
                 />
-                <p className="text-[11px] text-slate-400 flex items-center gap-1">
-                  <Shield className="w-3 h-3 text-teal-400" />
+                <p className="flex items-center gap-1 text-[11px] text-slate-400">
+                  <Shield className="h-3 w-3 text-teal-400" />
                   Email cannot be changed. Contact support for assistance.
                 </p>
               </div>
@@ -241,10 +182,10 @@ export default function ProfilePage() {
                     initial={{ opacity: 0, height: 0, y: -10 }}
                     animate={{ opacity: 1, height: 'auto', y: 0 }}
                     exit={{ opacity: 0, height: 0, y: -10 }}
-                    className="flex items-center gap-3 text-sm font-medium text-emerald-700 bg-emerald-50/80 border border-emerald-200/60 px-4 py-3 rounded-xl shadow-sm"
+                    className="flex items-center gap-3 rounded-xl border border-emerald-200/60 bg-emerald-50/80 px-4 py-3 text-sm font-medium text-emerald-700 shadow-sm"
                   >
-                    <div className="p-1 bg-emerald-100 rounded-full">
-                      <CheckCircle className="w-4 h-4 text-emerald-600" />
+                    <div className="rounded-full bg-emerald-100 p-1">
+                      <CheckCircle className="h-4 w-4 text-emerald-600" />
                     </div>
                     <span>Profile settings updated successfully!</span>
                   </motion.div>
@@ -255,10 +196,10 @@ export default function ProfilePage() {
                     initial={{ opacity: 0, height: 0, y: -10 }}
                     animate={{ opacity: 1, height: 'auto', y: 0 }}
                     exit={{ opacity: 0, height: 0, y: -10 }}
-                    className="flex items-center gap-3 text-sm font-medium text-rose-700 bg-rose-50/80 border border-rose-200/60 px-4 py-3 rounded-xl shadow-sm"
+                    className="flex items-center gap-3 rounded-xl border border-rose-200/60 bg-rose-50/80 px-4 py-3 text-sm font-medium text-rose-700 shadow-sm"
                   >
-                    <div className="p-1 bg-rose-100 rounded-full">
-                      <AlertCircle className="w-4 h-4 text-rose-600" />
+                    <div className="rounded-full bg-rose-100 p-1">
+                      <AlertCircle className="h-4 w-4 text-rose-600" />
                     </div>
                     <span>{error}</span>
                   </motion.div>
@@ -266,20 +207,16 @@ export default function ProfilePage() {
               </AnimatePresence>
 
               {/* Actions */}
-              <div className="flex flex-col sm:flex-row items-center gap-3 pt-2">
-                <Button
-                  type="submit"
-                  disabled={saving}
-                  className="w-full sm:w-auto bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 text-white rounded-xl px-8 h-12 font-semibold shadow-lg shadow-teal-600/20 transition-all group"
-                >
+              <div className="flex flex-col items-center gap-3 pt-2 sm:flex-row">
+                <Button type="submit" disabled={saving} className="dash-cta group h-12 w-full px-8 sm:w-auto">
                   {saving ? (
                     <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                       Saving...
                     </>
                   ) : (
                     <>
-                      <Save className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform" />
+                      <Save className="mr-2 h-4 w-4 transition-transform group-hover:scale-110" />
                       Save Changes
                     </>
                   )}
@@ -287,7 +224,7 @@ export default function ProfilePage() {
                 <Button
                   type="button"
                   variant="outline"
-                  className="w-full sm:w-auto rounded-xl border-slate-200 hover:border-teal-300 hover:text-teal-700"
+                  className="w-full rounded-xl border-slate-200 hover:border-teal-300 hover:text-teal-700 sm:w-auto"
                   onClick={() => {
                     if (user) {
                       setFormData({
@@ -297,7 +234,7 @@ export default function ProfilePage() {
                     }
                   }}
                 >
-                  <Edit2 className="w-4 h-4 mr-2" />
+                  <Edit2 className="mr-2 h-4 w-4" />
                   Reset
                 </Button>
               </div>
@@ -307,35 +244,37 @@ export default function ProfilePage() {
       </motion.div>
 
       {/* Quick Stats / Profile Cards */}
-      <motion.div variants={itemVariants} className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-white/60 backdrop-blur-sm rounded-xl p-4 border border-slate-200/60 flex items-center gap-3">
-          <div className="p-2 bg-teal-50 rounded-xl">
-            <Award className="w-4 h-4 text-teal-600" />
+      <motion.div variants={itemVariants} className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <div className="flex items-center gap-3 rounded-xl border border-slate-200/60 bg-white/60 p-4 backdrop-blur-sm">
+          <div className="rounded-xl bg-teal-50 p-2">
+            <Award className="h-4 w-4 text-teal-600" />
           </div>
           <div>
-            <p className="text-xs text-slate-400 font-medium">Role</p>
-            <p className="text-sm font-semibold text-slate-700 capitalize">{user?.role || 'Guest'}</p>
+            <p className="text-xs font-medium text-slate-400">Role</p>
+            <p className="text-sm font-semibold text-slate-700 capitalize">
+              {ROLE_LABEL[user?.role] || user?.role || 'Guest'}
+            </p>
           </div>
         </div>
-        <div className="bg-white/60 backdrop-blur-sm rounded-xl p-4 border border-slate-200/60 flex items-center gap-3">
-          <div className="p-2 bg-teal-50 rounded-xl">
-            <Calendar className="w-4 h-4 text-teal-600" />
+        <div className="flex items-center gap-3 rounded-xl border border-slate-200/60 bg-white/60 p-4 backdrop-blur-sm">
+          <div className="rounded-xl bg-teal-50 p-2">
+            <Calendar className="h-4 w-4 text-teal-600" />
           </div>
           <div>
-            <p className="text-xs text-slate-400 font-medium">Member Since</p>
+            <p className="text-xs font-medium text-slate-400">Member Since</p>
             <p className="text-sm font-semibold text-slate-700">
               {user?.created_at ? new Date(user.created_at).toLocaleDateString() : 'N/A'}
             </p>
           </div>
         </div>
-        <div className="bg-white/60 backdrop-blur-sm rounded-xl p-4 border border-slate-200/60 flex items-center gap-3">
-          <div className="p-2 bg-teal-50 rounded-xl">
-            <Heart className="w-4 h-4 text-teal-600" />
+        <div className="flex items-center gap-3 rounded-xl border border-slate-200/60 bg-white/60 p-4 backdrop-blur-sm">
+          <div className="rounded-xl bg-teal-50 p-2">
+            <Heart className="h-4 w-4 text-teal-600" />
           </div>
           <div>
-            <p className="text-xs text-slate-400 font-medium">Status</p>
-            <p className="text-sm font-semibold text-emerald-600 flex items-center gap-1">
-              <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
+            <p className="text-xs font-medium text-slate-400">Status</p>
+            <p className="flex items-center gap-1 text-sm font-semibold text-emerald-600">
+              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" />
               Active
             </p>
           </div>

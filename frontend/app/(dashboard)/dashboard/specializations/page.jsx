@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Plus, Pencil, Trash2, Loader2, Tag } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Plus, Pencil, Trash2, Tag } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,8 +12,14 @@ import {
   DialogTitle, DialogFooter
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
+import { toast } from 'sonner';
 import AuthGuard from '@/components/shared/AuthGuard';
+import PageHeader from '@/components/dashboard/ui/PageHeader';
+import LoadingState from '@/components/dashboard/ui/LoadingState';
+import EmptyState from '@/components/dashboard/ui/EmptyState';
+import ConfirmDialog from '@/components/dashboard/ui/ConfirmDialog';
 import { consultantService } from '@/services/consultantService';
+import { containerVariants, itemVariants } from '@/lib/motion';
 
 export default function SpecializationsPage() {
   const [specializations, setSpecializations] = useState([]);
@@ -22,6 +29,7 @@ export default function SpecializationsPage() {
   const [name, setName] = useState('');
   const [saving, setSaving] = useState(false);
   const [deletingId, setDeletingId] = useState(null);
+  const [confirmDelete, setConfirmDelete] = useState(null);
   const [error, setError] = useState('');
 
   const fetchData = () => {
@@ -58,8 +66,10 @@ export default function SpecializationsPage() {
     try {
       if (editing) {
         await consultantService.adminUpdateSpecialization(editing.id, { name });
+        toast.success('Specialization updated');
       } else {
         await consultantService.adminCreateSpecialization({ name });
+        toast.success('Specialization created');
       }
       setModalOpen(false);
       fetchData();
@@ -71,79 +81,92 @@ export default function SpecializationsPage() {
   };
 
   const handleDelete = async (id) => {
-    if (!confirm('Delete this specialization?')) return;
     setDeletingId(id);
     try {
       await consultantService.adminDeleteSpecialization(id);
       setSpecializations(prev => prev.filter(s => s.id !== id));
+      toast.success('Specialization deleted');
     } catch {
-      console.error('Delete failed');
+      toast.error('Failed to delete specialization');
     } finally {
       setDeletingId(null);
+      setConfirmDelete(null);
     }
   };
 
   return (
-    <AuthGuard allowedRoles={['admin']}>
-      <div className="max-w-2xl">
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h1 className="text-2xl font-bold text-slate-800">Specializations</h1>
-            <p className="text-slate-400 text-sm">{specializations.length} total</p>
-          </div>
-          <Button onClick={openCreate} className="bg-blue-600 hover:bg-blue-700 text-white">
-            <Plus className="w-4 h-4 mr-2" /> Add New
+    <motion.div
+      variants={containerVariants}
+      initial="hidden"
+      animate="show"
+      className="max-w-2xl space-y-6"
+    >
+      <PageHeader
+        badge="Reference Data"
+        badgeIcon={Tag}
+        title="Specializations"
+        subtitle="Manage the therapy focus areas consultants can list on their profiles."
+        actions={
+          <Button onClick={openCreate} className="dash-cta">
+            <Plus className="h-4 w-4" /> Add New
           </Button>
-        </div>
+        }
+      />
 
-        {loading ? (
-          <div className="flex justify-center py-20">
-            <Loader2 className="w-7 h-7 animate-spin text-blue-600" />
-          </div>
-        ) : specializations.length > 0 ? (
-          <div className="space-y-2">
-            {specializations.map(spec => (
-              <Card key={spec.id} className="border border-slate-100 shadow-sm rounded-xl">
-                <CardContent className="p-4 flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
-                    <Tag className="w-4 h-4 text-blue-600" />
+      {loading ? (
+        <LoadingState label="Loading specializations..." />
+      ) : specializations.length > 0 ? (
+        <div className="space-y-3">
+          {specializations.map((spec) => (
+            <motion.div key={spec.id} variants={itemVariants}>
+              <Card className="group dash-card dash-card-hover relative overflow-hidden">
+                <div className="dash-accent" />
+                <CardContent className="flex items-center gap-3 p-4">
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-teal-100 to-emerald-100 text-teal-600">
+                    <Tag className="h-4 w-4" />
                   </div>
                   <div className="flex-1">
-                    <p className="font-medium text-slate-800">{spec.name}</p>
+                    <p className="font-bold text-slate-800">{spec.name}</p>
                   </div>
-                  <Badge variant="secondary" className="text-xs">
+                  <Badge variant="secondary" className="rounded-full bg-slate-100 px-2.5 text-xs text-slate-600">
                     {spec.blog_count ?? 0} used
                   </Badge>
                   <div className="flex gap-1.5">
                     <Button
                       size="sm" variant="ghost"
-                      className="h-8 w-8 p-0 text-slate-400 hover:text-blue-600"
+                      className="h-8 w-8 p-0 text-slate-400 hover:bg-teal-50 hover:text-teal-600"
                       onClick={() => openEdit(spec)}
                     >
-                      <Pencil className="w-4 h-4" />
+                      <Pencil className="h-4 w-4" />
                     </Button>
                     <Button
                       size="sm" variant="ghost"
-                      className="h-8 w-8 p-0 text-slate-400 hover:text-red-500"
-                      onClick={() => handleDelete(spec.id)}
-                      disabled={deletingId === spec.id}
+                      className="h-8 w-8 p-0 text-slate-400 hover:bg-rose-50 hover:text-rose-500"
+                      onClick={() => setConfirmDelete(spec)}
                     >
                       {deletingId === spec.id
-                        ? <Loader2 className="w-4 h-4 animate-spin" />
-                        : <Trash2 className="w-4 h-4" />
+                        ? <Trash2 className="h-4 w-4 animate-pulse text-rose-500" />
+                        : <Trash2 className="h-4 w-4" />
                       }
                     </Button>
                   </div>
                 </CardContent>
               </Card>
-            ))}
-          </div>
-        ) : (
-          <div className="text-center py-16 text-slate-400 text-sm">
-            No specializations yet
-          </div>
-        )}
-      </div>
+            </motion.div>
+          ))}
+        </div>
+      ) : (
+        <EmptyState
+          icon={Tag}
+          title="No specializations yet"
+          description="Create your first specialization to give consultants a set of focus areas to choose from."
+          action={
+            <Button onClick={openCreate} className="dash-cta">
+              <Plus className="h-4 w-4" /> Create Specialization
+            </Button>
+          }
+        />
+      )}
 
       <Dialog open={modalOpen} onOpenChange={setModalOpen}>
         <DialogContent>
@@ -151,29 +174,35 @@ export default function SpecializationsPage() {
             <DialogTitle>{editing ? 'Edit Specialization' : 'New Specialization'}</DialogTitle>
           </DialogHeader>
           <div className="py-2">
-            <Label className="mb-2 block text-slate-700">Name</Label>
+            <Label className="mb-2 block text-sm font-medium text-slate-700">Name</Label>
             <Input
               placeholder="e.g. Anxiety Disorders"
               value={name}
               onChange={e => setName(e.target.value)}
-              className="h-11"
+              className="h-11 rounded-xl border-slate-200 shadow-sm focus-visible:border-teal-500 focus-visible:ring-teal-500/20"
             />
             {error && (
-              <p className="text-sm text-red-500 bg-red-50 px-3 py-2 rounded-lg mt-3">{error}</p>
+              <p className="mt-3 rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-600">{error}</p>
             )}
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setModalOpen(false)}>Cancel</Button>
-            <Button
-              className="bg-blue-600 hover:bg-blue-700 text-white"
-              onClick={handleSave}
-              disabled={saving}
-            >
-              {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Save'}
+            <Button className="dash-cta" onClick={handleSave} disabled={saving}>
+              {saving ? 'Saving...' : 'Save'}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </AuthGuard>
+
+      <ConfirmDialog
+        open={!!confirmDelete}
+        onOpenChange={(open) => !open && setConfirmDelete(null)}
+        title="Delete this specialization?"
+        description={`"${confirmDelete?.name || ''}" will be removed. Consultants currently using it will keep their data.`}
+        confirmLabel="Delete"
+        onConfirm={() => handleDelete(confirmDelete.id)}
+        loading={deletingId === confirmDelete?.id}
+      />
+    </motion.div>
   );
 }

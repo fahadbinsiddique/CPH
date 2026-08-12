@@ -1,18 +1,24 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Search, Loader2, Shield, User, UserCheck } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Search, Users, User, UserCheck, Shield, ShieldCheck } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import PageHeader from '@/components/dashboard/ui/PageHeader';
+import LoadingState from '@/components/dashboard/ui/LoadingState';
+import EmptyState from '@/components/dashboard/ui/EmptyState';
 import AuthGuard from '@/components/shared/AuthGuard';
 import api from '@/lib/api';
+import { containerVariants, itemVariants } from '@/lib/motion';
+import { getRoleStyle, ROLE_LABEL } from '@/lib/roles';
 
 const ROLE_CONFIG = {
-  client:     { label: 'Client',     color: 'bg-blue-100 text-blue-700',   icon: User },
-  consultant: { label: 'Consultant', color: 'bg-purple-100 text-purple-700', icon: UserCheck },
-  admin:      { label: 'Admin',      color: 'bg-red-100 text-red-700',     icon: Shield },
+  client: { icon: User, style: 'client' },
+  consultant: { icon: UserCheck, style: 'consultant' },
+  admin: { icon: ShieldCheck, style: 'admin' },
 };
 
 export default function AdminUsersPage() {
@@ -21,83 +27,113 @@ export default function AdminUsersPage() {
   const [search, setSearch] = useState('');
 
   useEffect(() => {
-    api.get('/api/auth/users/')
-      .then(res => setUsers(res.data.results || res.data))
+    api
+      .get('/api/auth/users/')
+      .then((res) => setUsers(res.data.results || res.data))
       .catch(console.error)
       .finally(() => setLoading(false));
   }, []);
 
-  const filtered = users.filter(u =>
-    u.full_name?.toLowerCase().includes(search.toLowerCase()) ||
-    u.email?.toLowerCase().includes(search.toLowerCase())
+  const filtered = users.filter(
+    (u) =>
+      u.full_name?.toLowerCase().includes(search.toLowerCase()) ||
+      u.email?.toLowerCase().includes(search.toLowerCase())
   );
 
-  const byRole = (role) => filtered.filter(u => u.role === role);
+  const byRole = (role) => filtered.filter((u) => u.role === role);
 
   return (
     <AuthGuard allowedRoles={['admin']}>
-      <div className="max-w-4xl">
-        <h1 className="text-2xl font-bold text-slate-800 mb-1">Users</h1>
-        <p className="text-slate-400 text-sm mb-6">{users.length} total users</p>
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        animate="show"
+        className="max-w-4xl space-y-6"
+      >
+        <PageHeader
+          badge="User Management"
+          badgeIcon={Users}
+          title="Users"
+          subtitle={`${users.length} total users`}
+        />
 
         {/* Search */}
-        <div className="relative mb-5">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+        <motion.div variants={itemVariants} className="relative">
+          <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
           <Input
             placeholder="Search by name or email..."
             value={search}
-            onChange={e => setSearch(e.target.value)}
-            className="pl-9 h-10"
+            onChange={(e) => setSearch(e.target.value)}
+            className="h-11 rounded-xl border-slate-200 bg-white/50 pl-10 shadow-sm focus-visible:border-teal-500 focus-visible:ring-teal-500/20"
           />
-        </div>
+        </motion.div>
 
         {loading ? (
-          <div className="flex justify-center py-20">
-            <Loader2 className="w-7 h-7 animate-spin text-blue-600" />
-          </div>
+          <LoadingState label="Loading users..." />
         ) : (
-          <Tabs defaultValue="all">
-            <TabsList className="mb-5">
-              <TabsTrigger value="all">All ({filtered.length})</TabsTrigger>
-              <TabsTrigger value="client">Clients ({byRole('client').length})</TabsTrigger>
-              <TabsTrigger value="consultant">Consultants ({byRole('consultant').length})</TabsTrigger>
-            </TabsList>
+          <motion.div variants={itemVariants}>
+            <Tabs defaultValue="all">
+              <TabsList className="mb-5 bg-white/80 border border-slate-200/60 shadow-sm backdrop-blur-sm">
+                <TabsTrigger value="all">All ({filtered.length})</TabsTrigger>
+                <TabsTrigger value="client">Clients ({byRole('client').length})</TabsTrigger>
+                <TabsTrigger value="consultant">Consultants ({byRole('consultant').length})</TabsTrigger>
+              </TabsList>
 
-            {['all', 'client', 'consultant'].map(tab => (
-              <TabsContent key={tab} value={tab}>
-                <div className="space-y-2">
-                  {(tab === 'all' ? filtered : byRole(tab)).map(u => {
-                    const config = ROLE_CONFIG[u.role] || ROLE_CONFIG.client;
-                    const Icon = config.icon;
-                    return (
-                      <Card key={u.id} className="border border-slate-100 shadow-sm rounded-xl">
-                        <CardContent className="p-4 flex items-center gap-4">
-                          <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 font-bold flex-shrink-0">
-                            {u.full_name?.charAt(0)}
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="font-medium text-slate-800 truncate">{u.full_name}</p>
-                            <p className="text-xs text-slate-400">{u.email}</p>
-                          </div>
-                          <div className="flex items-center gap-2 flex-shrink-0">
-                            <span className={`text-xs font-medium px-2.5 py-1 rounded-full flex items-center gap-1 ${config.color}`}>
-                              <Icon className="w-3 h-3" />
-                              {config.label}
-                            </span>
-                            <span className="text-xs text-slate-400">
-                              {new Date(u.created_at).toLocaleDateString()}
-                            </span>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    );
-                  })}
-                </div>
-              </TabsContent>
-            ))}
-          </Tabs>
+              {['all', 'client', 'consultant'].map((tab) => (
+                <TabsContent key={tab} value={tab}>
+                  {(tab === 'all' ? filtered : byRole(tab)).length > 0 ? (
+                    <div className="space-y-3">
+                      {(tab === 'all' ? filtered : byRole(tab)).map((u) => {
+                        const cfg = ROLE_CONFIG[u.role] || ROLE_CONFIG.client;
+                        const Icon = cfg.icon;
+                        const style = getRoleStyle(cfg.style);
+                        return (
+                          <Card
+                            key={u.id}
+                            className="group dash-card dash-card-hover relative overflow-hidden"
+                          >
+                            <div className="dash-accent" />
+                            <CardContent className="flex items-center gap-4 p-4">
+                              <div
+                                className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gradient-to-br text-base font-bold text-white shadow-sm ${style.gradient}`}
+                              >
+                                {u.full_name?.charAt(0)}
+                              </div>
+                              <div className="min-w-0 flex-1">
+                                <p className="truncate font-medium text-slate-800">{u.full_name}</p>
+                                <p className="text-xs text-slate-400">{u.email}</p>
+                              </div>
+                              <div className="flex shrink-0 items-center gap-2">
+                                <span
+                                  className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs font-medium ${style.chip}`}
+                                >
+                                  <Icon className="h-3 w-3" />
+                                  {ROLE_LABEL[u.role] || u.role}
+                                </span>
+                                <span className="hidden text-xs text-slate-400 md:inline">
+                                  {new Date(u.created_at).toLocaleDateString()}
+                                </span>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <EmptyState
+                      icon={Shield}
+                      title="No users found"
+                      description={
+                        search ? `No results match "${search}"` : 'There are no users in this category.'
+                      }
+                    />
+                  )}
+                </TabsContent>
+              ))}
+            </Tabs>
+          </motion.div>
         )}
-      </div>
+      </motion.div>
     </AuthGuard>
   );
 }

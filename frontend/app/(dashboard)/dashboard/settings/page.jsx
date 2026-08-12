@@ -1,13 +1,36 @@
 'use client';
 
 import { useState } from 'react';
-import { Loader2, Lock, Bell, Shield, Eye, EyeOff } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Loader2, Lock, Bell, Shield, Eye, EyeOff, CheckCircle, AlertCircle, Settings } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import PageHeader from '@/components/dashboard/ui/PageHeader';
 import api from '@/lib/api';
 import { ConsultantCreateModal } from '@/components/consultant/ConsultantCreateModal';
+import { containerVariants, itemVariants } from '@/lib/motion';
+
+function Toggle({ checked, onChange }) {
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={checked}
+      onClick={() => onChange(!checked)}
+      className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer items-center rounded-full transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2 ${
+        checked ? 'bg-teal-600' : 'bg-slate-200'
+      }`}
+    >
+      <span
+        className={`inline-block h-4 w-4 transform rounded-full bg-white shadow-sm transition-transform duration-200 ${
+          checked ? 'translate-x-4' : 'translate-x-0.5'
+        }`}
+      />
+    </button>
+  );
+}
 
 export default function SettingsPage() {
   const [passwords, setPasswords] = useState({
@@ -19,9 +42,14 @@ export default function SettingsPage() {
   const [saving, setSaving] = useState(false);
   const [success, setSuccess] = useState('');
   const [error, setError] = useState('');
+  const [notifications, setNotifications] = useState({
+    reminders: true,
+    confirmations: true,
+    messages: true,
+  });
 
-  const handleChange = e => {
-    setPasswords(p => ({ ...p, [e.target.name]: e.target.value }));
+  const handleChange = (e) => {
+    setPasswords((p) => ({ ...p, [e.target.name]: e.target.value }));
     setError('');
     setSuccess('');
   };
@@ -51,145 +79,136 @@ export default function SettingsPage() {
     }
   };
 
-  return (
-    <div className="max-w-2xl space-y-5">
-      <h1 className="text-2xl font-bold text-slate-800">Settings</h1>
+  const passwordFields = [
+    { name: 'old_password', label: 'Current Password' },
+    { name: 'new_password', label: 'New Password' },
+    { name: 'confirm_password', label: 'Confirm New Password' },
+  ];
 
-      {/* Consultant account — create/update the current user's therapist profile */}
-      <Card className="border-0 shadow-sm rounded-2xl">
-        <CardContent className="p-6">
-          <div className="flex items-center gap-2 mb-2">
-            <Shield className="w-4 h-4 text-slate-500" />
-            <h2 className="font-semibold text-slate-800">Consultant Account</h2>
-          </div>
-          <p className="text-xs text-slate-400 mb-4">
-            Fill in your professional details to join as a therapist. Your current
-            account is upgraded to a consultant role — no second account is created.
-          </p>
-          <ConsultantCreateModal />
-        </CardContent>
-      </Card>
+  const notifRows = [
+    { key: 'reminders', label: 'Appointment reminders', desc: 'Get notified 1 hour before sessions' },
+    { key: 'confirmations', label: 'Booking confirmations', desc: 'Email when appointments are confirmed' },
+    { key: 'messages', label: 'New messages', desc: 'Notify on new consultant messages' },
+  ];
+
+  return (
+    <motion.div
+      variants={containerVariants}
+      initial="hidden"
+      animate="show"
+      className="max-w-2xl space-y-6"
+    >
+      <PageHeader
+        badge="Account Settings"
+        badgeIcon={Settings}
+        title="Settings"
+        subtitle="Manage your consultant account, password, and notification preferences."
+      />
+
+  
 
       {/* Change password */}
-      <Card className="border-0 shadow-sm rounded-2xl">
-        <CardContent className="p-6">
-          <div className="flex items-center gap-2 mb-5">
-            <Lock className="w-4 h-4 text-slate-500" />
-            <h2 className="font-semibold text-slate-800">Change Password</h2>
-          </div>
+      <motion.div variants={itemVariants}>
+        <Card className="group dash-card dash-card-hover relative overflow-hidden">
+          <div className="dash-accent" />
+          <CardContent className="p-6">
+            <div className="mb-5 flex items-center gap-2">
+              <Lock className="h-4 w-4 text-teal-600" />
+              <h2 className="font-bold text-slate-800">Change Password</h2>
+            </div>
 
-          <div className="space-y-4">
-            {[
-              { name: 'old_password', label: 'Current Password' },
-              { name: 'new_password', label: 'New Password' },
-              { name: 'confirm_password', label: 'Confirm New Password' },
-            ].map(({ name, label }) => (
-              <div key={name} className="space-y-1.5">
-                <Label className="text-slate-700">{label}</Label>
-                <div className="relative">
-                  <Input
-                    name={name}
-                    type={show ? 'text' : 'password'}
-                    value={passwords[name]}
-                    onChange={handleChange}
-                    className="h-11 pr-10"
-                    placeholder="••••••••"
+            <div className="space-y-4">
+              {passwordFields.map(({ name, label }) => (
+                <div key={name} className="space-y-1.5">
+                  <Label className="text-sm font-medium text-slate-700">{label}</Label>
+                  <div className="relative">
+                    <Input
+                      name={name}
+                      type={show ? 'text' : 'password'}
+                      value={passwords[name]}
+                      onChange={handleChange}
+                      className="h-11 rounded-xl border-slate-200 pr-10 shadow-sm focus-visible:border-teal-500 focus-visible:ring-teal-500/20"
+                      placeholder="••••••••"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShow((v) => !v)}
+                      className="absolute top-1/2 right-3 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                    >
+                      {show ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <AnimatePresence mode="wait">
+              {error && (
+                <motion.p
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="mt-4 flex items-center gap-2 rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-600"
+                >
+                  <AlertCircle className="h-4 w-4 shrink-0" />
+                  {error}
+                </motion.p>
+              )}
+              {success && (
+                <motion.p
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="mt-4 flex items-center gap-2 rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-700"
+                >
+                  <CheckCircle className="h-4 w-4 shrink-0" />
+                  {success}
+                </motion.p>
+              )}
+            </AnimatePresence>
+
+            <Button onClick={handlePasswordChange} disabled={saving} className="dash-cta mt-5">
+              {saving ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Saving...
+                </>
+              ) : (
+                <>
+                  <Shield className="mr-2 h-4 w-4" /> Update Password
+                </>
+              )}
+            </Button>
+          </CardContent>
+        </Card>
+      </motion.div>
+
+      {/* Notification preferences */}
+      <motion.div variants={itemVariants}>
+        <Card className="group dash-card dash-card-hover relative overflow-hidden">
+          <div className="dash-accent" />
+          <CardContent className="p-6">
+            <div className="mb-5 flex items-center gap-2">
+              <Bell className="h-4 w-4 text-teal-600" />
+              <h2 className="font-bold text-slate-800">Notifications</h2>
+            </div>
+
+            <div className="space-y-3">
+              {notifRows.map(({ key, label, desc }) => (
+                <div key={key} className="flex items-center justify-between py-2">
+                  <div>
+                    <p className="text-sm font-medium text-slate-700">{label}</p>
+                    <p className="text-xs text-slate-400">{desc}</p>
+                  </div>
+                  <Toggle
+                    checked={notifications[key]}
+                    onChange={(v) => setNotifications((n) => ({ ...n, [key]: v }))}
                   />
-                  <button
-                    type="button"
-                    onClick={() => setShow((v) => !v)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
-                  >
-                    {show ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                  </button>
                 </div>
-              </div>
-            ))}
-          </div>
-
-          {error && (
-            <p className="text-sm text-red-500 bg-red-50 px-3 py-2 rounded-lg mt-4">{error}</p>
-          )}
-          {success && (
-            <p className="text-sm text-green-600 bg-green-50 px-3 py-2 rounded-lg mt-4">
-              ✅ {success}
-            </p>
-          )}
-
-          <Button
-            className="mt-5 bg-blue-600 hover:bg-blue-700 text-white"
-            onClick={handlePasswordChange}
-            disabled={saving}
-          >
-            {saving ? (
-              <>
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" /> Saving...
-              </>
-            ) : (
-              <>
-                <Shield className="w-4 h-4 mr-2" /> Update Password
-              </>
-            )}
-          </Button>
-        </CardContent>
-      </Card>
-
-      {/* Notification preferences — UI only */}
-      <Card className="border-0 shadow-sm rounded-2xl">
-        <CardContent className="p-6">
-          <div className="flex items-center gap-2 mb-5">
-            <Bell className="w-4 h-4 text-slate-500" />
-            <h2 className="font-semibold text-slate-800">Notifications</h2>
-          </div>
-
-          <div className="space-y-3">
-            {[
-              { label: 'Appointment reminders', desc: 'Get notified 1 hour before sessions' },
-              { label: 'Booking confirmations', desc: 'Email when appointments are confirmed' },
-              { label: 'New messages', desc: 'Notify on new consultant messages' },
-            ].map(({ label, desc }) => (
-              <div key={label} className="flex items-center justify-between py-2">
-                <div>
-                  <p className="text-sm font-medium text-slate-700">{label}</p>
-                  <p className="text-xs text-slate-400">{desc}</p>
-                </div>
-                <label className="relative inline-flex cursor-pointer">
-                  <input type="checkbox" defaultChecked className="sr-only peer" />
-                  <div className="w-9 h-5 bg-slate-200 peer-focus:ring-2 peer-focus:ring-blue-300 rounded-full peer peer-checked:bg-blue-600 after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-4" />
-                </label>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card className="border-0 shadow-sm rounded-2xl">
-        <CardContent className="p-6">
-          <div className="flex items-center gap-2 mb-5">
-            <Bell className="w-4 h-4 text-slate-500" />
-            <h2 className="font-semibold text-slate-800">Notifications</h2>
-          </div>
-
-          <div className="space-y-3 ">
-            {[
-              { label: 'Appointment reminders', desc: 'Get notified 1 hour before sessions' },
-              { label: 'Booking confirmations', desc: 'Email when appointments are confirmed' },
-              { label: 'New messages', desc: 'Notify on new consultant messages' },
-            ].map(({ label, desc }) => (
-              <div key={label} className="flex items-center justify-between py-2">
-                <div>
-                  <p className="text-sm font-medium text-slate-700">{label}</p>
-                  <p className="text-xs text-slate-400">{desc}</p>
-                </div>
-                <label className="relative inline-flex cursor-pointer">
-                  <input type="checkbox" defaultChecked className="sr-only peer" />
-                  <div className="w-9 h-5 bg-slate-200 peer-focus:ring-2 peer-focus:ring-blue-300 rounded-full peer peer-checked:bg-blue-600 after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-4" />
-                </label>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-  )
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </motion.div>
+    </motion.div>
+  );
 }

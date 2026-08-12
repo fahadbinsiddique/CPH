@@ -136,6 +136,113 @@ class AdminStatsView(APIView):
             'verified_consultants': Consultant.objects.filter(is_verified=True).count(),
             'total_appointments': Appointment.objects.count(),
             'pending_appointments': Appointment.objects.filter(status='pending').count(),
+            'confirmed_appointments': Appointment.objects.filter(status='confirmed').count(),
             'completed_appointments': Appointment.objects.filter(status='completed').count(),
+            'cancelled_appointments': Appointment.objects.filter(status='cancelled').count(),
         }
         return Response(stats)
+
+
+class AdminAnalyticsView(APIView):
+    permission_classes = [IsRoleAdmin]
+
+    def get(self, request):
+        from datetime import timedelta
+        from django.utils import timezone
+        from django.contrib.auth import get_user_model
+        from django.db.models import Count, Sum
+        from django.db.models.functions import TruncDate
+        from consultants.models import Consultant
+        from assessments.models import QuizResult
+
+        User = get_user_model()
+
+        days = min(int(request.query_params.get('days', 30)), 365)
+        since = timezone.now() - timedelta(days=days - 1)
+        since_date = timezone.localdate() - timedelta(days=days - 1)
+
+        # Appointments per day (last N days)
+        appointment_daily = (
+            Appointment.objects
+            .filter(created_at__gte=since)
+            .annotate(day=TruncDate('created_at'))
+            .values('day')
+            .annotate(count=Count('id'))
+            .order_by('day')
+        )
+        appointment_by_day = {str(row['day']): row['count'] for row in appointment_daily}
+
+        # New client registrations per day (last N days)
+        user_daily = (
+            User.objects
+            .filter(role='client', date_joined__gte=since)
+            .annotate(day=TruncDate('date_joined'))
+            .values('day')
+            .annotate(count=Count('id'))
+            .order_by('day')
+        )
+        user_by_day = {str(row['day']): row['count'] for row in user_daily}
+
+        # Assessment completions per day (last N days)
+        quiz_daily = (
+            QuizResult.objects
+            .filter(completed_at__gte=since)
+            .annotate(day=TruncDate('completed_at'))
+            .values('day')
+            .annotate(count=Count('id'))
+            .order_by('day')
+        )
+        quiz_by_day = {str(row['day']): row['count'] for row in quiz_daily}
+
+        # Build the dense series for each day in range
+        from datetime import timedelta as delta
+        series = []
+        for i in range(days):
+            day = since_date + delta(days=i)
+            key = str(day)
+            series.append({
+                'date': key,
+                'appointments': appointment_by_day.get(key, 0),
+                'registrations': user_by_day.get(key, 0),
+                'assessments': quiz_by_day.get(key, 0),
+            })
+
+        # Top consultants by total appointments
+        top_consultants = (
+            Consultant.objects
+            .annotate(total=Count('appointments'))
+            .filter(total__gt=0)
+            .order_by('-total')[:5]
+            .values('id', 'user__full_name', 'total')
+        )
+        top_consultants = [
+            {'name': row['user__full_name'] or 'Unnamed', 'sessions': row['total']}
+            for row in top_consultants
+        ]
+
+        # Revenue estimate (confirmed + completed sessions)
+        revenue_estimate = sum(
+            a.consultant.consultation_fee
+            for a in Appointment.objects.filter(status__in=['confirmed', 'completed'])
+        )
+
+        # Session type split
+        session_types = list(
+            Appointment.objects
+            .values('session_type')
+            .annotate(count=Count('id'))
+        )
+
+        return Response({
+            'period_days': days,
+            'series': series,
+            'status_breakdown': {
+                'pending': Appointment.objects.filter(status='pending').count(),
+                'confirmed': Appointment.objects.filter(status='confirmed').count(),
+                'completed': Appointment.objects.filter(status='completed').count(),
+                'cancelled': Appointment.objects.filter(status='cancelled').count(),
+            },
+            'session_types': session_types,
+            'top_consultants': top_consultants,
+            'revenue_estimate': revenue_estimate,
+        })

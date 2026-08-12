@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import {
   LayoutDashboard,
   Calendar,
@@ -11,7 +11,6 @@ import {
   Settings,
   LogOut,
   Menu,
-  X,
   Brain,
   Users,
   BookOpen,
@@ -21,273 +20,310 @@ import {
   Shield,
   Sparkles,
   Heart,
-  ChevronLeft,
   ClipboardList,
-  Tag 
+  Tag,
+  Bell,
 } from 'lucide-react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Sheet, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import useAuthStore from '@/store/authStore';
 import AuthGuard from '@/components/shared/AuthGuard';
 import { toast } from 'sonner';
+import { getRoleStyle, getInitials, ROLE_LABEL } from '@/lib/roles';
+import { cn } from '@/lib/utils';
 
-const NAV_ITEMS = {
+const NAV_SECTIONS = {
   client: [
-    { href: '/dashboard', label: 'Overview', icon: LayoutDashboard, color: 'from-teal-400 to-emerald-500' },
-    { href: '/dashboard/bookings', label: 'Appointments', icon: Calendar, color: 'from-blue-400 to-indigo-500' },
-    { href: '/dashboard/profile', label: 'Profile', icon: User, color: 'from-purple-400 to-pink-500' },
-    { href: '/dashboard/settings', label: 'Settings', icon: Settings, color: 'from-slate-400 to-slate-500' },
-    { href: '/dashboard/assessments', label: 'Assessments', icon: ClipboardList , color: 'from-blue-400 to-indigo-500'},
+    {
+      label: 'General',
+      items: [
+        { href: '/dashboard', label: 'Overview', icon: LayoutDashboard, color: 'from-teal-400 to-emerald-500' },
+        { href: '/dashboard/bookings', label: 'Appointments', icon: Calendar, color: 'from-blue-400 to-indigo-500' },
+        { href: '/dashboard/assessments', label: 'Assessments', icon: ClipboardList, color: 'from-indigo-400 to-blue-500' },
+      ],
+    },
+    {
+      label: 'Account',
+      items: [
+        { href: '/dashboard/profile', label: 'Profile', icon: User, color: 'from-purple-400 to-pink-500' },
+        { href: '/dashboard/settings', label: 'Settings', icon: Settings, color: 'from-slate-400 to-slate-500' },
+      ],
+    },
   ],
   consultant: [
-    { href: '/dashboard', label: 'Overview', icon: LayoutDashboard, color: 'from-teal-400 to-emerald-500' },
-    { href: '/dashboard/appointments', label: 'Appointments', icon: Calendar, color: 'from-blue-400 to-indigo-500' },
-    { href: '/dashboard/availability', label: 'Availability', icon: Clock, color: 'from-amber-400 to-orange-500' },
-    { href: '/dashboard/patients', label: 'My Patients', icon: Users, color: 'from-rose-400 to-pink-500' },
-    { href: '/dashboard/profile', label: 'Profile', icon: User, color: 'from-purple-400 to-pink-500' },
-    { href: '/dashboard/settings', label: 'Settings', icon: Settings, color: 'from-slate-400 to-slate-500' },
+    {
+      label: 'General',
+      items: [
+        { href: '/dashboard', label: 'Overview', icon: LayoutDashboard, color: 'from-teal-400 to-emerald-500' },
+        { href: '/dashboard/appointments', label: 'Appointments', icon: Calendar, color: 'from-blue-400 to-indigo-500' },
+        { href: '/dashboard/availability', label: 'Availability', icon: Clock, color: 'from-amber-400 to-orange-500' },
+        { href: '/dashboard/patients', label: 'My Patients', icon: Users, color: 'from-rose-400 to-pink-500' },
+      ],
+    },
+    {
+      label: 'Account',
+      items: [
+        { href: '/dashboard/profile', label: 'Profile', icon: User, color: 'from-purple-400 to-pink-500' },
+        { href: '/dashboard/settings', label: 'Settings', icon: Settings, color: 'from-slate-400 to-slate-500' },
+      ],
+    },
   ],
   admin: [
-    { href: '/dashboard', label: 'Overview', icon: LayoutDashboard, color: 'from-teal-400 to-emerald-500' },
-    { href: '/dashboard/users', label: 'Manage Users', icon: Users, color: 'from-blue-400 to-indigo-500' },
-    { href: '/dashboard/consultants', label: 'Consultants', icon: Shield, color: 'from-violet-400 to-purple-500' },
-    { href: '/dashboard/specializations', label: 'Specializations', icon: Tag, color: 'from-indigo-400 to-blue-500' },
-    { href: '/dashboard/appointments', label: 'Appointments', icon: Calendar, color: 'from-amber-400 to-orange-500' },
-    { href: '/dashboard/blogs', label: 'Blog & Articles', icon: BookOpen, color: 'from-rose-400 to-pink-500' },
-    { href: '/dashboard/analytics', label: 'Analytics', icon: BarChart3, color: 'from-indigo-400 to-blue-500' },
-    { href: '/dashboard/settings', label: 'Settings', icon: Settings, color: 'from-slate-400 to-slate-500' },
+    {
+      label: 'General',
+      items: [
+        { href: '/dashboard', label: 'Overview', icon: LayoutDashboard, color: 'from-teal-400 to-emerald-500' },
+        { href: '/dashboard/analytics', label: 'Analytics', icon: BarChart3, color: 'from-indigo-400 to-blue-500' },
+      ],
+    },
+    {
+      label: 'Management',
+      items: [
+        { href: '/dashboard/users', label: 'Manage Users', icon: Users, color: 'from-blue-400 to-indigo-500' },
+        { href: '/dashboard/consultants', label: 'Consultants', icon: Shield, color: 'from-violet-400 to-purple-500' },
+        { href: '/dashboard/specializations', label: 'Specializations', icon: Tag, color: 'from-indigo-400 to-blue-500' },
+        { href: '/dashboard/appointments', label: 'Appointments', icon: Calendar, color: 'from-amber-400 to-orange-500' },
+        { href: '/dashboard/blogs', label: 'Blog & Articles', icon: BookOpen, color: 'from-rose-400 to-pink-500' },
+      ],
+    },
+    {
+      label: 'Account',
+      items: [{ href: '/dashboard/settings', label: 'Settings', icon: Settings, color: 'from-slate-400 to-slate-500' }],
+    },
   ],
 };
 
-const ROLE_BADGE_STYLE = {
-  admin: 'bg-gradient-to-r from-purple-100 to-violet-100 text-purple-700 border-purple-200/60',
-  consultant: 'bg-gradient-to-r from-indigo-100 to-blue-100 text-indigo-700 border-indigo-200/60',
-  client: 'bg-gradient-to-r from-teal-100 to-emerald-100 text-teal-700 border-teal-200/60',
-};
+function allNavItems(role) {
+  return (NAV_SECTIONS[role] || NAV_SECTIONS.client).flatMap((s) => s.items);
+}
 
-const ROLE_COLORS = {
-  admin: 'from-purple-600 to-violet-600',
-  consultant: 'from-indigo-600 to-blue-600',
-  client: 'from-teal-600 to-emerald-600',
-};
+function getPageLabel(pathname, role) {
+  const items = allNavItems(role);
+  const match = items.find((item) =>
+    item.href === '/dashboard' ? pathname === item.href : pathname.startsWith(item.href)
+  );
+  return match?.label || 'Dashboard';
+}
 
-function Sidebar({ open, onClose }) {
+function SidebarContent({ instanceId, onNavigate }) {
   const pathname = usePathname();
   const router = useRouter();
   const { user, logout } = useAuthStore();
   const role = user?.role || 'client';
-  const navItems = NAV_ITEMS[role] || NAV_ITEMS.client;
-  const roleColor = ROLE_COLORS[role] || ROLE_COLORS.client;
+  const sections = NAV_SECTIONS[role] || NAV_SECTIONS.client;
+  const roleStyle = getRoleStyle(role);
 
   const handleLogout = async () => {
     try {
       await logout();
-      toast.success("Logout successful")
+      toast.success('Logout successful');
     } catch (error) {
-      console.error("Component logout error:", error);
+      console.error('Component logout error:', error);
     }
   };
 
-  // Get user initials
-  const getInitials = (name) => {
-    if (!name) return 'U';
-    return name
-      .split(' ')
-      .map(n => n[0])
-      .join('')
-      .toUpperCase()
-      .slice(0, 2);
-  };
+  const isActive = (href) =>
+    href === '/dashboard' ? pathname === href : pathname.startsWith(href);
 
   return (
-    <>
-      {/* Mobile Backdrop */}
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-40 lg:hidden"
-            onClick={onClose}
-          />
-        )}
-      </AnimatePresence>
+    <div className="flex h-full min-h-0 flex-col bg-white">
+     
 
-      <aside
-        className={`
-          fixed top-0 left-0 h-full w-[280px] bg-white/90 backdrop-blur-xl border-r border-slate-200/60 z-50
-          flex flex-col transition-all duration-300 ease-in-out shadow-2xl shadow-slate-200/30
-          ${open ? 'translate-x-0' : '-translate-x-full'}
-          lg:translate-x-0 lg:static lg:z-auto lg:shadow-none lg:bg-white/70
-        `}
-      >
-        {/* Brand Header */}
-        <div className="flex items-center justify-between  px-6 h-20 border-b border-slate-200/60 shrink-0">
-          <div className="flex items-center gap-3">
-            
-            <div className="flex flex-col">
-              
-              <span className="text-[10px] text-slate-400 font-medium uppercase tracking-wider">Dashboard</span>
+      {/* User card */}
+      <div className="shrink-0 border-b border-slate-200/60 px-4 py-5">
+        <div className="relative overflow-hidden rounded-2xl border border-slate-200/60 bg-gradient-to-br from-slate-50/80 to-white p-4 shadow-sm">
+          <div
+            className={`absolute -top-10 -right-10 h-24 w-24 rounded-full bg-gradient-to-br ${roleStyle.gradient} opacity-10 blur-2xl`}
+          />
+          <div className="relative flex items-center gap-3">
+            <div className="relative">
+              <Avatar className="h-14 w-14 border-2 border-white shadow-md">
+                <AvatarFallback
+                  className={`bg-gradient-to-br ${roleStyle.gradient} text-lg font-bold text-white`}
+                >
+                  {getInitials(user?.full_name)}
+                </AvatarFallback>
+              </Avatar>
+              <span className="absolute -right-0.5 -bottom-0.5 h-3.5 w-3.5 animate-pulse rounded-full border-2 border-white bg-emerald-500 shadow-sm" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-sm font-bold text-slate-900">{user?.full_name || 'User'}</p>
+              <Badge className={`mt-0.5 border text-[10px] font-semibold capitalize ${roleStyle.badge}`}>
+                {ROLE_LABEL[role] || role}
+              </Badge>
             </div>
           </div>
-          <button
-            onClick={onClose}
-            className="lg:hidden text-slate-400 hover:text-slate-600 hover:bg-slate-100 p-2 rounded-lg transition-all"
-          >
-            <X className="w-4 h-4" />
-          </button>
         </div>
+      </div>
 
-        {/* User Profile Card */}
-        <div className="px-4 py-5 border-b border-slate-200/60 shrink-0">
-          <motion.div
-            whileHover={{ scale: 1.02 }}
-            className="relative bg-gradient-to-br from-slate-50/80 to-white border border-slate-200/60 rounded-2xl p-4 shadow-sm overflow-hidden"
-          >
-            {/* Decorative glow */}
-            <div className={`absolute -top-10 -right-10 w-24 h-24 bg-gradient-to-br ${roleColor} rounded-full blur-2xl opacity-10`} />
-            
-            <div className="flex items-center gap-3 relative">
-              <div className="relative">
-                <Avatar className="w-14 h-14 border-2 border-white shadow-md">
-                  <AvatarFallback className={`bg-gradient-to-br ${roleColor} text-white font-bold text-lg`}>
-                    {getInitials(user?.full_name || 'User' )}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-emerald-500 rounded-full border-2 border-white shadow-sm animate-pulse" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-bold text-slate-900 truncate">{user?.full_name || 'User'}</p>
-                <Badge className={`text-[10px] font-semibold px-2.5 py-0.5 mt-0.5 border capitalize ${ROLE_BADGE_STYLE[role]}`}>
-                  {role}
-                </Badge>
-              </div>
-            </div>
-          </motion.div>
-        </div>
-
-        {/* Navigation */}
-        <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto custom-scrollbar">
-          {navItems.map(({ href, label, icon: Icon, color }) => {
-            const isActive = href === '/dashboard' ? pathname === href : pathname.startsWith(href);
-            
-            return (
-              <Link key={href} href={href} onClick={onClose} className="block">
-                <motion.div
-                  whileHover={{ x: 4 }}
-                  whileTap={{ scale: 0.98 }}
-                  className={`
-                    flex items-center gap-3 px-3.5 py-3 rounded-xl text-sm font-medium
-                    transition-all duration-300 relative cursor-pointer
-                    ${isActive
-                      ? `bg-gradient-to-r ${color} text-white shadow-lg shadow-teal-500/20`
-                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/80'
-                    }
-                  `}
-                >
-                  <Icon className={`w-4.5 h-4.5 flex-shrink-0 transition-all duration-300 ${isActive ? 'scale-110' : 'text-slate-400 group-hover:text-slate-600'}`} />
-                  <span className="tracking-wide">{label}</span>
-                  {isActive && (
-                    <motion.div
-                      layoutId="activeIndicator"
-                      className="ml-auto"
+      {/* Navigation */}
+      <nav className="cph-scroll flex-1 space-y-5 overflow-y-auto px-3 py-4">
+        {sections.map((section) => (
+          <div key={section.label}>
+            <p className="mb-1.5 px-3.5 text-[10px] font-semibold tracking-wider text-slate-400 uppercase">
+              {section.label}
+            </p>
+            <div className="space-y-1">
+              {section.items.map((item) => {
+                const active = isActive(item.href);
+                const Icon = item.icon;
+                return (
+                  <Link key={item.href} href={item.href} onClick={onNavigate} className="relative block">
+                    <span
+                      className={cn(
+                        'relative flex cursor-pointer items-center gap-3 rounded-xl px-3.5 py-3 text-sm font-medium transition-all duration-300',
+                        active ? 'text-slate-900' : 'text-slate-600 hover:bg-slate-100/80 hover:text-slate-900'
+                      )}
                     >
-                      <ChevronRight className="w-4 h-4 text-white/80" />
-                    </motion.div>
-                  )}
-                </motion.div>
-              </Link>
-            );
-          })}
-        </nav>
+                      {active && (
+                        <motion.span
+                          layoutId={`${instanceId}-active`}
+                          className="absolute inset-0 rounded-xl border border-teal-200/60 bg-gradient-to-r from-teal-50 to-emerald-50"
+                          transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                        />
+                      )}
+                      <Icon
+                        className={cn(
+                          'relative z-10 h-[18px] w-[18px] shrink-0 transition-all duration-300',
+                          active ? 'scale-110 text-teal-600' : 'text-slate-400'
+                        )}
+                      />
+                      <span className="relative z-10 tracking-wide">{item.label}</span>
+                      {active && <ChevronRight className="relative z-10 ml-auto h-4 w-4 text-teal-600" />}
+                    </span>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        ))}
+      </nav>
 
-        {/* Footer Actions */}
-        <div className="px-3 py-4 border-t border-slate-200/60 shrink-0 space-y-2">
-          {/* Quick action badge */}
-          <motion.div
-            whileHover={{ scale: 1.02 }}
-            className="bg-gradient-to-r from-teal-50 to-emerald-50 rounded-xl p-3 border border-teal-200/60 flex items-center gap-2"
-          >
-            <Sparkles className="w-4 h-4 text-teal-500" />
-            <span className="text-xs font-medium text-slate-600">
-              Need help? <Link href="/support" className="text-teal-600 font-semibold hover:underline">Contact support</Link>
-            </span>
-          </motion.div>
-
-          <button
-            onClick={handleLogout}
-            className="flex items-center gap-3 px-3.5 py-3 rounded-xl text-sm font-semibold text-rose-600 hover:bg-rose-50/80 w-full transition-all duration-200 group border border-transparent hover:border-rose-200/40"
-          >
-            <LogOut className="w-4.5 h-4.5 text-rose-500 group-hover:translate-x-0.5 transition-transform" />
-            <span>Sign Out</span>
-          </button>
-        </div>
-      </aside>
-    </>
+      {/* Footer */}
+      <div className="shrink-0 space-y-2 border-t border-slate-200/60 px-3 py-4">
+      
+        <button
+          onClick={handleLogout}
+          className="group flex w-full cursor-pointer items-center gap-3 rounded-xl border border-transparent px-3.5 py-3 text-sm font-semibold text-rose-600 transition-all duration-200 hover:border-rose-200/40 hover:bg-rose-50/80"
+        >
+          <LogOut className="h-[18px] w-[18px] text-rose-500 transition-transform group-hover:translate-x-0.5" />
+          <span>Sign Out</span>
+        </button>
+      </div>
+    </div>
   );
 }
 
 export default function DashboardLayout({ children }) {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const { user } = useAuthStore();
+  const pathname = usePathname();
+  const role = user?.role || 'client';
+  const roleStyle = getRoleStyle(role);
+  const pageLabel = getPageLabel(pathname, role);
 
-  // Detect scroll for header shadow
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 10);
-    };
+    const handleScroll = () => setScrolled(window.scrollY > 10);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  const today = new Date().toLocaleDateString('en-US', {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+  });
+
+  const handleBell = () => toast('No new notifications', { description: "You're all caught up." });
+
   return (
     <AuthGuard>
-      <div className="flex mt-30 h-screen bg-gradient-to-br from-slate-50 via-white to-indigo-50/30 overflow-hidden font-sans">
-        <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      <div className="dash-shell">
+        <div className="mx-auto flex max-w-[1700px] pt-30">
+          {/* Desktop Sidebar */}
+          <aside className="sticky top-30 hidden h-[calc(100vh-7.5rem)] w-[280px] shrink-0 flex-col border-r border-slate-200/60 lg:flex">
+            <SidebarContent instanceId="desktop" />
+          </aside>
 
-        {/* Main Content */}
-        <div className="flex-1 flex flex-col overflow-hidden">
-          {/* Mobile Header */}
-          <header
-            className={`
-              lg:hidden h-16 px-5 flex items-center justify-between flex-shrink-0 z-30
-              transition-all duration-300
-              ${scrolled 
-                ? 'bg-white/90 backdrop-blur-md shadow-sm border-b border-slate-200/60' 
-                : 'bg-white/70 backdrop-blur-sm border-b border-slate-200/40'
-              }
-            `}
-          >
-            <button
-              onClick={() => setSidebarOpen(true)}
-              className="p-2 -ml-2 text-slate-600 hover:bg-slate-100 rounded-xl transition-all"
+          {/* Main Column */}
+          <div className="flex min-w-0 flex-1 flex-col">
+            {/* Top Header */}
+            <header
+              className={cn(
+                'sticky top-30 z-30 flex h-16 shrink-0 items-center gap-3 border-b px-4 transition-all duration-300 sm:px-6 lg:px-8',
+                scrolled
+                  ? 'border-slate-200/60 bg-white/90 shadow-sm backdrop-blur-md'
+                  : 'border-slate-200/40 bg-white/70 backdrop-blur-sm'
+              )}
             >
-              <Menu className="w-5 h-5" />
-            </button>
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-gradient-to-r from-teal-600 to-emerald-600 rounded-lg flex items-center justify-center shadow-md shadow-teal-500/20">
-                <Heart className="w-4 h-4 text-white" />
+              {/* Mobile menu */}
+              <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
+                <SheetTrigger asChild>
+                  <Button variant="ghost" size="icon" className="-ml-2 lg:hidden" onClick={() => setMobileOpen(true)}>
+                    <Menu className="h-5 w-5" />
+                    <span className="sr-only">Open navigation</span>
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="left" className="w-[290px] p-0">
+                  <SheetTitle className="sr-only">Dashboard navigation</SheetTitle>
+                  <SidebarContent instanceId="mobile" onNavigate={() => setMobileOpen(false)} />
+                </SheetContent>
+              </Sheet>
+
+              {/* Mobile brand */}
+              <div className="flex items-center gap-2 lg:hidden">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-r from-teal-600 to-emerald-600 shadow-md shadow-teal-500/20">
+                  <Heart className="h-4 w-4 text-white" />
+                </div>
+                <span className="text-sm font-bold tracking-tight text-slate-900">Dashboard</span>
               </div>
-              <span className="font-bold text-slate-900 text-sm tracking-tight">Dashboard</span>
-            </div>
-            <div className="w-8" />
-          </header>
 
-          {/* Main Content Area */}
-          <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-              className="max-w-7xl mx-auto"
-            >
-              {children}
-            </motion.div>
+              {/* Desktop breadcrumb */}
+              <div className="hidden items-center gap-2 lg:flex lg:flex-1">
+                <span className="text-[11px] font-semibold tracking-wider text-slate-400 uppercase">Dashboard</span>
+                <ChevronRight className="h-3.5 w-3.5 text-slate-300" />
+                <span className="text-sm font-bold text-slate-800">{pageLabel}</span>
+              </div>
 
-           
-          </main>
+              <div className="ml-auto flex items-center gap-2 lg:ml-0">
+                <Button variant="ghost" size="icon" onClick={handleBell} aria-label="Notifications">
+                  <Bell className="h-[18px] w-[18px]" />
+                </Button>
+                <Badge variant="outline" className="hidden border-slate-200 px-2.5 py-1 text-slate-500 sm:inline-flex">
+                  {today}
+                </Badge>
+                <Link href="/dashboard/profile">
+                  <div className="flex items-center gap-2 rounded-xl border border-slate-200/60 bg-white/70 px-2 py-1.5 transition-colors hover:bg-white">
+                    <Avatar className="h-7 w-7">
+                      <AvatarFallback
+                        className={`bg-gradient-to-br text-[10px] font-bold text-white ${roleStyle.gradient}`}
+                      >
+                        {getInitials(user?.full_name)}
+                      </AvatarFallback>
+                    </Avatar>
+                    <span className="hidden text-xs font-semibold text-slate-700 md:inline">
+                      {user?.full_name?.split(' ')[0]}
+                    </span>
+                  </div>
+                </Link>
+              </div>
+            </header>
+
+            {/* Main Content Area */}
+            <main className="flex-1 px-4 py-6 sm:px-6 lg:px-8">
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                className="mx-auto w-full max-w-7xl"
+              >
+                {children}
+              </motion.div>
+            </main>
+          </div>
         </div>
       </div>
     </AuthGuard>

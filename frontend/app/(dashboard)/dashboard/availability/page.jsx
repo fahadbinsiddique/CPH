@@ -6,21 +6,28 @@ import {
   Plus,
   Trash2,
   Loader2,
-  Save,
   Calendar,
   Clock,
-  Sparkles,
   Shield,
   CheckCircle,
   AlertCircle,
-  ChevronRight,
-  X,
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import PageHeader from '@/components/dashboard/ui/PageHeader';
+import LoadingState from '@/components/dashboard/ui/LoadingState';
+import EmptyState from '@/components/dashboard/ui/EmptyState';
 import AuthGuard from '@/components/shared/AuthGuard';
 import api from '@/lib/api';
+import { containerVariants, itemVariants } from '@/lib/motion';
 
 const DAYS = [
   { value: 'saturday', label: 'Saturday' },
@@ -58,24 +65,6 @@ const TIME_OPTIONS = [
   '20:00',
 ];
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  show: {
-    opacity: 1,
-    transition: { staggerChildren: 0.06, delayChildren: 0.1 },
-  },
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 20, scale: 0.97 },
-  show: {
-    opacity: 1,
-    y: 0,
-    scale: 1,
-    transition: { type: 'spring', stiffness: 300, damping: 24 },
-  },
-};
-
 const cardVariants = {
   hidden: { opacity: 0, x: -20, scale: 0.95 },
   show: {
@@ -84,12 +73,7 @@ const cardVariants = {
     scale: 1,
     transition: { type: 'spring', stiffness: 350, damping: 25 },
   },
-  exit: {
-    opacity: 0,
-    x: 20,
-    scale: 0.95,
-    transition: { duration: 0.2 },
-  },
+  exit: { opacity: 0, x: 20, scale: 0.95, transition: { duration: 0.2 } },
 };
 
 const dayColors = {
@@ -100,16 +84,6 @@ const dayColors = {
   wednesday: 'from-amber-100 to-orange-100 border-amber-200',
   thursday: 'from-cyan-100 to-sky-100 border-cyan-200',
   friday: 'from-fuchsia-100 to-pink-100 border-fuchsia-200',
-};
-
-const dayEmojis = {
-  saturday: '🌅',
-  sunday: '🌞',
-  monday: '📅',
-  tuesday: '📋',
-  wednesday: '🌿',
-  thursday: '🌱',
-  friday: '🌟',
 };
 
 export default function AvailabilityPage() {
@@ -182,84 +156,65 @@ export default function AvailabilityPage() {
 
   return (
     <AuthGuard allowedRoles={['consultant']}>
-      <motion.div
-        variants={containerVariants}
-        initial="hidden"
-        animate="show"
-        className="max-w-4xl"
-      >
-        {/* Header */}
-        <motion.div variants={itemVariants} className="mb-6">
-          <div className="flex items-center gap-2 mb-1">
-            <Badge className="bg-teal-50 text-teal-700 border-teal-200">
-              <Calendar className="w-3 h-3 mr-1" />
-              Schedule Management
+      <motion.div variants={containerVariants} initial="hidden" animate="show" className="max-w-4xl space-y-6">
+        <PageHeader
+          badge="Schedule Management"
+          badgeIcon={Calendar}
+          title="Weekly Availability"
+          subtitle="Set your consultation hours so patients can book appointments with you."
+          actions={
+            <Badge variant="outline" className="border-slate-200 text-slate-500">
+              <Shield className="mr-1 h-3 w-3" />
+              Consultant View
             </Badge>
-          </div>
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
-            Weekly Availability
-          </h1>
-          <p className="text-sm text-slate-500 font-medium mt-0.5">
-            Set your consultation hours so patients can book appointments with you.
-          </p>
-        </motion.div>
+          }
+        />
 
         {/* Stats Row */}
-        <motion.div variants={itemVariants} className="flex flex-wrap items-center gap-4 mb-6">
-          <div className="bg-white/80 backdrop-blur-sm rounded-xl px-4 py-2 border border-slate-200/60 shadow-sm">
-            <span className="text-xs text-slate-400 font-medium">Scheduled Days</span>
+        <motion.div variants={itemVariants} className="flex flex-wrap items-center gap-4">
+          <div className="bg-white/80 rounded-xl border border-slate-200/60 px-4 py-2 shadow-sm backdrop-blur-sm">
+            <span className="text-xs font-medium text-slate-400">Scheduled Days</span>
             <p className="text-lg font-bold text-slate-900">{scheduledCount} / 7</p>
           </div>
-          <div className="bg-white/80 backdrop-blur-sm rounded-xl px-4 py-2 border border-slate-200/60 shadow-sm">
-            <span className="text-xs text-slate-400 font-medium">Status</span>
-            <p className="text-sm font-semibold text-emerald-600 flex items-center gap-1">
-              <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
+          <div className="bg-white/80 rounded-xl border border-slate-200/60 px-4 py-2 shadow-sm backdrop-blur-sm">
+            <span className="text-xs font-medium text-slate-400">Status</span>
+            <p className="flex items-center gap-1 text-sm font-semibold text-emerald-600">
+              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" />
               {scheduledCount > 0 ? 'Active' : 'No schedule'}
             </p>
           </div>
-          <Badge variant="outline" className="border-slate-200 text-slate-500 ml-auto">
-            <Shield className="w-3 h-3 mr-1" />
-             schedule 
+          <Badge className="ml-auto border-teal-200 bg-teal-50 text-teal-700">
+            {scheduledCount > 0 ? `${scheduledCount}/7 days` : 'Set up'}
           </Badge>
         </motion.div>
 
         {/* Current Schedule */}
         <motion.div variants={itemVariants}>
-          <Card className="border border-slate-200/60 bg-white/80 backdrop-blur-sm shadow-sm hover:shadow-xl hover:border-teal-500/20 rounded-2xl overflow-hidden transition-all duration-500">
-            <div className="h-1 bg-gradient-to-r from-teal-400 via-emerald-400 to-teal-400 scale-x-0 hover:scale-x-100 transition-transform duration-700 origin-left" />
-
+          <Card className="group dash-card dash-card-hover relative overflow-hidden">
+            <div className="dash-accent" />
             <CardContent className="p-6 sm:p-8">
-              <div className="flex items-center justify-between mb-5">
+              <div className="mb-5 flex items-center justify-between">
                 <div>
-                  <h2 className="text-lg font-bold text-slate-900 tracking-tight flex items-center gap-2">
-                    <Clock className="w-5 h-5 text-teal-500" />
+                  <h2 className="flex items-center gap-2 text-lg font-bold tracking-tight text-slate-900">
+                    <Clock className="h-5 w-5 text-teal-500" />
                     Current Schedule
                   </h2>
-                  <p className="text-xs text-slate-400 mt-0.5">
+                  <p className="mt-0.5 text-xs text-slate-400">
                     {scheduledCount > 0
                       ? `You have ${scheduledCount} day${scheduledCount > 1 ? 's' : ''} scheduled`
                       : 'No days scheduled yet'}
                   </p>
                 </div>
-                <Badge className="bg-teal-50 text-teal-700 border-teal-200">
-                  {scheduledCount > 0 ? `${scheduledCount}/7 days` : 'Set up'}
-                </Badge>
               </div>
 
               {loading ? (
-                <div className="flex justify-center py-12">
-                  <div className="relative">
-                    <Loader2 className="w-8 h-8 animate-spin text-teal-600" />
-                    <div className="absolute inset-0 w-8 h-8 border-2 border-teal-100 rounded-full animate-ping opacity-20" />
-                  </div>
-                </div>
+                <LoadingState label="Loading your schedule..." />
               ) : availability.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   <AnimatePresence mode="popLayout">
                     {DAYS.filter((d) => scheduledDays.includes(d.value)).map((day) => {
                       const slot = availability.find((a) => a.day === day.value);
                       const dayColor = dayColors[day.value] || 'from-slate-100 to-slate-200';
-                      const emoji = dayEmojis[day.value] || '📅';
 
                       return (
                         <motion.div
@@ -269,20 +224,21 @@ export default function AvailabilityPage() {
                           animate="show"
                           exit="exit"
                           layout
-                          className={`bg-gradient-to-br ${dayColor} border rounded-xl p-4 flex items-center justify-between transition-all hover:shadow-md`}
+                          className={`flex items-center justify-between rounded-xl border bg-gradient-to-br p-4 transition-all hover:shadow-md ${dayColor}`}
                         >
                           <div className="flex items-center gap-3">
-                            <span className="text-2xl">{emoji}</span>
+                            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/60 text-teal-600 shadow-sm">
+                              <Calendar className="h-5 w-5" />
+                            </div>
                             <div>
                               <Badge
                                 variant="secondary"
-                                className="text-xs font-semibold bg-white/60 text-slate-700 border-white/40"
+                                className="border-white/40 bg-white/60 text-xs font-semibold text-slate-700"
                               >
                                 {day.label}
                               </Badge>
-                              <p className="text-sm font-medium text-slate-700 mt-0.5">
-                                {slot.start_time} <span className="text-slate-400">—</span>{' '}
-                                {slot.end_time}
+                              <p className="mt-0.5 text-sm font-medium text-slate-700">
+                                {slot.start_time} <span className="text-slate-400">—</span> {slot.end_time}
                               </p>
                             </div>
                           </div>
@@ -291,12 +247,12 @@ export default function AvailabilityPage() {
                             whileTap={{ scale: 0.9 }}
                             onClick={() => handleDelete(slot.id)}
                             disabled={deletingId === slot.id}
-                            className="p-2 rounded-lg hover:bg-white/60 transition-all text-slate-400 hover:text-rose-600"
+                            className="rounded-lg p-2 text-slate-400 transition-all hover:bg-white/60 hover:text-rose-600"
                           >
                             {deletingId === slot.id ? (
-                              <Loader2 className="w-4 h-4 animate-spin" />
+                              <Loader2 className="h-4 w-4 animate-spin" />
                             ) : (
-                              <Trash2 className="w-4 h-4" />
+                              <Trash2 className="h-4 w-4" />
                             )}
                           </motion.button>
                         </motion.div>
@@ -305,101 +261,93 @@ export default function AvailabilityPage() {
                   </AnimatePresence>
                 </div>
               ) : (
-                <div className="text-center py-12 border border-dashed border-slate-200 rounded-xl bg-slate-50/40">
-                  <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-3 border border-slate-200">
-                    <Calendar className="w-8 h-8 text-slate-300" />
-                  </div>
-                  <p className="font-semibold text-slate-700">No schedule set yet</p>
-                  <p className="text-sm text-slate-400 mt-1">
-                    Add your available days below
-                  </p>
-                </div>
+                <EmptyState
+                  icon={Calendar}
+                  title="No schedule set yet"
+                  description="Add your available days below"
+                />
               )}
             </CardContent>
           </Card>
         </motion.div>
 
         {/* Add New Schedule */}
-        <motion.div variants={itemVariants} className="mt-6">
-          <Card className="border border-slate-200/60 bg-white/80 backdrop-blur-sm shadow-sm hover:shadow-xl hover:border-teal-500/20 rounded-2xl overflow-hidden transition-all duration-500">
-            <div className="h-1 bg-gradient-to-r from-teal-400 via-emerald-400 to-teal-400 scale-x-0 hover:scale-x-100 transition-transform duration-700 origin-left" />
-
+        <motion.div variants={itemVariants}>
+          <Card className="group dash-card dash-card-hover relative overflow-hidden">
+            <div className="dash-accent" />
             <CardContent className="p-6 sm:p-8">
-              <div className="flex items-center gap-2 mb-5">
-                <div className="p-2 bg-teal-50 rounded-xl">
-                  <Plus className="w-5 h-5 text-teal-600" />
+              <div className="mb-5 flex items-center gap-2">
+                <div className="rounded-xl bg-teal-50 p-2">
+                  <Plus className="h-5 w-5 text-teal-600" />
                 </div>
                 <div>
-                  <h2 className="text-lg font-bold text-slate-900 tracking-tight">
-                    Add New Schedule
-                  </h2>
-                  <p className="text-xs text-slate-400 mt-0.5">
-                    Select a day and set your available hours
-                  </p>
+                  <h2 className="text-lg font-bold tracking-tight text-slate-900">Add New Schedule</h2>
+                  <p className="mt-0.5 text-xs text-slate-400">Select a day and set your available hours</p>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-5">
-                {/* Day */}
+              <div className="mb-5 grid grid-cols-1 gap-4 sm:grid-cols-3">
                 <div>
-                  <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5 block">
+                  <label className="mb-1.5 block text-xs font-semibold tracking-wider text-slate-500 uppercase">
                     Day
                   </label>
-                  <select
+                  <Select
                     value={form.day}
-                    onChange={(e) => setForm((p) => ({ ...p, day: e.target.value }))}
-                    className="w-full h-11 px-3 rounded-xl border border-slate-200 text-sm bg-white/50 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-all shadow-sm"
+                    onValueChange={(day) => setForm((p) => ({ ...p, day }))}
                   >
-                    {DAYS.map((d) => (
-                      <option
-                        key={d.value}
-                        value={d.value}
-                        disabled={scheduledDays.includes(d.value)}
-                      >
-                        {d.label} {scheduledDays.includes(d.value) ? '✓' : ''}
-                      </option>
-                    ))}
-                  </select>
+                    <SelectTrigger className="h-11 rounded-xl bg-white/50 border-slate-200 shadow-sm">
+                      <SelectValue placeholder="Select a day" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {DAYS.map((d) => (
+                        <SelectItem key={d.value} value={d.value} disabled={scheduledDays.includes(d.value)}>
+                          {d.label} {scheduledDays.includes(d.value) ? '(scheduled)' : ''}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
 
-                {/* Start Time */}
                 <div>
-                  <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5 block">
+                  <label className="mb-1.5 block text-xs font-semibold tracking-wider text-slate-500 uppercase">
                     Start Time
                   </label>
-                  <select
+                  <Select
                     value={form.start_time}
-                    onChange={(e) =>
-                      setForm((p) => ({ ...p, start_time: e.target.value }))
-                    }
-                    className="w-full h-11 px-3 rounded-xl border border-slate-200 text-sm bg-white/50 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-all shadow-sm"
+                    onValueChange={(start_time) => setForm((p) => ({ ...p, start_time }))}
                   >
-                    {TIME_OPTIONS.map((t) => (
-                      <option key={t} value={t}>
-                        {t}
-                      </option>
-                    ))}
-                  </select>
+                    <SelectTrigger className="h-11 rounded-xl bg-white/50 border-slate-200 shadow-sm">
+                      <SelectValue placeholder="Start time" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {TIME_OPTIONS.map((t) => (
+                        <SelectItem key={t} value={t}>
+                          {t}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
 
-                {/* End Time */}
                 <div>
-                  <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5 block">
+                  <label className="mb-1.5 block text-xs font-semibold tracking-wider text-slate-500 uppercase">
                     End Time
                   </label>
-                  <select
+                  <Select
                     value={form.end_time}
-                    onChange={(e) =>
-                      setForm((p) => ({ ...p, end_time: e.target.value }))
-                    }
-                    className="w-full h-11 px-3 rounded-xl border border-slate-200 text-sm bg-white/50 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-all shadow-sm"
+                    onValueChange={(end_time) => setForm((p) => ({ ...p, end_time }))}
                   >
-                    {TIME_OPTIONS.map((t) => (
-                      <option key={t} value={t}>
-                        {t}
-                      </option>
-                    ))}
-                  </select>
+                    <SelectTrigger className="h-11 rounded-xl bg-white/50 border-slate-200 shadow-sm">
+                      <SelectValue placeholder="End time" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {TIME_OPTIONS.map((t) => (
+                        <SelectItem key={t} value={t}>
+                          {t}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
 
@@ -410,10 +358,10 @@ export default function AvailabilityPage() {
                     initial={{ opacity: 0, height: 0, y: -10 }}
                     animate={{ opacity: 1, height: 'auto', y: 0 }}
                     exit={{ opacity: 0, height: 0, y: -10 }}
-                    className="flex items-center gap-3 text-sm font-medium text-rose-700 bg-rose-50/80 border border-rose-200/60 px-4 py-3 rounded-xl mb-4"
+                    className="mb-4 flex items-center gap-3 rounded-xl border border-rose-200/60 bg-rose-50/80 px-4 py-3 text-sm font-medium text-rose-700"
                   >
-                    <div className="p-1 bg-rose-100 rounded-full">
-                      <AlertCircle className="w-4 h-4 text-rose-600" />
+                    <div className="rounded-full bg-rose-100 p-1">
+                      <AlertCircle className="h-4 w-4 text-rose-600" />
                     </div>
                     <span>{error}</span>
                   </motion.div>
@@ -424,35 +372,29 @@ export default function AvailabilityPage() {
                     initial={{ opacity: 0, height: 0, y: -10 }}
                     animate={{ opacity: 1, height: 'auto', y: 0 }}
                     exit={{ opacity: 0, height: 0, y: -10 }}
-                    className="flex items-center gap-3 text-sm font-medium text-emerald-700 bg-emerald-50/80 border border-emerald-200/60 px-4 py-3 rounded-xl mb-4"
+                    className="mb-4 flex items-center gap-3 rounded-xl border border-emerald-200/60 bg-emerald-50/80 px-4 py-3 text-sm font-medium text-emerald-700"
                   >
-                    <div className="p-1 bg-emerald-100 rounded-full">
-                      <CheckCircle className="w-4 h-4 text-emerald-600" />
+                    <div className="rounded-full bg-emerald-100 p-1">
+                      <CheckCircle className="h-4 w-4 text-emerald-600" />
                     </div>
                     <span>{success}</span>
                   </motion.div>
                 )}
               </AnimatePresence>
 
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={handleAdd}
-                disabled={saving}
-                className="w-full sm:w-auto bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 text-white rounded-xl px-8 h-12 font-semibold shadow-lg shadow-teal-600/20 transition-all group flex items-center justify-center"
-              >
+              <Button onClick={handleAdd} disabled={saving} className="dash-cta h-12 w-full px-8 sm:w-auto">
                 {saving ? (
                   <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     Adding...
                   </>
                 ) : (
                   <>
-                    <Plus className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform" />
+                    <Plus className="mr-2 h-4 w-4" />
                     Add Schedule
                   </>
                 )}
-              </motion.button>
+              </Button>
             </CardContent>
           </Card>
         </motion.div>

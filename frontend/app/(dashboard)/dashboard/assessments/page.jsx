@@ -10,9 +10,12 @@ import {
   ArrowRight,
   CalendarDays,
   AlertCircle,
+  Brain,
 } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import PageHeader from '@/components/dashboard/ui/PageHeader'
+import EmptyState from '@/components/dashboard/ui/EmptyState'
 import AuthGuard from '@/components/shared/AuthGuard'
 import {
   getSeverityMeta,
@@ -46,23 +49,21 @@ export default function AssessmentHistoryPage() {
 
   return (
     <AuthGuard>
-      <div className="max-w-3xl">
-        <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
-          <div>
-            <h1 className="font-heading text-2xl font-bold text-slate-800">
-              Assessment History
-            </h1>
-            <p className="mt-1 text-sm text-slate-400">
-              {results.length} {results.length === 1 ? 'assessment' : 'assessments'} taken
-            </p>
-          </div>
-          <Link href="/assessment">
-            <Button className="rounded-2xl bg-teal-700 text-white shadow-md shadow-teal-900/10 hover:bg-teal-800">
-              <ClipboardList className="h-4 w-4" aria-hidden="true" />
-              Take New
-            </Button>
-          </Link>
-        </div>
+      <div className="max-w-3xl space-y-6">
+        <PageHeader
+          badge="Assessment History"
+          badgeIcon={Brain}
+          title="Your Assessments"
+          subtitle={`${results.length} ${results.length === 1 ? 'assessment' : 'assessments'} taken`}
+          actions={
+            <Link href="/assessment">
+              <Button className="dash-cta">
+                <ClipboardList className="h-4 w-4" aria-hidden="true" />
+                Take New
+              </Button>
+            </Link>
+          }
+        />
 
         {loading ? (
           <div className="space-y-3" aria-hidden="true">
@@ -86,11 +87,8 @@ export default function AssessmentHistoryPage() {
           <Card className="rounded-2xl border-0 shadow-soft">
             <CardContent className="p-12 text-center">
               <AlertCircle className="mx-auto mb-3 h-12 w-12 text-slate-200" aria-hidden="true" />
-              <p className="text-slate-500 mb-4">We couldn&apos;t load your history.</p>
-              <Button
-                onClick={handleRetry}
-                className="rounded-2xl bg-teal-700 hover:bg-teal-800"
-              >
+              <p className="mb-4 text-slate-500">We couldn&apos;t load your history.</p>
+              <Button onClick={handleRetry} className="rounded-2xl bg-teal-700 hover:bg-teal-800">
                 Try again
               </Button>
             </CardContent>
@@ -110,7 +108,7 @@ export default function AssessmentHistoryPage() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4, delay: Math.min(i * 0.05, 0.3) }}
                 >
-                  <div className="flex items-center gap-4 rounded-2xl border border-slate-200/70 bg-white p-4 shadow-soft transition-shadow hover:shadow-card sm:p-5">
+                  <div className="flex items-center gap-4 rounded-2xl border border-slate-200/60 bg-white/80 p-4 shadow-sm backdrop-blur-sm transition-all duration-500 hover:border-teal-500/20 hover:shadow-xl hover:shadow-teal-600/5 sm:p-5">
                     <div
                       className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br text-2xl ring-1 ring-inset ${category.tile}`}
                       aria-hidden="true"
@@ -119,7 +117,7 @@ export default function AssessmentHistoryPage() {
                     </div>
 
                     <div className="min-w-0 flex-1">
-                      <p className="truncate font-heading text-sm font-semibold text-slate-800">
+                      <p className="truncate text-sm font-bold tracking-tight text-slate-800">
                         {result.quiz?.title}
                       </p>
                       <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-0.5">
@@ -134,9 +132,7 @@ export default function AssessmentHistoryPage() {
                     </div>
 
                     <div className="hidden shrink-0 text-right sm:block">
-                      <p className={`font-heading text-xl font-bold ${meta.text}`}>
-                        {result.percentage}%
-                      </p>
+                      <p className={`text-xl font-bold tracking-tight ${meta.text}`}>{result.percentage}%</p>
                       <p className="text-xs text-slate-400">
                         {result.score}/{result.max_score}
                       </p>
@@ -164,26 +160,19 @@ export default function AssessmentHistoryPage() {
             })}
           </div>
         ) : (
-          <Card className="border-0 shadow-soft">
-            <CardContent className="p-12 text-center">
-              <ClipboardList
-                className="mx-auto mb-3 h-12 w-12 text-slate-200"
-                aria-hidden="true"
-              />
-              <p className="font-heading text-base font-semibold text-slate-800">
-                No assessments taken yet
-              </p>
-              <p className="mt-1 mb-4 text-sm text-slate-400">
-                Completing your first assessment takes about five minutes.
-              </p>
+          <EmptyState
+            icon={ClipboardList}
+            title="No assessments taken yet"
+            description="Completing your first assessment takes about five minutes."
+            action={
               <Link href="/assessment">
-                <Button className="rounded-2xl bg-teal-700 hover:bg-teal-800">
+                <Button className="dash-cta">
                   Take Your First Assessment
                   <ArrowRight className="h-4 w-4" aria-hidden="true" />
                 </Button>
               </Link>
-            </CardContent>
-          </Card>
+            }
+          />
         )}
       </div>
     </AuthGuard>

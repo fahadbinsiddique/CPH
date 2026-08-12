@@ -172,7 +172,6 @@ export default function ConsultantProfileModal({ slug }) {
                     <h2 className="text-lg font-bold leading-tight tracking-tight text-slate-900 sm:text-2xl">
                       {consultant.user?.full_name}
                     </h2>
-                   
                   </div>
                   <p className="mt-0.5 text-sm text-slate-500 sm:text-base">
                     {consultant.specializations?.[0]?.name || 'Mental Health Professional'}
@@ -219,15 +218,20 @@ export default function ConsultantProfileModal({ slug }) {
 
                 {/* Specializations */}
                 {specializations().length > 0 && (
-                  <div className="flex flex-wrap gap-1.5">
-                    {specializations().map((s) => (
-                      <Badge
-                        key={s.id}
-                        className="rounded-full border border-teal-200/60 bg-teal-50 px-2.5 py-0.5 text-[11px] font-medium text-teal-700"
-                      >
-                        {s.name}
-                      </Badge>
-                    ))}
+                  <div className="space-y-1.5">
+                    <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+                      Areas of Expertise
+                    </p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {specializations().map((s) => (
+                        <Badge
+                          key={s.id}
+                          className="rounded-full border border-teal-200/60 bg-teal-50 px-2.5 py-0.5 text-[11px] font-medium text-teal-700"
+                        >
+                          {s.name}
+                        </Badge>
+                      ))}
+                    </div>
                   </div>
                 )}
 
@@ -297,7 +301,9 @@ export default function ConsultantProfileModal({ slug }) {
                               key={a.id}
                               className="flex items-center justify-between rounded-xl border border-slate-100 bg-slate-50/60 px-3.5 py-2.5 text-sm"
                             >
-                              <span className="font-semibold capitalize text-slate-700">{a.day}</span>
+                              <span className="font-semibold capitalize text-slate-700">
+                                {a.day}
+                              </span>
                               <span className="rounded-lg border border-slate-200/60 bg-white px-2 py-1 text-xs font-medium text-slate-500">
                                 {a.start_time} — {a.end_time}
                               </span>
@@ -306,7 +312,9 @@ export default function ConsultantProfileModal({ slug }) {
                         </div>
                       ) : (
                         <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50/40 py-8 text-center">
-                          <p className="text-sm text-slate-400">No availability schedule provided.</p>
+                          <p className="text-sm text-slate-400">
+                            No availability schedule provided.
+                          </p>
                         </div>
                       )}
                     </motion.div>
@@ -367,7 +375,8 @@ export default function ConsultantProfileModal({ slug }) {
                         <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50/40 py-8 text-center">
                           <Newspaper className="mx-auto mb-2 h-8 w-8 text-slate-300" />
                           <p className="text-sm text-slate-400">
-                            {consultant.user?.full_name || 'This consultant'} hasn't published any blog posts yet.
+                            {consultant.user?.full_name || 'This consultant'} has not published any
+                            blog posts yet.
                           </p>
                         </div>
                       )}

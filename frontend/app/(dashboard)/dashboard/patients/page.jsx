@@ -1,12 +1,26 @@
 'use client';
 
 import { useEffect, useState, useMemo } from 'react';
-import { Search, Loader2, Calendar, Clock } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Search, Calendar, Clock, Users } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import PageHeader from '@/components/dashboard/ui/PageHeader';
+import LoadingState from '@/components/dashboard/ui/LoadingState';
+import EmptyState from '@/components/dashboard/ui/EmptyState';
 import AuthGuard from '@/components/shared/AuthGuard';
 import { appointmentService } from '@/services/appointmentService';
+import { containerVariants, itemVariants } from '@/lib/motion';
+
+function formatDate(value) {
+  if (!value) return 'N/A';
+  return new Date(value + 'T00:00:00').toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  });
+}
 
 export default function PatientsPage() {
   const [appointments, setAppointments] = useState([]);
@@ -14,8 +28,9 @@ export default function PatientsPage() {
   const [search, setSearch] = useState('');
 
   useEffect(() => {
-    appointmentService.getAll()
-      .then(res => setAppointments(res.data.results || res.data))
+    appointmentService
+      .getAll()
+      .then((res) => setAppointments(res.data.results || res.data))
       .catch(console.error)
       .finally(() => setLoading(false));
   }, []);
@@ -23,7 +38,7 @@ export default function PatientsPage() {
   // Group by patient
   const patients = useMemo(() => {
     const map = {};
-    appointments.forEach(a => {
+    appointments.forEach((a) => {
       const id = a.client?.id;
       if (!id) return;
       if (!map[id]) {
@@ -41,76 +56,86 @@ export default function PatientsPage() {
     return Object.values(map);
   }, [appointments]);
 
-  const filtered = patients.filter(p =>
-    p.full_name?.toLowerCase().includes(search.toLowerCase()) ||
-    p.email?.toLowerCase().includes(search.toLowerCase())
+  const filtered = patients.filter(
+    (p) =>
+      p.full_name?.toLowerCase().includes(search.toLowerCase()) ||
+      p.email?.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
     <AuthGuard allowedRoles={['consultant']}>
-      <div className="max-w-3xl">
-        <h1 className="text-2xl font-bold text-slate-800 mb-1">Patients</h1>
-        <p className="text-slate-400 text-sm mb-6">
-          {patients.length} total patients
-        </p>
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        animate="show"
+        className="max-w-3xl space-y-6"
+      >
+        <PageHeader
+          badge="My Patients"
+          badgeIcon={Users}
+          title="Patients"
+          subtitle={`${patients.length} total patients`}
+        />
 
         {/* Search */}
-        <div className="relative mb-5">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+        <motion.div variants={itemVariants} className="relative">
+          <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
           <Input
             placeholder="Search by name or email..."
             value={search}
-            onChange={e => setSearch(e.target.value)}
-            className="pl-9 h-10"
+            onChange={(e) => setSearch(e.target.value)}
+            className="h-11 rounded-xl border-slate-200 bg-white/50 pl-10 shadow-sm focus-visible:border-teal-500 focus-visible:ring-teal-500/20"
           />
-        </div>
+        </motion.div>
 
         {loading ? (
-          <div className="flex justify-center py-20">
-            <Loader2 className="w-7 h-7 animate-spin text-blue-600" />
-          </div>
+          <LoadingState label="Loading your patients..." />
         ) : filtered.length > 0 ? (
-          <div className="space-y-3">
-            {filtered.map(patient => {
-              const completed = patient.appointments.filter(a => a.status === 'completed').length;
-              const upcoming = patient.appointments.filter(a =>
+          <motion.div variants={itemVariants} className="space-y-3">
+            {filtered.map((patient) => {
+              const completed = patient.appointments.filter((a) => a.status === 'completed').length;
+              const upcoming = patient.appointments.filter((a) =>
                 ['pending', 'confirmed'].includes(a.status)
               ).length;
 
               return (
-                <Card key={patient.id} className="border border-slate-100 shadow-sm rounded-2xl">
-                  <CardContent className="p-4 flex items-center gap-4">
+                <Card
+                  key={patient.id}
+                  className="group dash-card dash-card-hover relative overflow-hidden"
+                >
+                  <div className="dash-accent" />
+                  <CardContent className="flex items-center gap-4 p-4">
                     {/* Avatar */}
-                    <div className="w-11 h-11 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 font-bold flex-shrink-0">
+                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-indigo-100 to-blue-100 text-base font-bold text-indigo-600 shadow-sm">
                       {patient.full_name?.charAt(0)}
                     </div>
 
                     {/* Info */}
-                    <div className="flex-1 min-w-0">
-                      <p className="font-medium text-slate-800">{patient.full_name}</p>
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate font-medium text-slate-800">{patient.full_name}</p>
                       <p className="text-xs text-slate-400">{patient.email}</p>
 
-                      <div className="flex gap-3 mt-2">
+                      <div className="mt-2 flex flex-wrap gap-3">
                         <span className="flex items-center gap-1 text-xs text-slate-500">
-                          <Calendar className="w-3 h-3" />
+                          <Calendar className="h-3 w-3 text-teal-500" />
                           {patient.appointments.length} sessions
                         </span>
                         <span className="flex items-center gap-1 text-xs text-slate-500">
-                          <Clock className="w-3 h-3" />
-                          Last: {patient.lastVisit}
+                          <Clock className="h-3 w-3 text-teal-500" />
+                          Last: {formatDate(patient.lastVisit)}
                         </span>
                       </div>
                     </div>
 
                     {/* Stats */}
-                    <div className="flex gap-2 flex-shrink-0">
+                    <div className="flex shrink-0 flex-wrap gap-2">
                       {completed > 0 && (
-                        <Badge className="bg-green-100 text-green-700 text-xs">
+                        <Badge className="bg-emerald-50 text-xs text-emerald-700 border-emerald-200">
                           {completed} done
                         </Badge>
                       )}
                       {upcoming > 0 && (
-                        <Badge className="bg-blue-100 text-blue-700 text-xs">
+                        <Badge className="bg-blue-50 text-xs text-blue-700 border-blue-200">
                           {upcoming} upcoming
                         </Badge>
                       )}
@@ -119,13 +144,15 @@ export default function PatientsPage() {
                 </Card>
               );
             })}
-          </div>
+          </motion.div>
         ) : (
-          <div className="text-center py-16 text-slate-400 text-sm">
-            No patients found
-          </div>
+          <EmptyState
+            icon={Users}
+            title="No patients found"
+            description={search ? `No results match "${search}"` : 'Your patients will appear here.'}
+          />
         )}
-      </div>
+      </motion.div>
     </AuthGuard>
   );
 }
