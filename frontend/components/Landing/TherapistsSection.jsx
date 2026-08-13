@@ -114,22 +114,11 @@ const TherapistsSection = () => {
                           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
                         />
 
-                        {doc.available && (
-                          <div className="absolute right-3 top-3 inline-flex items-center gap-1.5 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold shadow-sm backdrop-blur">
-                            <span className="relative flex h-2 w-2">
-                              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
-                              <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
-                            </span>
-                            <span className="text-emerald-700">Available</span>
-                          </div>
-                        )}
+                       
 
                         <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-black/0 to-transparent" />
 
-                        <div className="absolute bottom-3 left-3 inline-flex items-center gap-1.5 rounded-full border border-white/25 bg-white/20 px-2.5 py-1 text-xs text-white backdrop-blur">
-                          <BadgeCheck className="h-3.5 w-3.5 text-teal-200" />
-                          Verified
-                        </div>
+                        
                       </div>
 
                       <div className="flex flex-1 flex-col p-5">
