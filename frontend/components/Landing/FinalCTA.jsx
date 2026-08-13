@@ -53,17 +53,10 @@ const FinalCTA = () => {
                 </a>
               </div>
 
-              <p className="mt-5 text-xs text-slate-400">
-                Free 15-min consultation &middot; Cancel anytime
-              </p>
+             
             </div>
 
-            <div className="absolute -bottom-3 -right-3 hidden items-center gap-1.5 rounded-full border border-teal-100 bg-white px-3.5 py-1.5 text-xs font-medium text-teal-700 shadow-soft md:flex">
-              <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
-              <span>4.9/5</span>
-              <span className="text-slate-400">|</span>
-              <span>10k+ users</span>
-            </div>
+            
           </div>
         </Reveal>
       </div>

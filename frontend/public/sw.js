@@ -1,4 +1,4 @@
-const CACHE_VERSION = "v1";
+const CACHE_VERSION = "v2";
 const STATIC_CACHE = `cph-static-${CACHE_VERSION}`;
 const DYNAMIC_CACHE = `cph-dynamic-${CACHE_VERSION}`;
 const API_CACHE = `cph-api-${CACHE_VERSION}`;
@@ -89,6 +89,10 @@ self.addEventListener("fetch", (event) => {
 
   // Chrome extensions skip
   if (!url.protocol.startsWith("http")) return;
+
+  // Never touch third-party / cross-origin requests (Google GSI, FedCM, fonts, analytics).
+  // The browser must handle these natively — the SW only manages same-origin traffic.
+  if (url.origin !== self.location.origin) return;
 
   // Never cache patterns
   if (NEVER_CACHE_PATTERNS.some((pattern) => pattern.test(url.pathname))) {
