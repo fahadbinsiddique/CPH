@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import {
   Search, Loader2, CheckCircle2, XCircle, Shield,
-  Plus, Pencil, Trash2, X, Users
+  Plus, Pencil, Trash2, Users, Check, Clock, UploadCloud
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -12,6 +12,9 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+} from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Dialog, DialogContent, DialogHeader,
@@ -33,6 +36,32 @@ const EMPTY_FORM = {
   is_available: true, profile_image: null,
 };
 
+const DAYS = [
+  { value: 'saturday', label: 'Saturday' },
+  { value: 'sunday', label: 'Sunday' },
+  { value: 'monday', label: 'Monday' },
+  { value: 'tuesday', label: 'Tuesday' },
+  { value: 'wednesday', label: 'Wednesday' },
+  { value: 'thursday', label: 'Thursday' },
+  { value: 'friday', label: 'Friday' },
+];
+
+const TIME_OPTIONS = [
+  '08:00', '08:30', '09:00', '09:30', '10:00', '10:30',
+  '11:00', '11:30', '12:00', '13:00', '14:00', '14:30',
+  '15:00', '15:30', '16:00', '16:30', '17:00', '17:30',
+  '18:00', '18:30', '19:00', '19:30', '20:00',
+];
+
+const SESSION_TYPES = [
+  { value: 'online', label: 'Online' },
+  { value: 'offline', label: 'In-person' },
+  { value: 'both', label: 'Both' },
+];
+
+let slotKeySeq = 0;
+const nextSlotKey = () => `slot-${++slotKeySeq}`;
+
 export default function AdminConsultantsPage() {
   const [consultants, setConsultants] = useState([]);
   const [specializations, setSpecializations] = useState([]);
@@ -45,7 +74,9 @@ export default function AdminConsultantsPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState(EMPTY_FORM);
+  const [availabilitySlots, setAvailabilitySlots] = useState([]);
   const [saving, setSaving] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(null);
   const [error, setError] = useState('');
 
   const fetch = () => {
@@ -95,6 +126,8 @@ export default function AdminConsultantsPage() {
   const openCreate = () => {
     setEditing(null);
     setForm(EMPTY_FORM);
+    setAvailabilitySlots([]);
+    setUploadProgress(null);
     setError('');
     setModalOpen(true);
   };
@@ -114,6 +147,16 @@ export default function AdminConsultantsPage() {
       is_available: c.is_available,
       profile_image: null,
     });
+    setAvailabilitySlots(
+      c.availability?.map(slot => ({
+        key: nextSlotKey(),
+        day: slot.day,
+        start_time: slot.start_time,
+        end_time: slot.end_time,
+        session_type: slot.session_type || 'both',
+      })) || []
+    );
+    setUploadProgress(null);
     setError('');
     setModalOpen(true);
   };
@@ -127,14 +170,48 @@ export default function AdminConsultantsPage() {
     }));
   };
 
+  const updateSlot = (key, patch) => {
+    setAvailabilitySlots(prev =>
+      prev.map(s => (s.key === key ? { ...s, ...patch } : s))
+    );
+  };
+
+  const removeSlot = (key) => {
+    setAvailabilitySlots(prev => prev.filter(s => s.key !== key));
+  };
+
+  const addSlot = () => {
+    const usedDays = availabilitySlots.map(s => s.day);
+    const freeDay = DAYS.find(d => !usedDays.includes(d.value));
+    setAvailabilitySlots(prev => [
+      ...prev,
+      {
+        key: nextSlotKey(),
+        day: freeDay ? freeDay.value : 'saturday',
+        start_time: '09:00',
+        end_time: '17:00',
+        session_type: 'both',
+      },
+    ]);
+  };
+
   const handleSave = async () => {
     if (!editing && (!form.full_name || !form.email || !form.password)) {
       setError('Name, email and password are required for new consultants.');
       return;
     }
 
+    const invalidSlot = availabilitySlots.find(s => s.start_time >= s.end_time);
+    const days = availabilitySlots.map(s => s.day);
+    const hasDuplicateDay = new Set(days).size !== days.length;
+    if (invalidSlot || hasDuplicateDay) {
+      setError('Fix availability: end time must be after start time, and each day can only be used once.');
+      return;
+    }
+
     setSaving(true);
     setError('');
+    setUploadProgress(0);
 
     try {
       const fd = new FormData();
@@ -150,24 +227,43 @@ export default function AdminConsultantsPage() {
         }
       });
 
+      fd.append('availability', JSON.stringify(
+        availabilitySlots.map(({ day, start_time, end_time, session_type }) => ({
+          day, start_time, end_time, session_type,
+        }))
+      ));
+
+      const config = {
+        onUploadProgress: (e) => {
+          setUploadProgress(e.total ? Math.round((e.loaded / e.total) * 100) : -1);
+        },
+        timeout: 60000,
+      };
+
       if (editing) {
-        await consultantService.adminUpdate(editing.id, fd);
+        await consultantService.adminUpdate(editing.id, fd, config);
         toast.success('Consultant updated');
       } else {
-        await consultantService.adminCreate(fd);
+        await consultantService.adminCreate(fd, config);
         toast.success('Consultant created');
       }
 
       setModalOpen(false);
       fetch();
     } catch (err) {
+      const data = err.response?.data;
+      const availabilityMsg = Array.isArray(data?.availability)
+        ? data.availability.join(' ')
+        : (typeof data?.availability === 'string' ? data.availability : '');
       setError(
-        err.response?.data?.email?.[0] ||
-        err.response?.data?.detail ||
+        data?.email?.[0] ||
+        availabilityMsg ||
+        data?.detail ||
         'Failed to save consultant.'
       );
     } finally {
       setSaving(false);
+      setUploadProgress(null);
     }
   };
 
@@ -180,6 +276,8 @@ export default function AdminConsultantsPage() {
   const unverified = filtered.filter(c => !c.is_verified);
 
   const inputCls = "h-10 rounded-xl border-slate-200 shadow-sm focus-visible:border-teal-500 focus-visible:ring-teal-500/20";
+
+  const usedAvailabilityDays = availabilitySlots.map(s => s.day);
 
   return (
     <motion.div
@@ -339,7 +437,7 @@ export default function AdminConsultantsPage() {
       )}
 
       <Dialog open={modalOpen} onOpenChange={setModalOpen}>
-        <DialogContent className="max-h-[90vh] max-w-xl overflow-y-auto">
+        <DialogContent className="cph-scroll max-h-[90vh] sm:max-w-3xl overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{editing ? 'Edit Consultant' : 'Add New Consultant'}</DialogTitle>
           </DialogHeader>
@@ -433,21 +531,37 @@ export default function AdminConsultantsPage() {
             </div>
 
             <div className="space-y-1.5">
-              <Label className="text-sm font-medium text-slate-700">Specializations</Label>
-              <div className="flex min-h-[44px] flex-wrap gap-2 rounded-xl bg-slate-50 p-3">
-                {specializations.map(spec => (
-                  <Badge
-                    key={spec.id}
-                    variant={form.specializations.includes(spec.id) ? 'default' : 'outline'}
-                    className="cursor-pointer"
-                    onClick={() => toggleSpec(spec.id)}
-                  >
-                    {spec.name}
-                    {form.specializations.includes(spec.id) && (
-                      <X className="ml-1 h-3 w-3" />
-                    )}
-                  </Badge>
-                ))}
+              <div className="flex items-center justify-between">
+                <Label className="text-sm font-medium text-slate-700">Specializations</Label>
+                <span className="text-xs font-semibold text-teal-600">
+                  {form.specializations.length} selected
+                </span>
+              </div>
+              <div className="cph-scroll max-h-48 overflow-y-auto rounded-xl border border-slate-200 bg-slate-50 p-1.5">
+                {specializations.length > 0 ? specializations.map(spec => {
+                  const selected = form.specializations.includes(spec.id);
+                  return (
+                    <label
+                      key={spec.id}
+                      className={`flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2 text-sm transition-all ${
+                        selected
+                          ? 'bg-teal-50 font-medium text-teal-700'
+                          : 'text-slate-700 hover:bg-white'
+                      }`}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={selected}
+                        onChange={() => toggleSpec(spec.id)}
+                        className="h-4 w-4 shrink-0 rounded border-slate-300 accent-teal-600"
+                      />
+                      <span className="flex-1">{spec.name}</span>
+                      {selected && <Check className="h-4 w-4 text-teal-600" />}
+                    </label>
+                  );
+                }) : (
+                  <p className="px-3 py-2 text-sm text-slate-400">Loading specializations...</p>
+                )}
               </div>
             </div>
 
@@ -459,6 +573,129 @@ export default function AdminConsultantsPage() {
                 onChange={e => setForm(p => ({ ...p, profile_image: e.target.files[0] }))}
                 className="w-full text-sm text-slate-500 file:mr-3 file:rounded-lg file:border-0 file:bg-teal-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-teal-600 hover:file:bg-teal-100"
               />
+            </div>
+
+            <div className="space-y-3 rounded-xl border border-slate-200 bg-slate-50/50 p-3.5">
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <Label className="flex items-center gap-2 text-sm font-medium text-slate-700">
+                    <Clock className="h-4 w-4 text-teal-600" />
+                    Weekly Availability
+                  </Label>
+                  <p className="mt-0.5 text-xs text-slate-400">
+                    Set consultation hours for each day of the week.
+                  </p>
+                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={addSlot}
+                  disabled={availabilitySlots.length >= DAYS.length}
+                  className="shrink-0 rounded-xl border-slate-200 text-teal-600 hover:bg-teal-50 hover:text-teal-700"
+                >
+                  <Plus className="mr-1 h-3.5 w-3.5" /> Add Slot
+                </Button>
+              </div>
+
+              {availabilitySlots.length === 0 ? (
+                <div className="rounded-xl border border-dashed border-slate-200 bg-white/60 px-4 py-5 text-center text-sm text-slate-400">
+                  No availability slots set. Add a slot to define consultation hours.
+                </div>
+              ) : (
+                <div className="cph-scroll max-h-64 space-y-2.5 overflow-y-auto pr-1">
+                  {availabilitySlots.map((slot, i) => (
+                    <div
+                      key={slot.key}
+                      className="grid grid-cols-12 items-center gap-2 rounded-xl border border-slate-200 bg-white p-2.5"
+                    >
+                      <div className="col-span-3">
+                        <Select
+                          value={slot.day}
+                          onValueChange={v => updateSlot(slot.key, { day: v })}
+                        >
+                          <SelectTrigger className="h-9 rounded-lg border-slate-200 bg-white text-sm">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {DAYS.map(d => (
+                              <SelectItem
+                                key={d.value}
+                                value={d.value}
+                                disabled={usedAvailabilityDays.includes(d.value) && usedAvailabilityDays[i] !== d.value}
+                              >
+                                {d.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="col-span-2">
+                        <Select
+                          value={slot.start_time}
+                          onValueChange={v => updateSlot(slot.key, { start_time: v })}
+                        >
+                          <SelectTrigger className="h-9 rounded-lg border-slate-200 bg-white text-sm">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {TIME_OPTIONS.map(t => (
+                              <SelectItem key={t} value={t}>{t}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <span className="col-span-1 text-center text-xs text-slate-400">to</span>
+
+                      <div className="col-span-2">
+                        <Select
+                          value={slot.end_time}
+                          onValueChange={v => updateSlot(slot.key, { end_time: v })}
+                        >
+                          <SelectTrigger className="h-9 rounded-lg border-slate-200 bg-white text-sm">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {TIME_OPTIONS.map(t => (
+                              <SelectItem key={t} value={t}>{t}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="col-span-3">
+                        <Select
+                          value={slot.session_type}
+                          onValueChange={v => updateSlot(slot.key, { session_type: v })}
+                        >
+                          <SelectTrigger className="h-9 rounded-lg border-slate-200 bg-white text-sm">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {SESSION_TYPES.map(t => (
+                              <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="col-span-1 flex justify-end">
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon-sm"
+                          onClick={() => removeSlot(slot.key)}
+                          className="h-8 w-8 text-slate-400 hover:bg-rose-50 hover:text-rose-500"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
             <div className="flex items-center gap-3">
@@ -477,10 +714,34 @@ export default function AdminConsultantsPage() {
             {error && (
               <p className="rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-600">{error}</p>
             )}
+
+            {saving && (
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between text-xs font-medium">
+                  <span className="flex items-center gap-1.5 text-slate-500">
+                    <UploadCloud className="h-3.5 w-3.5 text-teal-600" />
+                    Saving consultant...
+                  </span>
+                  {uploadProgress !== null && uploadProgress >= 0 && (
+                    <span className="text-teal-600">{uploadProgress}%</span>
+                  )}
+                </div>
+                <div className="h-2 w-full overflow-hidden rounded-full bg-slate-100">
+                  <div
+                    className={
+                      uploadProgress === -1
+                        ? 'h-full w-1/3 animate-pulse rounded-full bg-teal-400'
+                        : 'h-full rounded-full bg-gradient-to-r from-teal-500 to-emerald-500 transition-[width] duration-200 ease-out'
+                    }
+                    style={uploadProgress >= 0 ? { width: `${uploadProgress}%` } : undefined}
+                  />
+                </div>
+              </div>
+            )}
           </div>
 
           <DialogFooter>
-            <Button variant="outline" onClick={() => setModalOpen(false)}>Cancel</Button>
+            <Button variant="outline" onClick={() => setModalOpen(false)} disabled={saving}>Cancel</Button>
             <Button
               onClick={handleSave}
               disabled={saving}

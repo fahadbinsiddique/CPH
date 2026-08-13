@@ -27,13 +27,15 @@ export const consultantService = {
   // Admin — Consultant Management
   adminGetAll: () => api.get('/api/consultants/admin/list/'),
   adminGetOne: (id) => api.get(`/api/consultants/admin/${id}/`),
-  adminCreate: (data) =>
+  adminCreate: (data, config = {}) =>
     api.post('/api/consultants/admin/create/', data, {
       headers: { 'Content-Type': 'multipart/form-data' },
+      ...config,
     }),
-  adminUpdate: (id, data) =>
+  adminUpdate: (id, data, config = {}) =>
     api.patch(`/api/consultants/admin/${id}/`, data, {
       headers: { 'Content-Type': 'multipart/form-data' },
+      ...config,
     }),
   adminDelete: (id) => api.delete(`/api/consultants/admin/${id}/`),
   adminVerify: (id, value) =>

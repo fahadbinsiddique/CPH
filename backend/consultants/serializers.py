@@ -222,6 +222,8 @@ class ConsultantCreateUpdateSerializer(serializers.ModelSerializer):
         many=True, queryset=Specialization.objects.all(), required=False
     )
 
+    availability = serializers.JSONField(required=False, write_only=True)
+
     class Meta:
         model = Consultant
         fields = [
@@ -229,8 +231,33 @@ class ConsultantCreateUpdateSerializer(serializers.ModelSerializer):
             'specializations', 'bio', 'experience_years',
             'consultation_fee', 'profile_image',
             'is_verified', 'is_available',
-            'languages', 'location',
+            'languages', 'location', 'availability',
         ]
+
+    def validate_availability(self, value):
+        # The frontend submits availability as a JSON array of slot dicts
+        # ({day, start_time, end_time, session_type}) over multipart form data.
+        if value is None:
+            return value
+        if not isinstance(value, list):
+            raise serializers.ValidationError("Availability must be a list of slots.")
+
+        days = []
+        for slot in value:
+            slot_serializer = AvailabilitySerializer(data=slot)
+            slot_serializer.is_valid(raise_exception=True)
+
+            if slot['start_time'] >= slot['end_time']:
+                raise serializers.ValidationError(
+                    "End time must be after the start time for each availability slot."
+                )
+            if slot['day'] in days:
+                raise serializers.ValidationError(
+                    f"A slot for {slot['day']} can only be added once."
+                )
+            days.append(slot['day'])
+
+        return value
 
     def validate_email(self, value):
         
@@ -253,6 +280,7 @@ class ConsultantCreateUpdateSerializer(serializers.ModelSerializer):
         password = validated_data.pop('password')
         full_name = validated_data.pop('full_name', '')
         specializations = validated_data.pop('specializations', [])
+        availability = validated_data.pop('availability', [])
 
         try:
             user = User.objects.create_user(
@@ -273,6 +301,13 @@ class ConsultantCreateUpdateSerializer(serializers.ModelSerializer):
         if specializations:
             consultant.specializations.set(specializations)
 
+        for slot in availability:
+            slot_serializer = AvailabilitySerializer(data=slot)
+            slot_serializer.is_valid(raise_exception=True)
+            ConsultantAvailability.objects.create(
+                consultant=consultant, **slot_serializer.validated_data
+            )
+
         # Trigger credentials email after DB commit (admin-created consultant).
         # Non-blocking: the 201 response is returned without waiting on Resend.
         transaction.on_commit(
@@ -292,6 +327,7 @@ class ConsultantCreateUpdateSerializer(serializers.ModelSerializer):
         validated_data.pop('password', None)
         
         specializations = validated_data.pop('specializations', None)
+        availability = validated_data.pop('availability', None)
 
         
         for attr, value in validated_data.items():
@@ -300,6 +336,17 @@ class ConsultantCreateUpdateSerializer(serializers.ModelSerializer):
 
         if specializations is not None:
             instance.specializations.set(specializations)
+
+        if availability is not None:
+            # The frontend always submits the full slot list, so replace
+            # existing rows to keep them in sync (one slot per day).
+            instance.availability.all().delete()
+            for slot in availability:
+                slot_serializer = AvailabilitySerializer(data=slot)
+                slot_serializer.is_valid(raise_exception=True)
+                ConsultantAvailability.objects.create(
+                    consultant=instance, **slot_serializer.validated_data
+                )
 
         return instance
 
