@@ -164,9 +164,7 @@ export default function ConsultantProfilePage() {
                     <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
                       {user?.full_name}
                     </h1>
-                    {is_verified && (
-                      <CheckCircle2 className="w-5 h-5 text-teal-500 fill-teal-500/10" />
-                    )}
+                    
                   </div>
 
                   {/* Title */}

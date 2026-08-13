@@ -145,9 +145,9 @@ export default function ConsultantProfileModal({ slug }) {
               <div className="flex items-center gap-4 pr-8 sm:gap-5">
                 <div className="relative shrink-0">
                   <div className="flex h-28 w-28 items-center justify-center overflow-hidden rounded-2xl bg-slate-100 shadow-sm ring-1 ring-slate-200/70 sm:h-36 sm:w-36">
-                    {profile_image() ? (
+                    {consultant.profile_image ? (
                       <Image
-                        src={profile_image()}
+                        src={consultant.profile_image}
                         alt={consultant.user?.full_name || 'Consultant'}
                         width={144}
                         height={144}

@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 import {
   MapPin,
   Clock,
-  CheckCircle2,
+  
   Languages,
   ChevronRight,
 } from 'lucide-react';
@@ -89,9 +89,7 @@ export default function ConsultantCard({ consultant }) {
               <h3 className="text-lg font-bold leading-tight text-slate-900 transition-colors group-hover:text-teal-600">
                 {user?.full_name}
               </h3>
-              {is_verified && (
-                <CheckCircle2 className="h-4 w-4 shrink-0 text-teal-600" />
-              )}
+              
             </div>
             <p className="mt-0.5 truncate text-xs text-slate-500">
               {specializations?.[0]?.name || 'Mental Health Professional'}

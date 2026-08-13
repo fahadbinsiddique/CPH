@@ -18,7 +18,7 @@ export default function PWAInstallPrompt() {
     return false;
   });
 
-  // 🎯 ২. iOS check initializer (useEffect-এর বাইরে নিয়ে আসা হলো)
+  
   const [isIOS] = useState(() => {
     if (typeof window !== "undefined") {
       return (

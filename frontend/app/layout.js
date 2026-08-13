@@ -77,7 +77,7 @@ export default function RootLayout({ children, modal }) {
           {modal}
         </MotionProvider>
         {/* PWA Install Banner Popup */}
-        <PWAInstallPrompt />
+        {/* <PWAInstallPrompt /> */}
         <Toaster position="top-center" richColors closeButton />
         <Footer />
       </body>
