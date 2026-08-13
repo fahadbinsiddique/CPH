@@ -22,5 +22,7 @@ urlpatterns = [
 
     path('change-password/', ChangePasswordView.as_view(), name='change-password'),
 
+    path("push/subscribe/", SavePushSubscriptionView.as_view(), name="push-subscribe"),
+
     
 ]

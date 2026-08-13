@@ -2,15 +2,15 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Loader2, Lock, Bell, Shield, Eye, EyeOff, CheckCircle, AlertCircle, Settings } from 'lucide-react';
+import { Loader2, Lock, Bell, BellOff, Shield, Eye, EyeOff, CheckCircle, AlertCircle, Settings } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import PageHeader from '@/components/dashboard/ui/PageHeader';
 import api from '@/lib/api';
-import { ConsultantCreateModal } from '@/components/consultant/ConsultantCreateModal';
 import { containerVariants, itemVariants } from '@/lib/motion';
+import { usePushNotifications } from '@/hooks/usePushNotifications';
 
 function Toggle({ checked, onChange }) {
   return (
@@ -29,6 +29,60 @@ function Toggle({ checked, onChange }) {
         }`}
       />
     </button>
+  );
+}
+
+function PushNotificationToggle() {
+  const { permission, isSubscribed, loading, subscribe, unsubscribe } = usePushNotifications();
+
+  if (permission === 'denied') {
+    return (
+      <div className="flex items-center justify-between py-2.5 border-b border-slate-100">
+        <div>
+          <p className="text-sm font-medium text-slate-700">Push Notifications</p>
+          <p className="text-xs text-rose-500">
+            Blocked in browser settings. Please allow manually.
+          </p>
+        </div>
+        <BellOff className="h-5 w-5 text-slate-300" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex items-center justify-between py-2.5 border-b border-slate-100">
+      <div>
+        <p className="text-sm font-medium text-slate-700">Push Notifications</p>
+        <p className="text-xs text-slate-400">
+          {isSubscribed
+            ? 'You will receive real-time booking and system alerts.'
+            : 'Get instant updates about appointment updates directly on your device.'}
+        </p>
+      </div>
+      <Button
+        size="sm"
+        variant={isSubscribed ? 'outline' : 'default'}
+        className={
+          isSubscribed
+            ? 'border-rose-200 text-rose-600 hover:bg-rose-50 rounded-xl text-xs h-9'
+            : 'bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs h-9'
+        }
+        onClick={isSubscribed ? unsubscribe : subscribe}
+        disabled={loading}
+      >
+        {loading ? (
+          <Loader2 className="h-4 w-4 animate-spin" />
+        ) : isSubscribed ? (
+          <>
+            <BellOff className="mr-1.5 h-3.5 w-3.5" /> Disable Push
+          </>
+        ) : (
+          <>
+            <Bell className="mr-1.5 h-3.5 w-3.5" /> Enable Push
+          </>
+        )}
+      </Button>
+    </div>
   );
 }
 
@@ -102,10 +156,8 @@ export default function SettingsPage() {
         badge="Account Settings"
         badgeIcon={Settings}
         title="Settings"
-        subtitle="Manage your consultant account, password, and notification preferences."
+        subtitle="Manage your account, password, and notification preferences."
       />
-
-  
 
       {/* Change password */}
       <motion.div variants={itemVariants}>
@@ -193,6 +245,10 @@ export default function SettingsPage() {
             </div>
 
             <div className="space-y-3">
+              {/* Web Push Notification Toggle */}
+              <PushNotificationToggle />
+
+              {/* General Notification Preferences */}
               {notifRows.map(({ key, label, desc }) => (
                 <div key={key} className="flex items-center justify-between py-2">
                   <div>

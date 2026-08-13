@@ -368,3 +368,30 @@ class GoogleOneTapLoginView(APIView):
         }, status=status.HTTP_200_OK)
 
         return set_auth_cookies(response, access, refresh)
+
+
+from .models import PushSubscription
+from .push_notifications import send_push_notification
+
+
+class SavePushSubscriptionView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        data = request.data
+        sub, created = PushSubscription.objects.update_or_create(
+            user=request.user,
+            endpoint=data["endpoint"],
+            defaults={
+                "p256dh": data["keys"]["p256dh"],
+                "auth": data["keys"]["auth"],
+            },
+        )
+        return Response({"status": "saved", "created": created})
+
+    def delete(self, request):
+        endpoint = request.data.get("endpoint")
+        PushSubscription.objects.filter(
+            user=request.user, endpoint=endpoint
+        ).delete()
+        return Response({"status": "deleted"})

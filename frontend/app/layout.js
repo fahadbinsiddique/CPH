@@ -5,6 +5,8 @@ import Footer from '@/components/layout/Footer'
 import MotionProvider from '@/components/layout/MotionProvider'
 import { Toaster } from 'sonner'
 import GoogleOneTap from '@/components/auth/GoogleOneTap'
+import ServiceWorkerRegister from '@/components/shared/ServiceWorkerRegister'
+import PWAInstallPrompt from '@/components/shared/PWAInstallPrompt'
 
 // Geist Sans for body and general text.
 const geistSans = Geist({
@@ -25,8 +27,35 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 })
 
 export const metadata = {
-  title: 'Center for Psychologycal Health',
-  description: 'A modern mental wellness platform',
+  title: 'Center for Psychology',
+  description: 'Mental wellness & online counseling platform',
+  manifest: '/manifest.webmanifest',
+
+  icons: {
+    icon: [
+      { url: '/icons/favicon-96x96.png', sizes: '96x96', type: 'image/png' },
+      { url: '/icons/favicon.svg', type: 'image/svg+xml' },
+    ],
+    shortcut: '/icons/favicon.ico',
+    apple: '/icons/apple-touch-icon.png',
+  },
+
+  appleWebApp: {
+    title: 'Cph',
+    capable: true,
+    statusBarStyle: 'default',
+  },
+  formatDetection: {
+    telephone: false,
+  },
+}
+
+export const viewport = {
+  themeColor: '#0d9488',
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
 }
 
 export default function RootLayout({ children, modal }) {
@@ -37,12 +66,16 @@ export default function RootLayout({ children, modal }) {
       className={`${geistSans.variable} ${geistMono.variable} ${plusJakartaSans.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
+        {/* Service Worker Auto Registration */}
+        <ServiceWorkerRegister />
         <Navbar />
         <MotionProvider>
           <GoogleOneTap />
           {children}
           {modal}
         </MotionProvider>
+        {/* PWA Install Banner Popup */}
+        <PWAInstallPrompt />
         <Toaster position="top-center" richColors closeButton />
         <Footer />
       </body>

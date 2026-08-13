@@ -1,14 +1,19 @@
-import resend
+import json
 import os
 import threading
+import resend
 from django.conf import settings
+from cph_app.models import PushSubscription
+from cph_app.push_notifications import send_push_notification
 
-resend.api_key = os.getenv('RESEND_API_KEY')
+# Resend Email Configuration
+resend.api_key = os.getenv("RESEND_API_KEY")
+FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "onboarding@resend.dev")
 
-FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'onboarding@resend.dev')
-
+# HELPER FUNCTIONS (EMAIL & PUSH)
 
 def send_email(to, subject, html):
+    """Synchronous email sender using Resend."""
     try:
         resend.Emails.send({
             "from": f"Centre for Psychological Health <{FROM_EMAIL}>",
@@ -23,17 +28,33 @@ def send_email(to, subject, html):
 
 
 def send_email_async(to, subject, html):
-    """
-    Fire-and-forget email send so the HTTP response is never blocked by the
-    external Resend call. Errors are logged inside the worker thread only.
-    """
+    """Fire-and-forget email send using background thread."""
     def _worker():
         send_email(to, subject, html)
 
     threading.Thread(target=_worker, daemon=True).start()
 
 
+def send_user_push_async(user, title, body, url="/dashboard"):
+    """
+    Fire-and-forget push notification sender for a specific user's registered devices.
+    """
+    def _worker():
+        subscriptions = PushSubscription.objects.filter(user=user)
+        for sub in subscriptions:
+            send_push_notification(
+                subscription_info=sub.get_subscription_info(),
+                title=title,
+                body=body,
+                url=url,
+            )
+
+    threading.Thread(target=_worker, daemon=True).start()
+
+# APPOINTMENT & NOTIFICATION FUNCTIONS
+
 def booking_confirmation_email(appointment):
+    """Send booking confirmation email and push notification to Client."""
     client = appointment.client
     consultant = appointment.consultant.user
 
@@ -59,10 +80,19 @@ def booking_confirmation_email(appointment):
         </div>
     </div>
     """
-    send_email(client.email, "Booking Confirmation — Centre for Psychological Health", html)
+    send_email_async(client.email, "Booking Confirmation — Centre for Psychological Health", html)
+
+    # Push Notification to Client
+    send_user_push_async(
+        user=client,
+        title="Booking Submitted ✅",
+        body=f"Your appointment with {consultant.full_name} on {appointment.appointment_date} has been placed.",
+        url="/dashboard/bookings"
+    )
 
 
 def booking_status_update_email(appointment):
+    """Send appointment status update email and push notification to Client."""
     client = appointment.client
     consultant = appointment.consultant.user
     status = appointment.status
@@ -73,7 +103,10 @@ def booking_status_update_email(appointment):
         'completed': ('Session Completed 🎉', '#2563eb', 'Your session has been marked as completed. Thank you for using our platform!'),
     }
 
-    title, color, message = status_messages.get(status, ('Appointment Update', '#2563eb', 'Your appointment status has been updated.'))
+    title, color, message = status_messages.get(
+        status, 
+        ('Appointment Update', '#2563eb', 'Your appointment status has been updated.')
+    )
 
     html = f"""
     <div style="font-family: sans-serif; max-width: 500px; margin: 0 auto;">
@@ -93,11 +126,26 @@ def booking_status_update_email(appointment):
         </div>
     </div>
     """
-    send_email(client.email, title, html)
+    send_email_async(client.email, title, html)
+
+    # Push Notification to Client
+    push_bodies = {
+        "confirmed": f"Your appointment with {consultant.full_name} is confirmed ✅",
+        "cancelled": f"Your appointment on {appointment.appointment_date} was cancelled ❌",
+        "completed": "Your counseling session has been completed 🎉",
+    }
+    push_body = push_bodies.get(status, f"Status updated to {status}")
+
+    send_user_push_async(
+        user=client,
+        title=title,
+        body=push_body,
+        url="/dashboard/bookings"
+    )
 
 
 def new_appointment_request_email(appointment):
-    """Consultant notify  — new booking request"""
+    """Notify Consultant about new appointment request via email and push notification."""
     consultant = appointment.consultant.user
     client = appointment.client
 
@@ -122,9 +170,19 @@ def new_appointment_request_email(appointment):
         </div>
     </div>
     """
-    send_email(consultant.email, "New Appointment Request", html)
+    send_email_async(consultant.email, "New Appointment Request 📅", html)
+
+    # Push Notification to Consultant
+    send_user_push_async(
+        user=consultant,
+        title="New Appointment Request 📅",
+        body=f"{client.full_name} requested a session on {appointment.appointment_date} at {appointment.appointment_time}.",
+        url="/dashboard/appointments"
+    )
+
 
 def welcome_email(user):
+    """Welcome email + push notification for newly registered users."""
     html = f"""
     <div style="font-family: sans-serif; max-width: 500px; margin: 0 auto;">
         <div style="background: #2563eb; padding: 24px; text-align: center; border-radius: 12px 12px 0 0;">
@@ -137,15 +195,24 @@ def welcome_email(user):
         </div>
     </div>
     """
-    send_email(user.email, "Welcome to Centre for Psychological Health", html)
+    send_email_async(user.email, "Welcome to Centre for Psychological Health", html)
+
+    send_user_push_async(
+        user=user,
+        title="Welcome to CPH! 🎉",
+        body="Thank you for joining us. Take a moment to explore our mental health services.",
+        url="/consultants"
+    )
 
 
-# consultants/services.py
+
+# CONSULTANT SPECIFIC EMAIL SERVICES
+
 
 def send_consultant_welcome_email(to_email, full_name, temp_password):
     """Credentials email sent when an ADMIN creates a consultant account."""
     subject = "Welcome to Centre for Psychological Health - Account Credentials"
-    
+
     html = f"""
     <div style="font-family: sans-serif; max-width: 500px; margin: 0 auto;">
         <div style="background: #2563eb; padding: 24px; text-align: center; border-radius: 12px 12px 0 0;">
@@ -165,29 +232,21 @@ def send_consultant_welcome_email(to_email, full_name, temp_password):
         </div>
     </div>
     """
-    
     return send_email(to_email, subject, html)
 
 
 def send_consultant_welcome_email_async(to_email, full_name, temp_password):
     """Non-blocking variant used by the admin create flow."""
-    send_email_async(
-        to_email,
-        "Welcome to Centre for Psychological Health - Account Credentials",
-        (
-            f"Dear <strong>{full_name or 'Consultant'}</strong>,<br/><br/>"
-            f"An administrator has created a Consultant account for you.<br/>"
-            f"<strong>Login Email:</strong> {to_email}<br/>"
-            f"<strong>Temporary Password:</strong> {temp_password}<br/><br/>"
-            f"Please log in and change your password as soon as possible."
-        ),
-    )
+    def _worker():
+        send_consultant_welcome_email(to_email, full_name, temp_password)
+
+    threading.Thread(target=_worker, daemon=True).start()
 
 
 def send_consultant_application_received_email(to_email, full_name):
     """Confirmation email for SELF-REGISTERED consultants (no password included)."""
     subject = "Application Received - Centre for Psychological Health"
-    
+
     html = f"""
     <div style="font-family: sans-serif; max-width: 500px; margin: 0 auto;">
         <div style="background: #2563eb; padding: 24px; text-align: center; border-radius: 12px 12px 0 0;">
@@ -207,7 +266,6 @@ def send_consultant_application_received_email(to_email, full_name):
         </div>
     </div>
     """
-    
     return send_email(to_email, subject, html)
 
 
@@ -217,3 +275,14 @@ def send_consultant_application_received_email_async(to_email, full_name):
         send_consultant_application_received_email(to_email, full_name)
 
     threading.Thread(target=_worker, daemon=True).start()
+
+
+# Wrapper Aliases for backward compatibility
+def notify_consultant_new_booking(appointment):
+    """Alias to trigger new appointment request flow for consultant."""
+    new_appointment_request_email(appointment)
+
+
+def notify_client_status_update(appointment):
+    """Alias to trigger status update flow for client."""
+    booking_status_update_email(appointment)

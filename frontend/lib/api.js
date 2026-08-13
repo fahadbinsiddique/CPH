@@ -6,7 +6,7 @@ import useAuthStore from '@/store/authStore'
 // Development console watermark.
 if (typeof window !== 'undefined') {
   console.log(
-    '%c (◣ _ ◢) Developed By: Fahad Bin Siddique',
+    '%c Developed By: Fahad Bin Siddique',
     'background: #1e1e2f; color: #00ffcc; padding: 6px 12px; border-radius: 8px; font-weight: bold; font-family: sans-serif;'
   );
 }

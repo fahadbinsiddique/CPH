@@ -25,16 +25,16 @@ CPH/
 │   │   ├── db.py                # Fallback-safe database resolver
 │   │   ├── exceptions.py        # DRF exception handler
 │   │   ├── models.py            # Base/timestamped models
-│   │   └── permissions.py
+│   │   └── permissions.py       # IsRoleAdmin guard
 │   ├── api/                     # API router + Swagger/OpenAPI
 │   │   ├── urls.py              # Aggregates all feature routes
 │   │   └── schema.py            # drf-spectacular docs
-│   ├── cph_app/                 # Auth & users (JWT)
+│   ├── cph_app/                 # Auth & users (JWT + Google One Tap)
 │   ├── consultants/             # Consultant / Specialization / Availability
 │   ├── appointments/            # Bookings & schedules
 │   ├── blogs/                   # Blog / category / tags
-│   ├── assessments/             # (stub — not wired yet)
-│   ├── seeders/                 # `seed_all`, `seed_consultants`
+│   ├── assessments/             # Quiz engine (Quiz / Question / AnswerOption / ScoreRange / QuizResult)
+│   ├── seeders/                 # `seed_all`, `seed_quizzes`, `seed_consultants`
 │   ├── tests/                   # Generic pytest setup + smoke tests
 │   ├── manage.py
 │   ├── requirements.txt
@@ -44,16 +44,22 @@ CPH/
 ├── frontend/                    # Next.js App Router (no src/ directory)
 │   ├── app/
 │   │   ├── (auth)/auth/login    # /auth/login
-│   │   ├── (dashboard)/dashboard…  # /dashboard + role pages (protected)
+│   │   ├── (dashboard)/dashboard/…  # /dashboard + 12 role pages (protected)
+│   │   ├── @modal/              # Parallel/intercepting routes (consultant, join-as-therapist)
 │   │   ├── layout.js            # Root layout (Navbar / Footer)
 │   │   ├── page.js              # Home
-│   │   ├── about-us · services · booking · consultant · blog
-│   ├── components/              # Reusable UI (Landing, layout, shared, ui)
-│   ├── lib/                     # Axios instance, utils
-│   ├── store/                   # Zustand auth store
-│   ├── services/                # API service modules
-│   ├── middleware.js            # Route guard (cookie check on /dashboard)
-│   ├── hooks/
+│   │   ├── about-us · services · join-as-therapist · booking/[slug] · consultant/[slug] · blog/[slug] · assessment/[slug] · assessment/result/[id]
+│   ├── components/
+│   │   ├── Landing/             # Landing page sections
+│   │   ├── auth/                # LoginDrawer, RegisterDrawer, GoogleOneTap
+│   │   ├── shared/              # AuthGuard, BlogCard, Loaders...
+│   │   ├── dashboard/           # AdminDashboard, ConsultantDashboard, ui/* (StatCard, StatusBadge, PageHeader, EmptyState, LoadingState, ConfirmDialog, AppointmentCard, WellnessTip)
+│   │   ├── ui/                  # shadcn/ui primitives
+│   ├── lib/                     # Axios instance, utils, roles, status, motion, authGate
+│   ├── store/                   # Zustand stores (authStore, uiStore)
+│   ├── services/                # API service modules (appointment, assessment, blog, consultant)
+│   ├── hooks/                   # useDebounce, useHeaderHeight
+│   ├── types/                   # Shared JS type references
 │   ├── .env.example
 │   ├── package.json
 │   └── Dockerfile
@@ -85,7 +91,7 @@ Copy-Item .env.example .env     # Windows
 # cp .env.example .env           # Mac/Linux
 
 python manage.py migrate
-python manage.py seed_all       # seed consultants + specializations
+python manage.py seed_all       # seed consultants + specializations + quizzes
 python manage.py createsuperuser
 python manage.py runserver       # http://127.0.0.1:8000
 ```
@@ -123,7 +129,7 @@ docker compose up -d --build
 
 | File | Purpose |
 |---|---|
-| `backend/.env` | `SECRET_KEY`, `DEBUG`, `DATABASE_URL` *or* `DB_*`, Cloudinary, CORS/CSRF origins |
+| `backend/.env` | `SECRET_KEY`, `DEBUG`, `DATABASE_URL` *or* `DB_*`, `GOOGLE_CLIENT_ID`, Cloudinary, CORS/CSRF origins, Resend `RESEND_API_KEY` |
 | `frontend/.env.local` | `NEXT_PUBLIC_API_BASE_URL` |
 
 Database resolution order (see `backend/core/db.py`):
@@ -137,24 +143,23 @@ Database resolution order (see `backend/core/db.py`):
 
 | Area | Base path |
 |---|---|
-| Auth | `/api/auth/` — register, login, logout, refresh, me, change-password, users |
-| Consultants | `/api/consultants/` — list, detail, specializations, availability, admin CRUD |
-| Appointments | `/api/appointments/` — create, list, status, booked-slots, admin stats |
-| Blogs | `/api/blogs/` — list, detail, featured, categories, tags, admin CRUD |
+| Auth | `/api/auth/` — register, login, logout, refresh, **google**, me, me/update, users, change-password |
+| Consultants | `/api/consultants/` — list, detail, specializations, availability, **apply/create**, admin list/create/update/verify |
+| Appointments | `/api/appointments/` — create, list, detail, status, booked-slots, **admin stats + analytics** |
+| Assessments | `/api/assessments/` — list, detail (`<slug>`), submit, results, result detail |
+| Blogs | `/api/blogs/` — list, detail, **featured**, categories, tags, admin CRUD |
 | Docs | `/api/schema/`, `/api/docs/`, `/api/redoc/` |
 
 ---
 
 ## Auth Model
 
-JWT via SimpleJWT stored in **HttpOnly cookies** (`access_token`, `refresh_token`):
-- Middleware (`frontend/middleware.js`) guards `/dashboard` by checking for cookies.
-- `AuthGuard` (`frontend/components/shared/AuthGuard.jsx`) verifies the session against `/api/auth/me/` before rendering protected pages.
-- Roles: `client`, `consultant`, `admin` (role-based dashboards).
+JWT via SimpleJWT stored in **HttpOnly cookies** (`access_token`, `refresh_token`), plus **Google One Tap** (`/api/auth/google/`). Roles: `client`, `consultant`, `admin`.
 
-> Next.js 16 deprecates the `middleware.js` filename in favour of `proxy.js`.
-> The current `middleware.js` works and matches the requested layout; rename to
-> `proxy.js` to remove the deprecation warning.
+Session handling on the frontend is now fully client-side — there is **no `middleware.js` / `proxy.js`**:
+- `AuthGuard` (`frontend/components/shared/AuthGuard.jsx`) verifies the session against `/api/auth/me/` and blocks by `allowedRoles`. Wraps every `/dashboard` page.
+- `(dashboard)/dashboard/layout.jsx` renders a role-aware sidebar (`NAV_SECTIONS`) and gates sections per role.
+- `lib/authGate.js` + `store/uiStore` open the **LoginDrawer** in place and store a resume path for post-login redirect.
 
 ---
 
@@ -173,3 +178,4 @@ python -m pytest                # uses config.settings.test (in-memory SQLite)
 - Provide `ALLOWED_HOSTS`, `CORS_ALLOWED_ORIGINS`, `CSRF_TRUSTED_ORIGINS`, and a `DATABASE_URL` with `DB_SSL_REQUIRE=True`.
 - `prod.py` enables secure cookies (HTTPS) and `SECURE_PROXY_SSL_HEADER`.
 - Backend deploy command: `gunicorn config.wsgi:application --bind 0.0.0.0:8000`.
+- Frontend build uses **React Compiler** and `output: 'standalone'` (`next.config.mjs`).
