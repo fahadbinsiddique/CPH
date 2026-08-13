@@ -19,6 +19,7 @@ import {
   Shield,
   Heart,
   Star,
+  WifiOff,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -99,6 +100,7 @@ export default function BookingPage() {
   const [bookedSlots, setBookedSlots] = useState([]);
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [queued, setQueued] = useState(false);
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -147,13 +149,17 @@ export default function BookingPage() {
     setSubmitting(true);
     setError('');
     try {
-      await appointmentService.create({
+      const res = await appointmentService.create({
         consultant: consultant.id,
         appointment_date: formatDate(selectedDate),
         appointment_time: selectedSlot,
         session_type: sessionType,
         client_message: message,
       });
+      if (res.queued) {
+        setQueued(true);
+        return;
+      }
       setSuccess(true);
     } catch (err) {
       setError(
@@ -218,6 +224,42 @@ export default function BookingPage() {
           </Button>
           <Button 
             variant="outline" 
+            className="w-full rounded-xl border-slate-200"
+            onClick={() => router.push('/consultant')}
+          >
+            Browse More Consultants
+          </Button>
+        </div>
+      </motion.div>
+    </div>
+  );
+
+  if (queued) return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-teal-50/40 flex items-center justify-center p-4">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95, y: 20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: 'easeOut' }}
+        className="bg-white/80 backdrop-blur-sm p-8 rounded-3xl shadow-2xl text-center max-w-md border border-white/40"
+      >
+        <div className="w-24 h-24 bg-gradient-to-br from-amber-400 to-orange-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-amber-500/20">
+          <WifiOff className="w-14 h-14 text-white" />
+        </div>
+        <h2 className="text-3xl font-bold text-slate-900 mb-2">Saved Offline 📤</h2>
+        <p className="text-slate-600">
+          You&apos;re currently offline. Your booking request with{" "}
+          <span className="font-semibold text-teal-600">{consultant?.user?.full_name}</span>{" "}
+          has been saved and will be submitted automatically when you&apos;re back online.
+        </p>
+        <div className="flex flex-col gap-3 mt-6">
+          <Button
+            className="w-full bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 text-white rounded-xl shadow-lg shadow-teal-600/20"
+            onClick={() => router.push('/dashboard/bookings')}
+          >
+            View My Bookings
+          </Button>
+          <Button
+            variant="outline"
             className="w-full rounded-xl border-slate-200"
             onClick={() => router.push('/consultant')}
           >

@@ -9,6 +9,7 @@ import {
   ListChecks,
   Lock,
   Lightbulb,
+  WifiOff,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import QuestionOption from '@/components/assessment/QuestionOption'
@@ -37,6 +38,7 @@ export default function QuizPage() {
   const [answers, setAnswers] = useState({})
   const [submitting, setSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState(false)
+  const [queued, setQueued] = useState(false)
 
   const optionRefs = useRef([])
   const activeIndex = useRef(0)
@@ -68,6 +70,10 @@ export default function QuizPage() {
         quiz_id: quiz.id,
         answers,
       })
+      if (res.queued) {
+        setQueued(true)
+        return
+      }
       router.push(`/assessment/result/${res.data.id}`)
     } catch {
       setSubmitError(true)
@@ -85,6 +91,33 @@ export default function QuizPage() {
         style={{ paddingTop: headerOffset }}
       >
         <AssessmentScreenLoader />
+      </main>
+    )
+  }
+
+  if (queued) {
+    return (
+      <main
+        className="flex min-h-screen items-center justify-center bg-gradient-to-b from-white via-white to-teal-50/40 px-4"
+        style={{ paddingTop: headerOffset }}
+      >
+        <div className="w-full max-w-md text-center">
+          <div className="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br from-amber-400 to-orange-500 shadow-lg shadow-amber-500/20">
+            <WifiOff className="h-14 w-14 text-white" />
+          </div>
+          <h1 className="text-3xl font-bold text-slate-900">Saved Offline</h1>
+          <p className="mt-3 text-slate-600">
+            You&apos;re currently offline. Your answers have been saved and will be
+            submitted automatically once you&apos;re back online.
+          </p>
+          <Link
+            href="/assessment"
+            className="mt-8 inline-flex items-center gap-2 rounded-xl bg-teal-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-teal-600/20 hover:bg-teal-700"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back to Assessments
+          </Link>
+        </div>
       </main>
     )
   }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { toast } from "sonner";
 
 export default function ServiceWorkerRegister() {
   useEffect(() => {
@@ -9,13 +10,16 @@ export default function ServiceWorkerRegister() {
       "serviceWorker" in navigator &&
       process.env.NODE_ENV === "production"
     ) {
-      window.addEventListener("load", () => {
+      const onLoad = () => {
         navigator.serviceWorker
           .register("/sw.js", { scope: "/" })
           .then((registration) => {
-            console.log("SW registered:", registration.scope);
+            // Reload once the updated SW takes control (after SKIP_WAITING).
+            navigator.serviceWorker.addEventListener("controllerchange", () => {
+              window.location.reload();
+            });
 
-            // New version available- auto update
+            // New version available — offer to refresh.
             registration.addEventListener("updatefound", () => {
               const newWorker = registration.installing;
               newWorker?.addEventListener("statechange", () => {
@@ -23,16 +27,31 @@ export default function ServiceWorkerRegister() {
                   newWorker.state === "installed" &&
                   navigator.serviceWorker.controller
                 ) {
- 
-                  console.log("New version available — refresh to update");
+                  toast("New version available", {
+                    description: "Reload to get the latest update.",
+                    duration: 15000,
+                    action: {
+                      label: "Refresh",
+                      onClick: () => {
+                        if (newWorker.state === "waiting") {
+                          newWorker.postMessage({ type: "SKIP_WAITING" });
+                        } else {
+                          registration.update();
+                        }
+                      },
+                    },
+                  });
                 }
               });
             });
           })
           .catch((err) => console.error("SW registration failed:", err));
-      });
+      };
+
+      window.addEventListener("load", onLoad);
+      return () => window.removeEventListener("load", onLoad);
     }
   }, []);
 
-  return null; 
+  return null;
 }

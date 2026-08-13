@@ -7,6 +7,7 @@ import { Toaster } from 'sonner'
 import GoogleOneTap from '@/components/auth/GoogleOneTap'
 import ServiceWorkerRegister from '@/components/shared/ServiceWorkerRegister'
 import PWAInstallPrompt from '@/components/shared/PWAInstallPrompt'
+import ConnectionStatusBanner from '@/components/shared/ConnectionStatusBanner'
 
 // Geist Sans for body and general text.
 const geistSans = Geist({
@@ -68,6 +69,7 @@ export default function RootLayout({ children, modal }) {
       <body className="min-h-full flex flex-col">
         {/* Service Worker Auto Registration */}
         <ServiceWorkerRegister />
+        <ConnectionStatusBanner />
         <Navbar />
         <MotionProvider>
           <GoogleOneTap />

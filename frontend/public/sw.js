@@ -5,14 +5,11 @@ const API_CACHE = `cph-api-${CACHE_VERSION}`;
 
 // Offline-pages
 const STATIC_ASSETS = [
-  "/",
   "/offline.html",
-  "/consultant",
-  "/blog",
-  "/assessment",
   "/icons/web-app-manifest-192x192.png",
   "/icons/web-app-manifest-512x512.png",
   "/icons/favicon-96x96.png",
+  "/icons/apple-touch-icon.png",
 ];
 
 //  API responses cache 
@@ -32,14 +29,20 @@ const NEVER_CACHE_PATTERNS = [
 ];
 
 
-// INSTALL — static assets pre-cache
+// INSTALL — static assets pre-cache (resilient: one bad file never fails install).
+// No skipWaiting here: the new SW waits so the "Refresh" toast controls activation.
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
     caches
       .open(STATIC_CACHE)
-      .then((cache) => cache.addAll(STATIC_ASSETS))
-      .then(() => self.skipWaiting())
+      .then((cache) =>
+        Promise.allSettled(
+          STATIC_ASSETS.map((asset) =>
+            cache.add(asset).catch((err) => console.warn("Precache failed:", asset, err))
+          )
+        )
+      )
   );
 });
 
@@ -64,6 +67,14 @@ self.addEventListener("activate", (event) => {
       )
       .then(() => self.clients.claim())
   );
+});
+
+// MESSAGE — honor the "Refresh" action from the update prompt
+
+self.addEventListener("message", (event) => {
+  if (event.data && event.data.type === "SKIP_WAITING") {
+    self.skipWaiting();
+  }
 });
 
 

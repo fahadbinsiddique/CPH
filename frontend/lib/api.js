@@ -2,6 +2,14 @@
 
 import axios from 'axios'
 import useAuthStore from '@/store/authStore'
+import {
+  isOnline,
+  shouldQueueEndpoint,
+  queueOfflineWrite,
+  readFromCatalog,
+  buildRequestKey,
+  catalogPut,
+} from '@/lib/offlineStore'
 
 // Development console watermark.
 if (typeof window !== 'undefined') {
@@ -30,12 +38,74 @@ const api = axios.create({
   },
 })
 
+// Offline adapter — serves cached GETs from IndexedDB and queues mutations
+// when offline, so the app never stalls on a 10s timeout while disconnected.
+
+const defaultAdapter = axios.getAdapter
+  ? axios.getAdapter(axios.defaults.adapter)
+  : axios.defaults.adapter
+
+const offlineAdapter = async (config) => {
+  const method = (config.method || 'get').toLowerCase()
+  const url = buildRequestKey(config)
+
+  // Replayed queue entries always hit the network.
+  if (config._fromQueue) return defaultAdapter(config)
+
+  if (isOnline()) return defaultAdapter(config)
+
+  // OFFLINE from here on
+  if (method === 'get') {
+    const cached = await readFromCatalog(url)
+    if (cached !== undefined) {
+      return {
+        data: cached,
+        status: 200,
+        statusText: 'OK',
+        headers: {},
+        config,
+        fromOffline: true,
+      }
+    }
+    throw new Error('You are offline and this data is not cached.')
+  }
+
+  // Mutations — save to the sync queue instead of failing silently.
+  if (method !== 'get' && shouldQueueEndpoint(url)) {
+    await queueOfflineWrite(method, url, config.data)
+    return {
+      data: { offline_queued: true },
+      status: 202,
+      statusText: 'Accepted',
+      headers: {},
+      config,
+      fromOffline: true,
+      queued: true,
+    }
+  }
+
+  throw new Error('You are offline.')
+}
+
+api.defaults.adapter = offlineAdapter
+
 // Response interceptor.
 
 api.interceptors.response.use(
   // Successful response.
 
-  (response) => response,
+  (response) => {
+    // Persist successful GETs to the IndexedDB catalog for offline reads.
+    if (
+      !response.fromOffline &&
+      response.config &&
+      (response.config.method || 'get').toLowerCase() === 'get' &&
+      response.data !== undefined
+    ) {
+      catalogPut(buildRequestKey(response.config), response.data)
+    }
+    return response
+  },
 
   // Error response.
 

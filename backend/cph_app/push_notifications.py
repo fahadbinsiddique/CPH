@@ -15,7 +15,13 @@ VAPID_CLAIMS = {
 }
 
 def send_push_notification(subscription_info, title, body, url="/dashboard"):
-    
+
+    if not VAPID_PRIVATE_KEY or not VAPID_PUBLIC_KEY:
+        raise RuntimeError(
+            "Push notifications are not configured: set VAPID_PRIVATE_KEY and "
+            "VAPID_PUBLIC_KEY in the environment (see .env.example)."
+        )
+
     try:
         payload = json.dumps({
             "title": title,
