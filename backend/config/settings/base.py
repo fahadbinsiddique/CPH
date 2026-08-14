@@ -111,6 +111,11 @@ REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
     # Keep DRF's default exception payload for frontend compatibility.
     'EXCEPTION_HANDLER': 'core.exceptions.custom_exception_handler',
+    # Public endpoints that mint sessions must be throttled (defense in depth
+    # against token-replay / credential abuse).
+    'DEFAULT_THROTTLE_RATES': {
+        'google_login': '10/hour',
+    },
 }
 
 # drf-spectacular (Swagger/OpenAPI)

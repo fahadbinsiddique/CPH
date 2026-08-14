@@ -300,13 +300,25 @@ class ChangePasswordView(APIView):
 
 from google.oauth2 import id_token
 from google.auth.transport import requests
-from google.auth.exceptions import GoogleAuthError
+from google.auth.exceptions import GoogleAuthError, TransportError
+from rest_framework.throttling import AnonRateThrottle
+from rest_framework.settings import api_settings
 
 
 User = get_user_model()
 
+class GoogleRateThrottle(AnonRateThrottle):
+    scope = 'google_login'
+
+    def get_rate(self):
+        # Read dynamically so override_settings / runtime config changes apply
+        # (THROTTLE_RATES on SimpleRateThrottle is snapshotted at import time).
+        return api_settings.DEFAULT_THROTTLE_RATES.get(self.scope, '10/hour')
+
+
 class GoogleOneTapLoginView(APIView):
     permission_classes = [AllowAny]
+    throttle_classes = [GoogleRateThrottle]
 
     def post(self, request):
         token = request.data.get('token')
@@ -324,7 +336,7 @@ class GoogleOneTapLoginView(APIView):
                 requests.Request(),
                 settings.GOOGLE_CLIENT_ID,
             )
-        except (ValueError, GoogleAuthError):
+        except (ValueError, GoogleAuthError, TransportError):
             return Response({'error': 'Invalid or expired Google token'}, status=status.HTTP_400_BAD_REQUEST)
 
         if id_info.get('iss') not in ('accounts.google.com', 'https://accounts.google.com'):
@@ -343,20 +355,34 @@ class GoogleOneTapLoginView(APIView):
             return Response({'error': 'Unverified Google email'}, status=status.HTTP_400_BAD_REQUEST)
 
         email = id_info.get('email')
+        google_sub = id_info.get('sub')
         first_name = id_info.get('given_name', '')
         last_name = id_info.get('family_name', '')
         full_name = f"{first_name} {last_name}".strip() or email.split('@')[0]
 
-        user, created = User.objects.get_or_create(
-            email=email,
-            defaults={
-                'username': email,
-                'first_name': first_name,
-                'last_name': last_name,
-                'full_name': full_name,
-                'is_active': True,
-            },
-        )
+        # Match the stable Google user id first (survives email changes), then
+        # fall back to email for accounts that registered with Google before the
+        # field existed.
+        user = None
+        if google_sub:
+            user = User.objects.filter(google_sub=google_sub).first()
+        if user is None:
+            user = User.objects.filter(email=email).first()
+        if user is None:
+            user = User.objects.create(
+                email=email,
+                username=email[:150],
+                google_sub=google_sub,
+                first_name=first_name,
+                last_name=last_name,
+                full_name=full_name,
+                is_active=True,
+            )
+        else:
+            # Link the stable Google id when we matched by email only.
+            if google_sub and not user.google_sub:
+                user.google_sub = google_sub
+                user.save(update_fields=['google_sub'])
 
         refresh = RefreshToken.for_user(user)
         access = refresh.access_token

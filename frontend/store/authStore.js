@@ -48,24 +48,6 @@ const useAuthStore = create(
         }
       },
 
-      googleLogin: async (token, nonce) => {
-        set({ isLoading: true, error: null });
-        try {
-          const res = await api.post('/api/auth/google/', { token, nonce });
-          const actualUser = res.data.user?.user || res.data.user;
-          set({
-            user: actualUser,
-            isAuthenticated: true,
-            isLoading: false,
-          });
-          return { success: true, user: actualUser };
-        } catch (err) {
-          const error = err.response?.data || { error: 'Google login failed' };
-          set({ error, isLoading: false });
-          return { success: false, error };
-        }
-      },
-
       logout: async () => {
         try {
           // Send the logout request to the Django backend.
