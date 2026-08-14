@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
@@ -8,9 +9,11 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import useAuthStore from '@/store/authStore';
 import { requireLogin } from '@/lib/authGate';
+import BookingModal from '@/components/booking/BookingModal';
 
 export default function ConsultantCard({ consultant }) {
   const { isAuthenticated } = useAuthStore();
+  const [bookingOpen, setBookingOpen] = useState(false);
   const {
     slug,
     user,
@@ -21,7 +24,16 @@ export default function ConsultantCard({ consultant }) {
     is_available,
   } = consultant;
 
+  const handleBookNow = () => {
+    if (!isAuthenticated) {
+      requireLogin({ resumePath: `/booking/${slug}` });
+      return;
+    }
+    setBookingOpen(true);
+  };
+
   return (
+    <>
     <motion.div
       initial={{ opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}
@@ -53,7 +65,7 @@ export default function ConsultantCard({ consultant }) {
           )}
 
           {/* Availability Chip Badge */}
-          <div className="absolute left-3 top-3 z-10">
+          {/* <div className="absolute left-3 top-3 z-10">
             <span
               className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-[10px] font-semibold shadow-sm backdrop-blur-md ${
                 is_available
@@ -68,7 +80,7 @@ export default function ConsultantCard({ consultant }) {
               />
               {is_available ? 'Available' : 'Unavailable'}
             </span>
-          </div>
+          </div> */}
 
           <div className="pointer-events-none absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-white/80 to-transparent" />
         </div>
@@ -142,29 +154,25 @@ export default function ConsultantCard({ consultant }) {
                 Profile
               </Button>
             </Link>
-            <Link
-              href={`/booking/${slug}`}
-              className="flex-1"
-              onClick={(e) => {
-                if (!isAuthenticated) {
-                  e.preventDefault();
-                  requireLogin({ resumePath: `/booking/${slug}` });
-                }
-              }}
-            >
-              <Button
-                disabled={!is_available}
-                className="group/btn h-9 w-full rounded-xl bg-teal-600 text-xs font-semibold text-white shadow-sm transition-all hover:bg-teal-700 disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-400"
-              >
-                <span>{is_available ? 'Book Now' : 'Booked'}</span>
-                {is_available && (
-                  <ChevronRight className="ml-1 h-3.5 w-3.5 transition-transform group-hover/btn:translate-x-0.5" />
-                )}
-              </Button>
-            </Link>
+            <Button
+              disabled={!is_available}
+              onClick={handleBookNow}
+              className="group/btn h-9 w-[60%] rounded-xl bg-teal-600 text-xs font-semibold text-white shadow-sm transition-all hover:bg-teal-700 disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-400"  >
+              <span>{is_available ? 'Book Now' : 'Booked'}</span>
+              {is_available && (
+                <ChevronRight className="ml-1 h-3.5 w-3.5 transition-transform group-hover/btn:translate-x-0.5" />
+              )}
+            </Button>
           </div>
         </div>
       </div>
     </motion.div>
+
+    <BookingModal
+      open={bookingOpen}
+      onOpenChange={setBookingOpen}
+      consultant={consultant}
+    />
+    </>
   );
 }

@@ -34,6 +34,7 @@ import {
 import { consultantService } from '@/services/consultantService'
 import useAuthStore from '@/store/authStore'
 import { requireLogin } from '@/lib/authGate'
+import BookingModal from '@/components/booking/BookingModal'
 
 const tabs = [
   { id: 'bio', label: 'Biography', icon: BookOpen },
@@ -66,6 +67,7 @@ export default function ConsultantProfileModal({ slug }) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
   const [activeTab, setActiveTab] = useState('bio')
+  const [bookingOpen, setBookingOpen] = useState(false)
 
   useEffect(() => {
     let active = true
@@ -94,7 +96,7 @@ export default function ConsultantProfileModal({ slug }) {
       requireLogin({ resumePath: `/booking/${slug}` })
       return
     }
-    router.push(`/booking/${slug}`)
+    setBookingOpen(true)
   }
 
   const handleViewFullProfile = () => {
@@ -107,12 +109,13 @@ export default function ConsultantProfileModal({ slug }) {
   }
 
   return (
-    <Dialog
-      open
-      onOpenChange={(open) => {
-        if (!open) closeModal()
-      }}
-    >
+    <>
+      <Dialog
+        open
+        onOpenChange={(open) => {
+          if (!open) closeModal()
+        }}
+      >
       <DialogContent
         showCloseButton={false}
         className="flex max-h-[88dvh] w-full flex-col gap-0 overflow-hidden rounded-2xl bg-white p-0 sm:max-w-2xl lg:max-w-3xl"
@@ -407,7 +410,14 @@ export default function ConsultantProfileModal({ slug }) {
           </>
         )}
       </DialogContent>
-    </Dialog>
+      </Dialog>
+
+      <BookingModal
+        open={bookingOpen}
+        onOpenChange={setBookingOpen}
+        consultant={consultant}
+      />
+    </>
   )
 
   function profile_image() {

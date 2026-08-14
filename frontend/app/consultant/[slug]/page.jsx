@@ -30,6 +30,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { consultantService } from '@/services/consultantService';
 import useAuthStore from '@/store/authStore';
 import { requireLogin } from '@/lib/authGate';
+import BookingModal from '@/components/booking/BookingModal';
 
 // Premium Animation Variants
 const containerVariants = {
@@ -57,6 +58,7 @@ export default function ConsultantProfilePage() {
   const [consultant, setConsultant] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('bio'); // bio | schedule | research
+  const [bookingOpen, setBookingOpen] = useState(false);
 
   useEffect(() => {
     consultantService
@@ -108,6 +110,7 @@ export default function ConsultantProfilePage() {
   ];
 
   return (
+    <>
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-indigo-50/30 pt-24 pb-16 selection:bg-teal-100 selection:text-teal-900">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         {/* Back Button */}
@@ -257,7 +260,7 @@ export default function ConsultantProfilePage() {
                         requireLogin({ resumePath: `/booking/${slug}` });
                         return;
                       }
-                      router.push(`/booking/${slug}`);
+                      setBookingOpen(true);
                     }}
                   >
                     <Calendar className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform" />
@@ -432,5 +435,12 @@ export default function ConsultantProfilePage() {
         </motion.div>
       </div>
     </div>
+
+    <BookingModal
+      open={bookingOpen}
+      onOpenChange={setBookingOpen}
+      consultant={consultant}
+    />
+    </>
   );
 }
