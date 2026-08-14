@@ -2,6 +2,36 @@ from rest_framework import serializers
 from .models import Blog, Category, Tag
 from cph_app.serializers import UserSerializer
 
+try:
+    import nh3
+except ImportError:  # pragma: no cover - install from requirements.txt
+    nh3 = None
+
+# Allowlist matching the rich text editor output (TipTap) while stripping
+# scripts, event handlers and unknown markup before it is stored/rendered.
+_ALLOWED_TAGS = {
+    'p', 'br', 'hr', 'strong', 'em', 'u', 's', 'mark',
+    'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+    'blockquote', 'pre', 'code', 'span', 'div',
+    'ul', 'ol', 'li',
+    'a', 'img',
+    'table', 'thead', 'tbody', 'tr', 'th', 'td',
+}
+
+_ALLOWED_ATTRIBUTES = {
+    'a': {'href', 'title', 'target','class'},
+    'img': {'src', 'alt', 'title', 'width', 'height'},
+    'p': {'style'},
+    'div': {'style'},
+    'blockquote': {'style'},
+    'h1': {'style'}, 'h2': {'style'}, 'h3': {'style'},
+    'h4': {'style'}, 'h5': {'style'}, 'h6': {'style'},
+    'code': {'class'},
+    'pre': {'class'},
+    'ol': {'start'},
+    'td': {'colspan', 'rowspan'}, 'th': {'colspan', 'rowspan'},
+}
+
 
 class CategorySerializer(serializers.ModelSerializer):
     blog_count = serializers.SerializerMethodField()
@@ -54,6 +84,28 @@ class BlogCreateUpdateSerializer(serializers.ModelSerializer):
             'featured_image', 'category', 'tags',
             'status', 'is_featured',
         ]
+
+    def validate_content(self, value):
+        if not value or not value.strip():
+            raise serializers.ValidationError('Content is required.')
+        if nh3 is None:
+            raise serializers.ValidationError('HTML sanitizer (nh3) is not installed.')
+        return nh3.clean(
+            value,
+            tags=_ALLOWED_TAGS,
+            attributes=_ALLOWED_ATTRIBUTES,
+            link_rel='noopener noreferrer',
+        )
+
+    def validate_title(self, value):
+        if not value or not value.strip():
+            raise serializers.ValidationError('Title is required.')
+        return value.strip()
+
+    def validate_tags(self, value):
+        if value is not None and len(value) > 10:
+            raise serializers.ValidationError('A post can have at most 10 tags.')
+        return value
 
     def create(self, validated_data):
         tags = validated_data.pop('tags', [])

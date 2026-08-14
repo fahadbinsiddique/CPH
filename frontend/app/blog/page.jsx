@@ -1,177 +1,209 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Tag, Loader2, BookOpen } from 'lucide-react';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { Skeleton } from '@/components/ui/skeleton';
+import { ArrowDown, Loader2, AlertTriangle, RotateCcw } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import BlogHero from '@/components/blog/BlogHero';
 import BlogCard from '@/components/shared/BlogCard';
+import FeaturedBlogCard from '@/components/blog/FeaturedBlogCard';
+import BlogCardSkeleton from '@/components/blog/BlogCardSkeleton';
+import BlogEmptyState from '@/components/blog/BlogEmptyState';
+import ErrorBoundary from '@/components/shared/ErrorBoundary';
 import { blogService } from '@/services/blogService';
 import { useDebounce } from '@/hooks/useDebounce';
+import { extractList, toErrorMessage } from '@/lib/blog-utils';
+import { toast } from 'sonner';
 
 export default function BlogListPage() {
   const [blogs, setBlogs] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(false);
   const [search, setSearch] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState(() =>
+    typeof window === 'undefined' ? '' : new URLSearchParams(window.location.search).get('category__slug') || ''
+  );
+  const [selectedTag, setSelectedTag] = useState(() =>
+    typeof window === 'undefined' ? '' : new URLSearchParams(window.location.search).get('tags__slug') || ''
+  );
+  const [error, setError] = useState(false);
+  const [reloadKey, setReloadKey] = useState(0);
+  const pageRef = useRef(1);
 
   const debouncedSearch = useDebounce(search, 400);
 
-  const fetchBlogs = useCallback(async () => {
-    setLoading(true);
-    try {
-      const params = {};
+  const fetchPage = useCallback(
+    async (page, append) => {
+      const params = { page };
       if (debouncedSearch) params.search = debouncedSearch;
-      if (selectedCategory) params['category__slug'] = selectedCategory;
-      const res = await blogService.getAll(params);
-      setBlogs(res.data.results || res.data);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  }, [debouncedSearch, selectedCategory]);
+      if (selectedCategory) params.category__slug = selectedCategory;
+      if (selectedTag) params.tags__slug = selectedTag;
+      try {
+        const res = await blogService.getAll(params);
+        const results = extractList(res.data);
+        setBlogs((prev) => (append ? [...prev, ...results] : results));
+        setHasMore(Boolean(res.data?.next));
+        setError(false);
+      } catch (err) {
+        setError(true);
+        toast.error(toErrorMessage(err));
+      }
+    },
+    [debouncedSearch, selectedCategory, selectedTag]
+  );
 
-  // eslint-disable-next-line react-hooks/set-state-in-effect
-  useEffect(() => { fetchBlogs(); }, [fetchBlogs]);
+  const loadInitial = useCallback(async () => {
+    setLoading(true);
+    setLoadingMore(false);
+    pageRef.current = 1;
+    await fetchPage(1, false);
+    setLoading(false);
+  }, [fetchPage]);
 
   useEffect(() => {
-    blogService.getCategories()
-      .then(res => setCategories(res.data))
-      .catch(console.error);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    loadInitial();
+  }, [loadInitial, reloadKey]);
+
+  useEffect(() => {
+    blogService
+      .getCategories()
+      .then((res) => setCategories(extractList(res.data)))
+      .catch(() => {});
   }, []);
 
-  const featured = blogs.filter(b => b.is_featured);
-  const regular = blogs.filter(b => !b.is_featured);
+  const loadMore = async () => {
+    if (loadingMore || !hasMore) return;
+    setLoadingMore(true);
+    const nextPage = pageRef.current + 1;
+    await fetchPage(nextPage, true);
+    pageRef.current = nextPage;
+    setLoadingMore(false);
+  };
+
+  const resetFilters = () => {
+    setSearch('');
+    setSelectedCategory('');
+    setSelectedTag('');
+  };
+
+  const isFiltering = Boolean(debouncedSearch || selectedCategory || selectedTag);
+  const featured = blogs.find((b) => b.is_featured);
+  const gridBlogs = isFiltering ? blogs : blogs.filter((b) => !b.is_featured);
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      {/* Header */}
-      <div className="bg-white border-b border-slate-100">
-        <div className="max-w-5xl mx-auto px-4 py-12 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
-            <div className="w-12 h-12 bg-blue-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-              <BookOpen className="w-6 h-6 text-blue-600" />
-            </div>
-            <h1 className="text-3xl font-bold text-slate-800 mb-2">Blog</h1>
-            <p className="text-slate-400">
-              Mental health insights, tips and research
-            </p>
-          </motion.div>
-        </div>
-      </div>
+    <ErrorBoundary>
+      <div className="min-h-screen bg-slate-50">
+        <BlogHero
+          search={search}
+          onSearchChange={setSearch}
+          categories={categories}
+          selectedCategory={selectedCategory}
+          onSelectCategory={setSelectedCategory}
+        />
 
-      <div className="max-w-5xl mx-auto px-4 py-8">
-        {/* Search & Filter */}
-        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4 mb-8">
-          <div className="relative mb-3">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-            <Input
-              placeholder="Search articles..."
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              className="pl-9 h-10"
-            />
-          </div>
-
-          {categories.length > 0 && (
-            <div className="flex flex-wrap gap-2">
-              <Badge
-                variant={!selectedCategory ? 'default' : 'outline'}
-                className="cursor-pointer"
-                onClick={() => setSelectedCategory('')}
-              >
-                All
-              </Badge>
-              {categories.map(cat => (
-                <Badge
-                  key={cat.slug}
-                  variant={selectedCategory === cat.slug ? 'default' : 'outline'}
-                  className="cursor-pointer"
-                  onClick={() => setSelectedCategory(
-                    selectedCategory === cat.slug ? '' : cat.slug
-                  )}
-                >
-                  {cat.name}
-                  <span className="ml-1 text-xs opacity-60">({cat.blog_count})</span>
-                </Badge>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="bg-white rounded-2xl p-4 border border-slate-100">
-                <Skeleton className="h-44 w-full rounded-xl mb-4" />
-                <Skeleton className="h-4 w-3/4 mb-2" />
-                <Skeleton className="h-3 w-full mb-1" />
-                <Skeleton className="h-3 w-2/3" />
-              </div>
-            ))}
-          </div>
-        ) : (
-          <>
-            {/* Featured */}
-            {featured.length > 0 && !search && !selectedCategory && (
-              <div className="mb-8">
-                <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-4">
-                  Featured
-                </h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                  {featured.slice(0, 2).map((blog, i) => (
-                    <motion.div
-                      key={blog.id}
-                      initial={{ opacity: 0, y: 16 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: i * 0.05 }}
-                    >
-                      <BlogCard blog={blog} featured />
-                    </motion.div>
+        <div className="mx-auto max-w-6xl px-4 py-10">
+          {loading && blogs.length === 0 ? (
+            <div className="space-y-10">
+              <BlogCardSkeleton featured />
+              <div>
+                <div className="mb-4 h-4 w-32 rounded bg-slate-200 animate-pulse" />
+                <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                  {Array.from({ length: 6 }).map((_, i) => (
+                    <BlogCardSkeleton key={i} />
                   ))}
                 </div>
               </div>
-            )}
-
-            {/* All posts */}
-            <div>
-              {(search || selectedCategory) ? null : (
-                <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-4">
-                  Latest Articles
-                </h2>
-              )}
-
-              {blogs.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                  <AnimatePresence>
-                    {(search || selectedCategory ? blogs : regular).map((blog, i) => (
-                      <motion.div
-                        key={blog.id}
-                        initial={{ opacity: 0, y: 16 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ delay: i * 0.04 }}
-                      >
-                        <BlogCard blog={blog} />
-                      </motion.div>
-                    ))}
-                  </AnimatePresence>
-                </div>
-              ) : (
-                <div className="text-center py-16 text-slate-400">
-                  No articles found
-                </div>
-              )}
             </div>
-          </>
-        )}
+          ) : error && blogs.length === 0 ? (
+            <div className="flex flex-col items-center justify-center px-6 py-20 text-center">
+              <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-rose-50">
+                <AlertTriangle className="h-8 w-8 text-rose-500" />
+              </div>
+              <h3 className="text-lg font-bold text-slate-800">Couldn&apos;t load articles</h3>
+              <p className="mt-2 max-w-sm text-sm text-slate-400">
+                Something went wrong while fetching the blog feed. Please try again.
+              </p>
+              <Button onClick={() => setReloadKey((k) => k + 1)} className="mt-6 gap-2">
+                <RotateCcw className="h-4 w-4" /> Try Again
+              </Button>
+            </div>
+          ) : (
+            <>
+              {/* Featured hero */}
+              {featured && !isFiltering && (
+                <motion.div
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+                  className="mb-10"
+                >
+                  <FeaturedBlogCard blog={featured} />
+                </motion.div>
+              )}
+
+              {/* Grid */}
+              <div>
+                <div className="mb-5 flex items-center justify-between">
+                  <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-500">
+                    {isFiltering ? 'Search results' : 'Latest articles'}
+                  </h2>
+                  {isFiltering && (
+                    <button
+                      type="button"
+                      onClick={resetFilters}
+                      className="text-sm font-medium text-teal-700 transition-colors hover:text-teal-800"
+                    >
+                      Clear filters
+                    </button>
+                  )}
+                </div>
+
+                {gridBlogs.length > 0 ? (
+                  <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                    <AnimatePresence>
+                      {gridBlogs.map((blog, i) => (
+                        <motion.div
+                          key={blog.id}
+                          initial={{ opacity: 0, y: 16 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0 }}
+                          transition={{ delay: Math.min(i * 0.04, 0.3) }}
+                        >
+                          <BlogCard blog={blog} />
+                        </motion.div>
+                      ))}
+                    </AnimatePresence>
+                  </div>
+                ) : (
+                  <BlogEmptyState onReset={resetFilters} />
+                )}
+              </div>
+
+              {/* Load more */}
+              {hasMore && (
+                <div className="mt-10 flex justify-center">
+                  <Button
+                    variant="outline"
+                    onClick={loadMore}
+                    disabled={loadingMore}
+                    className="gap-2 rounded-xl border-slate-200 bg-white px-8 text-slate-600 shadow-sm hover:border-teal-300 hover:text-teal-700"
+                  >
+                    {loadingMore ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <ArrowDown className="h-4 w-4" />
+                    )}
+                    {loadingMore ? 'Loading...' : 'Load more articles'}
+                  </Button>
+                </div>
+              )}
+            </>
+          )}
+        </div>
       </div>
-    </div>
+    </ErrorBoundary>
   );
 }

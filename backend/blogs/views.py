@@ -1,7 +1,8 @@
 from rest_framework import generics, filters, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticatedOrReadOnly, AllowAny
+from rest_framework.permissions import AllowAny
+from rest_framework.pagination import PageNumberPagination
 from core.permissions import IsRoleAdmin
 from django_filters.rest_framework import DjangoFilterBackend
 from .models import Blog, Category, Tag
@@ -11,9 +12,16 @@ from .serializers import (
 )
 
 
+class BlogPagination(PageNumberPagination):
+    page_size = 9
+    page_size_query_param = 'page_size'
+    max_page_size = 30
+
+
 class BlogListView(generics.ListAPIView):
     serializer_class = BlogListSerializer
     permission_classes = [AllowAny]
+    pagination_class = BlogPagination
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ['category__slug', 'tags__slug', 'is_featured']
     search_fields = ['title', 'excerpt', 'content']
@@ -97,3 +105,50 @@ class AdminBlogDetailView(generics.RetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         return Blog.objects.all()
+
+
+class AdminTagListCreateView(generics.ListCreateAPIView):
+    """Admin-only tag management (used by the editor's tag input)."""
+    permission_classes = [IsRoleAdmin]
+    queryset = Tag.objects.all().order_by('name')
+    serializer_class = TagSerializer
+
+    def perform_create(self, serializer):
+        name = (serializer.validated_data.get('name') or '').strip()
+        existing = Tag.objects.filter(name__iexact=name).first()
+        if existing:
+            # Reuse the existing tag instead of failing on a slug collision.
+            serializer.instance = existing
+        else:
+            serializer.save()
+
+
+class BlogImageUploadView(APIView):
+    """Upload an image (cover or rich-text inline) to Cloudinary and return its URL."""
+    permission_classes = [IsRoleAdmin]
+
+    def post(self, request):
+        image = request.FILES.get('image')
+        if not image:
+            return Response(
+                {'detail': 'No image file provided.'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        try:
+            import cloudinary.uploader
+            result = cloudinary.uploader.upload(
+                image,
+                folder='blog-images/',
+                resource_type='image',
+                overwrite=True,
+                use_filename=True,
+                unique_filename=True,
+            )
+        except Exception as exc:
+            return Response(
+                {'detail': f'Upload failed: {exc}'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        return Response({'url': result.get('secure_url') or result.get('url')})

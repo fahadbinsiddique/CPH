@@ -1,131 +1,241 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import {
-  Clock, Eye, Calendar, ArrowLeft,
-  Tag, User, Loader2
+  ArrowLeft, Calendar, Clock, Eye, Tag, FileText,
+  Loader2, BookOpen,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { blogService } from '@/services/blogService';
+import {
+  parseImageSrc, formatDate, extractList,
+  prepareContent, estimateReadTime, toErrorMessage,
+} from '@/lib/blog-utils';
+import AuthorCard from '@/components/blog/AuthorCard';
+import ShareButtons from '@/components/blog/ShareButtons';
+import TableOfContents from '@/components/blog/TableOfContents';
+import RelatedPosts from '@/components/blog/RelatedPosts';
 
 export default function BlogDetailPage() {
   const { slug } = useParams();
-  const router = useRouter();
   const [blog, setBlog] = useState(null);
+  const [related, setRelated] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
+  const [imgError, setImgError] = useState(false);
 
   useEffect(() => {
-    blogService.getBySlug(slug)
-      .then(res => setBlog(res.data))
-      .catch(() => router.push('/blog'))
-      .finally(() => setLoading(false));
+    let active = true;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setLoading(true);
+    setNotFound(false);
+
+    blogService
+      .getBySlug(slug)
+      .then((res) => {
+        if (!active) return;
+        setBlog(res.data);
+        setImgError(false);
+      })
+      .catch((err) => {
+        if (!active) return;
+        setNotFound(true);
+        console.error(toErrorMessage(err));
+      })
+      .finally(() => active && setLoading(false));
+
+    return () => {
+      active = false;
+    };
   }, [slug]);
 
-  if (loading) return (
-    <div className="min-h-screen flex items-center justify-center">
-      <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
-    </div>
-  );
+  useEffect(() => {
+    if (!blog) return undefined;
+    let active = true;
 
-  if (!blog) return null;
+    const load = (params) =>
+      blogService
+        .getAll({ page_size: 6, ...params })
+        .then((res) => extractList(res.data).filter((p) => p.id !== blog.id));
 
-  const {
-    title, content, excerpt, featured_image,
-    author, category, tags, read_time,
-    views, published_at,
-  } = blog;
+    const byCategory = blog.category?.slug
+      ? load({ category__slug: blog.category.slug })
+      : Promise.resolve([]);
 
-  const date = published_at
-    ? new Date(published_at).toLocaleDateString('en-US', {
-        year: 'numeric', month: 'long', day: 'numeric'
+    byCategory
+      .then((candidates) => {
+        if (!active) return;
+        if (candidates.length > 0) {
+          setRelated(candidates.slice(0, 3));
+          return undefined;
+        }
+        return load({});
       })
-    : '';
+      .then((fallback) => {
+        if (active && fallback) setRelated(fallback.slice(0, 3));
+      })
+      .catch(() => {});
+
+    return () => {
+      active = false;
+    };
+  }, [blog]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-white">
+        <div className="mx-auto max-w-3xl px-4 py-12">
+          <div className="mb-8 h-4 w-24 animate-pulse rounded bg-slate-200" />
+          <div className="h-8 w-3/4 animate-pulse rounded-lg bg-slate-200" />
+          <div className="mt-3 h-4 w-1/2 animate-pulse rounded bg-slate-200" />
+          <div className="mt-8 h-64 w-full animate-pulse rounded-2xl bg-slate-200" />
+          <div className="mt-8 space-y-3">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <div key={i} className="h-4 animate-pulse rounded bg-slate-100" />
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (notFound || !blog) {
+    return (
+      <div className="min-h-screen bg-white">
+        <div className="mx-auto flex max-w-xl flex-col items-center px-4 py-24 text-center">
+          <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-slate-100">
+            <BookOpen className="h-10 w-10 text-slate-300" />
+          </div>
+          <h1 className="text-2xl font-bold text-slate-900">Article not found</h1>
+          <p className="mt-3 text-sm text-slate-500">
+            This article may have been unpublished or the link is incorrect.
+          </p>
+          <Link href="/blog" className="mt-8">
+            <Button variant="outline" className="gap-2">
+              <ArrowLeft className="h-4 w-4" /> Back to blog
+            </Button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  const { html: contentHtml, headings } = prepareContent(blog.content);
+  const date = formatDate(blog.published_at, { month: 'long' });
+  const imageSrc = parseImageSrc(blog.featured_image);
+  const showImage = imageSrc && !imgError;
+  const readTime = blog.read_time || estimateReadTime(blog.content);
 
   return (
     <div className="min-h-screen bg-white">
-      <div className="max-w-3xl mx-auto px-4 py-10">
+      {/* Hero */}
+      <div className="border-b border-slate-100 bg-slate-50/60">
+        <div className="mx-auto max-w-3xl px-4 py-10 sm:py-12">
+          <Link
+            href="/blog"
+            className="mb-6 inline-flex items-center gap-2 text-sm font-medium text-slate-500 transition-colors hover:text-teal-700"
+          >
+            <ArrowLeft className="h-4 w-4" /> Back to blog
+          </Link>
 
-        {/* Back */}
-        <button
-          onClick={() => router.back()}
-          className="flex items-center gap-2 text-slate-400 hover:text-slate-600 mb-8 text-sm"
-        >
-          <ArrowLeft className="w-4 h-4" /> Back to Blog
-        </button>
+          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
+            <div className="flex flex-wrap items-center gap-2">
+              {blog.category && (
+                <Link href={`/blog?category__slug=${blog.category.slug}`}>
+                  <Badge variant="secondary" className="hover:bg-teal-50 hover:text-teal-700">
+                    {blog.category.name}
+                  </Badge>
+                </Link>
+              )}
+              {blog.is_featured && (
+                <Badge className="border-0 bg-teal-600 text-white">Featured</Badge>
+              )}
+            </div>
 
+            <h1 className="mt-4 text-3xl font-bold leading-tight tracking-tight text-slate-900 sm:text-4xl sm:leading-tight">
+              {blog.title}
+            </h1>
+
+            {blog.excerpt && (
+              <p className="mt-4 text-lg leading-relaxed text-slate-500">{blog.excerpt}</p>
+            )}
+
+            <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2 border-y border-slate-100 py-4 text-sm text-slate-500">
+              {blog.author?.full_name && (
+                <span className="flex items-center gap-2 font-medium text-slate-700">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-teal-500 to-emerald-600 text-xs font-bold text-white">
+                    {blog.author.full_name.charAt(0)}
+                  </span>
+                  {blog.author.full_name}
+                </span>
+              )}
+              {date && (
+                <span className="flex items-center gap-1.5">
+                  <Calendar className="h-4 w-4" /> {date}
+                </span>
+              )}
+              <span className="flex items-center gap-1.5">
+                <Clock className="h-4 w-4" /> {readTime} min read
+              </span>
+              <span className="flex items-center gap-1.5">
+                <Eye className="h-4 w-4" /> {blog.views ?? 0} views
+              </span>
+              <span className="ml-auto">
+                <ShareButtons title={blog.title} />
+              </span>
+            </div>
+          </motion.div>
+        </div>
+      </div>
+
+      {/* Body */}
+      <div className="mx-auto max-w-3xl px-4 py-10">
         <motion.article
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
         >
-          {/* Category */}
-          {category && (
-            <Badge variant="secondary" className="mb-4">
-              {category.name}
-            </Badge>
-          )}
-
-          {/* Title */}
-          <h1 className="text-3xl font-bold text-slate-800 leading-tight mb-4">
-            {title}
-          </h1>
-
-          {/* Excerpt */}
-          {excerpt && (
-            <p className="text-lg text-slate-500 leading-relaxed mb-6">
-              {excerpt}
-            </p>
-          )}
-
-          {/* Meta */}
-          <div className="flex flex-wrap items-center gap-4 text-sm text-slate-400 mb-8 pb-6 border-b border-slate-100">
-            <span className="flex items-center gap-1.5">
-              <User className="w-4 h-4" />
-              {author?.full_name}
-            </span>
-            <span className="flex items-center gap-1.5">
-              <Calendar className="w-4 h-4" />
-              {date}
-            </span>
-            <span className="flex items-center gap-1.5">
-              <Clock className="w-4 h-4" />
-              {read_time} min read
-            </span>
-            <span className="flex items-center gap-1.5">
-              <Eye className="w-4 h-4" />
-              {views} views
-            </span>
-          </div>
-
           {/* Featured image */}
-          {featured_image && (
-            <div className="rounded-2xl overflow-hidden mb-8 bg-slate-100">
+          {showImage ? (
+            <div className="mb-8 overflow-hidden rounded-2xl bg-slate-100">
               <Image
-                src={featured_image}
-                alt={title}
+                src={imageSrc}
+                alt={blog.title}
                 width={800}
-                height={400}
-                className="w-full object-cover max-h-80"
+                height={450}
+                sizes="(max-width: 768px) 100vw, 768px"
+                className="h-auto w-full object-cover"
+                onError={() => setImgError(true)}
+                priority
               />
+            </div>
+          ) : (
+            <div className="mb-8 flex h-56 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-50 to-indigo-50">
+              <FileText className="h-14 w-14 text-teal-200" />
             </div>
           )}
 
+          {/* Table of contents */}
+          {headings.length >= 2 && <TableOfContents headings={headings} className="mb-8" />}
+
           {/* Content */}
           <div
-            className="prose prose-slate max-w-none prose-headings:font-semibold prose-a:text-blue-600 prose-img:rounded-xl"
-            dangerouslySetInnerHTML={{ __html: content }}
+            className="blog-prose prose prose-slate max-w-none prose-headings:font-bold prose-headings:text-slate-900 prose-headings:tracking-tight prose-a:text-teal-700 prose-a:no-underline hover:prose-a:underline prose-img:rounded-xl"
+            dangerouslySetInnerHTML={{ __html: contentHtml }}
           />
 
           {/* Tags */}
-          {tags?.length > 0 && (
-            <div className="flex flex-wrap gap-2 mt-8 pt-6 border-t border-slate-100">
-              <Tag className="w-4 h-4 text-slate-400 mt-0.5" />
-              {tags.map(tag => (
+          {blog.tags?.length > 0 && (
+            <div className="mt-10 flex flex-wrap items-center gap-2 border-t border-slate-100 pt-6">
+              <Tag className="h-4 w-4 text-slate-400" />
+              {blog.tags.map((tag) => (
                 <Link key={tag.id} href={`/blog?tags__slug=${tag.slug}`}>
-                  <Badge variant="outline" className="cursor-pointer hover:bg-slate-100">
+                  <Badge variant="outline" className="cursor-pointer text-slate-500 hover:bg-slate-100">
                     #{tag.name}
                   </Badge>
                 </Link>
@@ -133,17 +243,21 @@ export default function BlogDetailPage() {
             </div>
           )}
 
-          {/* Author card */}
-          <div className="mt-10 p-5 bg-slate-50 rounded-2xl flex items-center gap-4">
-            <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-xl flex-shrink-0">
-              {author?.full_name?.charAt(0)}
-            </div>
+          {/* Share */}
+          <div className="mt-8 flex items-center justify-between rounded-2xl border border-slate-100 bg-slate-50/70 px-5 py-4">
             <div>
-              <p className="font-semibold text-slate-800">{author?.full_name}</p>
-              <p className="text-sm text-slate-400">Author</p>
+              <p className="text-sm font-semibold text-slate-800">Enjoyed this article?</p>
+              <p className="text-xs text-slate-400">Share it with someone who might need it.</p>
             </div>
+            <ShareButtons title={blog.title} />
           </div>
+
+          {/* Author */}
+          <AuthorCard author={blog.author} />
         </motion.article>
+
+        {/* Related */}
+        {related.length > 0 && <RelatedPosts posts={related} />}
       </div>
     </div>
   );

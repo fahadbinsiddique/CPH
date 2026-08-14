@@ -287,3 +287,116 @@
     }
   }
 }
+
+/* =========================
+   RICH TEXT EDITOR (TipTap)
+========================= */
+
+.cph-editor .ProseMirror {
+  min-height: inherit;
+  outline: none;
+}
+
+.cph-editor .ProseMirror p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: oklch(0.7 0.02 200);
+  pointer-events: none;
+  height: 0;
+}
+
+.cph-editor .ProseMirror:focus {
+  outline: none;
+}
+
+.cph-editor .ProseMirror img {
+  border-radius: 0.75rem;
+  margin: 1.25rem auto;
+  max-height: 28rem;
+  width: auto;
+}
+
+.cph-editor .ProseMirror pre {
+  border-radius: 0.75rem;
+  background: oklch(0.21 0.034 260);
+  color: oklch(0.95 0 0);
+  padding: 0.875rem 1rem;
+  overflow-x: auto;
+}
+
+.cph-editor .ProseMirror pre code {
+  background: transparent;
+  color: inherit;
+  padding: 0;
+}
+
+.cph-editor .ProseMirror blockquote {
+  border-left: 4px solid oklch(0.79 0.05 181);
+  padding-left: 1rem;
+  color: oklch(0.45 0.02 200);
+}
+
+.cph-editor .ProseMirror hr {
+  border: none;
+  border-top: 1px solid oklch(0.9 0.01 200);
+  margin: 1.5rem 0;
+}
+
+.cph-editor .ProseMirror a {
+  color: oklch(0.53 0.13 181);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.cph-editor .ProseMirror ul,
+.cph-editor .ProseMirror ol {
+  padding-left: 1.5rem;
+}
+
+.cph-editor .ProseMirror ul {
+  list-style: disc;
+}
+
+.cph-editor .ProseMirror ol {
+  list-style: decimal;
+}
+
+.cph-editor .ProseMirror h1,
+.cph-editor .ProseMirror h2,
+.cph-editor .ProseMirror h3 {
+  @apply font-heading;
+}
+
+/* =========================
+   PUBLIC BLOG PROSE (READER)
+========================= */
+
+.blog-prose .ProseMirror-selectednode,
+.blog-prose img {
+  border-radius: 0.75rem;
+}
+
+.blog-prose :not(pre) > code {
+  border-radius: 0.375rem;
+  background: oklch(0.96 0.008 200);
+  color: oklch(0.35 0.05 260);
+  padding: 0.15rem 0.4rem;
+  font-size: 0.85em;
+}
+
+.blog-prose pre {
+  border-radius: 0.75rem;
+  background: oklch(0.21 0.034 260);
+  color: oklch(0.95 0 0);
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+}
+
+.blog-prose h1[id],
+.blog-prose h2[id],
+.blog-prose h3[id],
+.blog-prose h4[id],
+.blog-prose h5[id],
+.blog-prose h6[id] {
+  scroll-margin-top: 7rem;
+}

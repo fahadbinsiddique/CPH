@@ -71,9 +71,19 @@ class Blog(models.Model):
     def __str__(self):
         return self.title
 
+    def _generate_unique_slug(self):
+        """Build a URL-safe slug, resolving collisions with a numeric suffix."""
+        base = slugify(self.title) or 'post'
+        slug = base
+        suffix = 2
+        while Blog.objects.filter(slug=slug).exclude(pk=self.pk).exists():
+            slug = f'{base}-{suffix}'
+            suffix += 1
+        return slug
+
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = slugify(self.title)
+            self.slug = self._generate_unique_slug()
 
         # Automatically calculate read time based on an average reading speed.
         word_count = len(self.content.split())
