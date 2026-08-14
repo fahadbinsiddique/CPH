@@ -26,6 +26,7 @@ class Consultant(models.Model):
     profile_image=CloudinaryField('image', blank=True, null=True)
     is_verified = models.BooleanField(default=False)
     is_available = models.BooleanField(default=True)
+    is_featured = models.BooleanField(default=False)
     languages = models.CharField(max_length=255, blank=True)
     location = models.CharField(max_length=255, blank=True)
     slug = models.SlugField(unique=True, blank=True)

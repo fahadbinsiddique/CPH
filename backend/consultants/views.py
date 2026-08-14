@@ -25,7 +25,7 @@ class ConsultantListView(generics.ListAPIView):
    
     serializer_class = ConsultantListSerializer
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ['is_available', 'specializations__slug', 'location']
+    filterset_fields = ['is_available', 'is_featured' ,'specializations__slug', 'location']
     search_fields = ['user__full_name', 'bio', 'location', 'languages']
     ordering_fields = ['consultation_fee', 'experience_years', 'created_at']
     ordering = ['-created_at']

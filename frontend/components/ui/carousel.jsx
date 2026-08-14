@@ -190,4 +190,46 @@ function CarouselNext({ className, variant = 'outline', size = 'icon-sm', ...pro
   )
 }
 
-export { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext, useCarousel }
+function CarouselDots({ count, className }) {
+  const { api } = useCarousel()
+  const [selected, setSelected] = React.useState(0)
+
+  React.useEffect(() => {
+    if (!api) return
+    const onSelect = () => setSelected(api.selectedScrollSnap())
+    onSelect()
+    api.on('select', onSelect).on('reInit', onSelect)
+    return () => {
+      api.off('select', onSelect).off('reInit', onSelect)
+    }
+  }, [api])
+
+  return (
+    <div className={cn('flex flex-wrap items-center justify-center gap-2', className)}>
+      {Array.from({ length: count }).map((_, i) => (
+        <button
+          key={i}
+          type="button"
+          onClick={() => api?.scrollTo(i)}
+          aria-label={`Go to slide ${i + 1}`}
+          className={cn(
+            'h-2.5 rounded-full transition-all duration-300',
+            i === selected
+              ? 'w-6 bg-teal-600'
+              : 'w-2.5 bg-slate-300 hover:bg-slate-400',
+          )}
+        />
+      ))}
+    </div>
+  )
+}
+
+export {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselPrevious,
+  CarouselNext,
+  CarouselDots,
+  useCarousel,
+}

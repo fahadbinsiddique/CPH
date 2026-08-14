@@ -3,7 +3,6 @@
 
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import Image from 'next/image'
 import Link from 'next/link'
 import {
   Heart,
@@ -38,11 +37,13 @@ import {
   HeartHandshake,
   Feather,
   XOctagon,
+  Loader2,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Skeleton } from '@/components/ui/skeleton'
+import { consultantService } from '@/services/consultantService'
 
 // Animation variants
 const containerVariants = {
@@ -72,100 +73,7 @@ const fadeInUp = {
   },
 }
 
-// Team members data
-const teamMembers = [
-  {
-    id: 1,
-    name: 'Dr. Sarah Ahmed',
-    role: 'Clinical Psychologist & Founder',
-    specialization: 'Anxiety, Depression, Trauma',
-    experience: '15+ Years',
-    education: 'PhD in Clinical Psychology, University of Dhaka',
-    image: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=400&h=400&fit=crop',
-    bio: 'Dr. Sarah Ahmed is the founder of Centre For Psychological Health. She is a licensed clinical psychologist with over 15 years of experience in treating anxiety, depression, and trauma-related disorders.',
-    social: {
-      linkedin: '#',
-      twitter: '#',
-      email: 'sarah@cph.com',
-    },
-  },
-  {
-    id: 2,
-    name: 'Dr. John Miller',
-    role: 'Psychiatrist & Medical Director',
-    specialization: 'Medication Management, Mood Disorders',
-    experience: '12+ Years',
-    education: 'MD in Psychiatry, Harvard Medical School',
-    image: 'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=400&h=400&fit=crop',
-    bio: 'Dr. John Miller brings extensive experience in psychiatric care, specializing in medication management and mood disorders. He believes in an integrated approach combining therapy and medication.',
-    social: {
-      linkedin: '#',
-      twitter: '#',
-      email: 'john@cph.com',
-    },
-  },
-  {
-    id: 3,
-    name: 'Dr. Emily Chen',
-    role: 'Licensed Psychologist',
-    specialization: 'Child & Adolescent Therapy, Family Counseling',
-    experience: '10+ Years',
-    education: 'PsyD in Clinical Psychology, Stanford University',
-    image: 'https://images.unsplash.com/photo-1594824476967-48c8b964273f?w=400&h=400&fit=crop',
-    bio: 'Dr. Emily Chen is a licensed psychologist with a passion for working with children, adolescents, and families. She uses evidence-based approaches to help young people thrive.',
-    social: {
-      linkedin: '#',
-      twitter: '#',
-      email: 'emily@cph.com',
-    },
-  },
-  {
-    id: 4,
-    name: 'Dr. Michael Rahman',
-    role: 'Clinical Psychologist',
-    specialization: 'Trauma & PTSD, EMDR Therapy',
-    experience: '8+ Years',
-    education: 'PhD in Clinical Psychology, University of Toronto',
-    image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop',
-    bio: 'Dr. Michael Rahman specializes in trauma therapy using EMDR and other evidence-based approaches. He is committed to helping individuals heal from past experiences.',
-    social: {
-      linkedin: '#',
-      twitter: '#',
-      email: 'michael@cph.com',
-    },
-  },
-  {
-    id: 5,
-    name: 'Lisa Thompson',
-    role: 'Licensed Clinical Social Worker',
-    specialization: 'Family Therapy, Parenting Support',
-    experience: '10+ Years',
-    education: 'MSW, University of California, Berkeley',
-    image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&h=400&fit=crop',
-    bio: 'Lisa Thompson is a licensed clinical social worker with extensive experience in family therapy and parenting support. She helps families build stronger, healthier relationships.',
-    social: {
-      linkedin: '#',
-      twitter: '#',
-      email: 'lisa@cph.com',
-    },
-  },
-  {
-    id: 6,
-    name: 'Dr. David Kim',
-    role: 'Neuropsychologist',
-    specialization: 'Cognitive Assessments, Brain Injury Rehabilitation',
-    experience: '9+ Years',
-    education: 'PhD in Neuropsychology, University of Melbourne',
-    image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop',
-    bio: 'Dr. David Kim specializes in neuropsychological assessments and rehabilitation for individuals with brain injuries and cognitive disorders.',
-    social: {
-      linkedin: '#',
-      twitter: '#',
-      email: 'david@cph.com',
-    },
-  },
-]
-
+// Team members are fetched from the backend (consultantService.getAll) at runtime.
 // Core values
 const coreValues = [
   {
@@ -198,7 +106,7 @@ const coreValues = [
 const stats = [
   { icon: Users, value: '500+', label: 'Happy Clients' },
   { icon: Award, value: '15+', label: 'Years of Excellence' },
-  { icon: UserCheck, value: '6+', label: 'Expert Consultants' },
+  { icon: UserCheck, label: 'Expert Consultants' },
   { icon: Star, value: '4.9/5', label: 'Average Rating' },
 ]
 
@@ -231,8 +139,51 @@ const milestones = [
   },
 ]
 
+// http:// -> https:// and protocol-relative -> https, safe for <img>.
+function normalizeProfileImage(src) {
+  if (!src || typeof src !== 'string') return undefined
+  const trimmed = src.trim()
+  if (!trimmed) return undefined
+  if (trimmed.startsWith('http://')) return trimmed.replace('http://', 'https://')
+  if (trimmed.startsWith('//')) return `https:${trimmed}`
+  return trimmed
+}
+
 export default function AboutUsPage() {
   const [selectedTeamMember, setSelectedTeamMember] = useState(null)
+  const [consultants, setConsultants] = useState([])
+  const [teamLoading, setTeamLoading] = useState(true)
+  const [teamError, setTeamError] = useState(false)
+
+  useEffect(() => {
+    let mounted = true
+    consultantService
+      .getAll({ is_featured: true })
+      .then((res) => {
+        if (mounted) setConsultants(res.data.results || res.data || [])
+      })
+      .catch(() => {
+        if (mounted) setTeamError(true)
+      })
+      .finally(() => {
+        if (mounted) setTeamLoading(false)
+      })
+    return () => {
+      mounted = false
+    }
+  }, [])
+
+  const teamMembers = consultants.map((c) => ({
+    id: c.id,
+    slug: c.slug,
+    name: c.user?.full_name || 'Mental Health Expert',
+    role: c.specializations?.[0]?.name || 'Consultant Psychologist',
+    specialization: (c.specializations || []).map((s) => s.name).join(', '),
+    experience: c.experience_years ? `${c.experience_years}+ Years` : 'N/A',
+    education: c.location || c.languages || '—',
+    image: normalizeProfileImage(c.profile_image),
+    bio: c.bio || 'No biography has been provided yet.',
+  }))
 
   useEffect(() => {
     if (selectedTeamMember) {
@@ -290,7 +241,11 @@ export default function AboutUsPage() {
                     className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/10"
                   >
                     <Icon className="w-6 h-6 text-teal-300 mx-auto mb-1" />
-                    <p className="text-2xl font-bold">{stat.value}</p>
+                    <p className="text-2xl font-bold">
+                      {stat.label === 'Expert Consultants'
+                        ? `${consultants.length}+`
+                        : stat.value}
+                    </p>
                     <p className="text-xs text-teal-200/80">{stat.label}</p>
                   </motion.div>
                 )
@@ -449,27 +404,73 @@ export default function AboutUsPage() {
           </motion.div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
-            {teamMembers.map((member) => (
+            {teamLoading ? (
+              Array.from({ length: 3 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="rounded-2xl border border-slate-200/60 bg-white/80 backdrop-blur-sm shadow-sm overflow-hidden"
+                >
+                  <Skeleton className="h-48 w-full rounded-none" />
+                  <div className="p-5 space-y-3">
+                    <Skeleton className="h-5 w-2/3" />
+                    <Skeleton className="h-4 w-1/2" />
+                    <Skeleton className="h-4 w-3/4" />
+                  </div>
+                </div>
+              ))
+            ) : teamError || teamMembers.length === 0 ? (
+              <div className="col-span-full text-center py-20">
+                <Users className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+                <p className="text-slate-500 font-medium">
+                  {teamError
+                    ? 'Could not load our consultants right now.'
+                    : 'Our consultants will be listed here soon.'}
+                </p>
+                {teamError && (
+                  <Button
+                    variant="outline"
+                    className="mt-4 rounded-xl border-slate-200 text-slate-700"
+                    onClick={() => window.location.reload()}
+                  >
+                    Try again
+                  </Button>
+                )}
+              </div>
+            ) : (
+              teamMembers.map((member, index) => (
               <motion.div
                 key={member.id}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: 0.05 * member.id }}
+                transition={{ delay: 0.05 * index }}
                 whileHover={{ y: -6 }}
                 className="group cursor-pointer"
                 onClick={() => setSelectedTeamMember(member)}
               >
                 <Card className="h-full border border-slate-200/60 bg-white/80 backdrop-blur-sm shadow-sm hover:shadow-xl hover:border-teal-500/20 transition-all duration-500 overflow-hidden rounded-2xl">
-                  <div className="relative h-48 overflow-hidden">
-                    <Image
-                      src={member.image}
-                      alt={member.name}
-                      width={400}
-                      height={300}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                  <div className="relative h-48 overflow-hidden bg-gradient-to-br from-teal-50 to-emerald-100">
+                    {member.image ? (
+                      <>
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={member.image}
+                          alt={member.name}
+                          loading="lazy"
+                          decoding="async"
+                          className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                      </>
+                    ) : (
+                      <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-teal-50 to-emerald-100">
+                        <div className="flex h-20 w-20 items-center justify-center rounded-full border border-teal-200 bg-white/90 shadow-sm">
+                          <span className="text-3xl font-bold text-teal-700">
+                            {member.name.charAt(0).toUpperCase()}
+                          </span>
+                        </div>
+                      </div>
+                    )}
                     <div className="absolute bottom-4 left-4">
                       <Badge className="bg-white/20 text-white border-white/20 backdrop-blur-sm">
                         {member.experience}
@@ -488,7 +489,8 @@ export default function AboutUsPage() {
                   </CardContent>
                 </Card>
               </motion.div>
-            ))}
+              ))
+            )}
           </div>
         </div>
       </section>
@@ -511,15 +513,28 @@ export default function AboutUsPage() {
               onClick={(e) => e.stopPropagation()}
             >
               <div className="relative">
-                <div className="relative h-64 rounded-t-3xl overflow-hidden">
-                  <Image
-                    src={selectedTeamMember.image}
-                    alt={selectedTeamMember.name}
-                    width={800}
-                    height={400}
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+                <div className="relative h-64 rounded-t-3xl overflow-hidden bg-gradient-to-br from-teal-50 to-emerald-100">
+                  {selectedTeamMember.image ? (
+                    <>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={selectedTeamMember.image}
+                        alt={selectedTeamMember.name}
+                        loading="lazy"
+                        decoding="async"
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+                    </>
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center">
+                      <div className="flex h-28 w-28 items-center justify-center rounded-full border border-teal-200 bg-white/90 shadow-md">
+                        <span className="text-5xl font-bold text-teal-700">
+                          {selectedTeamMember.name.charAt(0).toUpperCase()}
+                        </span>
+                      </div>
+                    </div>
+                  )}
                   <button
                     onClick={() => setSelectedTeamMember(null)}
                     className="absolute top-4 right-4 p-2 bg-white/20 backdrop-blur-sm rounded-full hover:bg-white/30 transition-all"
@@ -557,6 +572,18 @@ export default function AboutUsPage() {
                   </div>
 
                   <div className="pt-4 border-t border-slate-200 flex flex-col sm:flex-row gap-3">
+                    {selectedTeamMember.slug && (
+                      <Link
+                        href={`/consultant/${selectedTeamMember.slug}`}
+                        className="flex-1"
+                        onClick={() => setSelectedTeamMember(null)}
+                      >
+                        <Button variant="outline" className="w-full rounded-xl border-slate-200">
+                          <ChevronRight className="mr-2 w-4 h-4" />
+                          View Full Profile
+                        </Button>
+                      </Link>
+                    )}
                     <Link href="/consultant" className="flex-1">
                       <Button className="w-full bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 text-white rounded-xl shadow-lg shadow-teal-600/20">
                         Book a Session

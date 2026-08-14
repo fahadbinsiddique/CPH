@@ -154,7 +154,7 @@ export default function ConsultantProfileModal({ slug }) {
                         alt={consultant.user?.full_name || 'Consultant'}
                         width={144}
                         height={144}
-                        className="h-full w-full object-cover"
+                        className="h-full w-full  object-center"
                         priority
                       />
                     ) : (

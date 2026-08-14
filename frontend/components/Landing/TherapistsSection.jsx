@@ -1,10 +1,9 @@
 'use client'
 
-import { useMemo } from 'react'
-import Image from 'next/image'
+import { useMemo, useEffect, useState, useCallback } from 'react'
 import Link from 'next/link'
 import { motion, useReducedMotion } from 'framer-motion'
-import { MessageCircle, BadgeCheck, ArrowRight, Sparkles } from 'lucide-react'
+import { MessageCircle, ArrowRight, Sparkles, Loader2, UserX } from 'lucide-react'
 import Autoplay from 'embla-carousel-autoplay'
 import {
   Carousel,
@@ -12,68 +11,97 @@ import {
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
+  CarouselDots,
 } from '@/components/ui/carousel'
-import { Button } from '../ui/button'
+import { Button } from '@/components/ui/button'
+import { Skeleton } from '@/components/ui/skeleton'
 import Reveal from '@/components/ui/Reveal'
+import { consultantService } from '@/services/consultantService'
 
-const therapists = [
-  {
-    name: 'Dr. Sarah Ahmed',
-    title: 'Clinical Psychologist',
-    specialty: 'Anxiety & Stress',
-    available: true,
-    image:
-      'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?q=80&w=800&auto=format&fit=crop',
-  },
-  {
-    name: 'Dr. John Miller',
-    title: 'Licensed Therapist',
-    specialty: 'Depression & Trauma',
-    available: true,
-    image:
-      'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?q=80&w=800&auto=format&fit=crop',
-  },
-  {
-    name: 'JUM Nazmul Hossain',
-    title: 'Consultant Psychologist',
-    specialty: 'Mindfulness & Healing',
-    available: false,
-    image: 'https://centreforpsychologicalhealth.com/assets/uploads/doctor-11.png',
-  },
-  {
-    name: 'Dr. Michael Rahman',
-    title: 'Psychiatric Consultant',
-    specialty: 'CBT Specialist',
-    available: true,
-    image:
-      'https://images.unsplash.com/photo-1622253692010-333f2da6031d?q=80&w=800&auto=format&fit=crop',
-  },
-  {
-    name: 'Anjuman Ara',
-    title: 'Senior Psychologist',
-    specialty: 'Child & Adolescent',
-    available: true,
-    image:
-      'https://centreforpsychologicalhealth.com/assets/uploads/doctor-21.png?q=80&w=800&auto=format&fit=crop',
-  },
-]
+// 🖼 http:// -> https:// and protocol-relative -> https, safe for <img> (no Next optimizer).
+function normalizeProfileImage(src) {
+  if (!src || typeof src !== 'string') return undefined
+  const trimmed = src.trim()
+  if (!trimmed) return undefined
+  if (trimmed.startsWith('http://')) return trimmed.replace('http://', 'https://')
+  if (trimmed.startsWith('//')) return `https:${trimmed}`
+  return trimmed
+}
+
+function extractConsultantList(payload) {
+  if (Array.isArray(payload)) return payload
+  if (!payload || typeof payload !== 'object') return []
+  if (Array.isArray(payload.results)) return payload.results
+  if (Array.isArray(payload.data?.results)) return payload.data.results
+  if (Array.isArray(payload.data)) return payload.data
+  return []
+}
 
 const TherapistsSection = () => {
+  const [therapists, setTherapists] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(false)
+  const [failedImages, setFailedImages] = useState(() => new Set())
   const prefersReducedMotion = useReducedMotion()
+
+  const fetchTherapists = useCallback(async () => {
+    setLoading(true)
+    setError(false)
+    try {
+      const res = await consultantService.getAll({ is_featured: true })
+      setTherapists(extractConsultantList(res?.data ?? res))
+    } catch (err) {
+      console.error('Failed to fetch specialists for home section:', err)
+      setError(true)
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchTherapists()
+  }, [fetchTherapists])
+
+  const handleImageError = useCallback((id) => {
+    setFailedImages((prev) => {
+      if (prev.has(id)) return prev
+      const next = new Set(prev)
+      next.add(id)
+      return next
+    })
+  }, [])
 
   const autoplayPlugin = useMemo(
     () =>
       prefersReducedMotion
         ? undefined
-        : Autoplay({ delay: 4000, stopOnInteraction: true }),
+        : Autoplay({ delay: 4000, stopOnInteraction: false }),
     [prefersReducedMotion]
+  )
+
+  const renderSkeletons = () => (
+    <div className="flex gap-6 overflow-hidden">
+      {Array.from({ length: 4 }).map((_, i) => (
+        <div key={i} className="w-full flex-none md:basis-1/2 lg:basis-1/3 xl:basis-1/4">
+          <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200/70 bg-white shadow-soft">
+            <Skeleton className="h-64 sm:h-72 w-full rounded-none" />
+            <div className="flex flex-1 flex-col gap-3 p-5">
+              <Skeleton className="h-4 w-3/4" />
+              <Skeleton className="h-3 w-1/2" />
+              <Skeleton className="mt-auto h-9 w-full rounded-xl" />
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
   )
 
   return (
     <section className="section-pad relative overflow-hidden bg-white">
       <div className="pointer-events-none absolute inset-0" aria-hidden="true">
-        <div className="absolute -top-24 -left-20 h-80 w-80 rounded-full bg-teal-50 blur-3xl" />
-        <div className="absolute -right-24 -bottom-24 h-80 w-80 rounded-full bg-emerald-50 blur-3xl" />
+        <div className="absolute -left-20 -top-24 h-80 w-80 rounded-full bg-teal-50 blur-3xl" />
+        <div className="absolute -bottom-24 -right-24 h-80 w-80 rounded-full bg-emerald-50 blur-3xl" />
       </div>
 
       <div className="section-shell relative z-10">
@@ -91,66 +119,141 @@ const TherapistsSection = () => {
 
         <Reveal y={30} duration={0.8}>
           <div className="relative px-2 sm:px-12">
-            <Carousel
-              plugins={autoplayPlugin ? [autoplayPlugin] : undefined}
-              className="w-full"
-              onMouseEnter={() => autoplayPlugin?.stop()}
-              onMouseLeave={() => autoplayPlugin?.reset()}
-              opts={{ align: 'start', loop: true }}
-            >
-              <CarouselContent className="-ml-4 md:-ml-6">
-                {therapists.map((doc, index) => (
-                  <CarouselItem
-                    key={index}
-                    className="pl-4 md:pl-6 md:basis-1/2 lg:basis-1/3 xl:basis-1/4"
-                  >
-                    <div className="group flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200/70 bg-white shadow-soft transition-all duration-300 hover:-translate-y-1 hover:border-teal-200 hover:shadow-card">
-                      <div className="relative h-56 w-full overflow-hidden bg-slate-100">
-                        <Image
-                          src={doc.image}
-                          alt={doc.name}
-                          fill
-                          className="object-cover object-top transition-transform duration-700 group-hover:scale-105"
-                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
-                        />
-
-                       
-
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-black/0 to-transparent" />
-
-                        
-                      </div>
-
-                      <div className="flex flex-1 flex-col p-5">
-                        <h3 className="text-lg font-bold leading-tight text-slate-800 transition-colors group-hover:text-teal-700">
-                          {doc.name}
-                        </h3>
-                        <p className="mt-0.5 text-sm font-medium text-slate-500">{doc.title}</p>
-
-                        <div className="mt-3">
-                          <span className="inline-block rounded-full border border-teal-100 bg-teal-50 px-2.5 py-1 text-xs font-medium text-teal-700">
-                            {doc.specialty}
-                          </span>
-                        </div>
-
-                        <Link
-                          href="/consultant"
-                          className="mt-auto flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm font-semibold text-slate-700 transition-all duration-300 hover:border-teal-600 hover:bg-teal-700 hover:text-white"
-                        >
-                          <MessageCircle className="h-4 w-4" />
-                          Book Session
-                        </Link>
-                      </div>
-                    </div>
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-
-              <div className="hidden md:block">
-                <CarouselPrevious className="-left-12 h-11 w-11 border-slate-200 bg-white text-slate-600 transition-colors hover:border-teal-200 hover:bg-teal-50 hover:text-teal-700 lg:-left-14" />
-                <CarouselNext className="-right-12 h-11 w-11 border-slate-200 bg-white text-slate-600 transition-colors hover:border-teal-200 hover:bg-teal-50 hover:text-teal-700 lg:-right-14" />
+            {loading ? (
+              renderSkeletons()
+            ) : error ? (
+              <div className="flex flex-col items-center justify-center gap-4 py-14 text-center">
+                <div className="flex h-14 w-14 items-center justify-center rounded-full bg-red-50">
+                  <UserX className="h-6 w-6 text-red-500" />
+                </div>
+                <div>
+                  <p className="text-base font-semibold text-slate-800">
+                    Could not load specialists
+                  </p>
+                  <p className="mt-1 text-sm text-slate-500">
+                    Something went wrong while fetching our specialists. Please try again.
+                  </p>
+                </div>
+                <Button
+                  variant="outline"
+                  onClick={fetchTherapists}
+                  className="rounded-xl text-slate-700 hover:text-teal-700"
+                >
+                  <Loader2 className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+                  Try again
+                </Button>
               </div>
-            </Carousel>
+            ) : therapists.length === 0 ? (
+              <div className="flex flex-col items-center justify-center gap-4 py-14 text-center">
+                <div className="flex h-14 w-14 items-center justify-center rounded-full bg-teal-50">
+                  <Sparkles className="h-6 w-6 text-teal-600" />
+                </div>
+                <div>
+                  <p className="text-base font-semibold text-slate-800">No specialists yet</p>
+                  <p className="mt-1 text-sm text-slate-500">
+                    Our specialists will be listed here soon. Stay tuned!
+                  </p>
+                </div>
+                <Button asChild variant="outline" className="rounded-xl text-slate-700 hover:text-teal-700">
+                  <Link href="/consultant">Browse the directory</Link>
+                </Button>
+              </div>
+            ) : (
+              <Carousel
+                plugins={autoplayPlugin ? [autoplayPlugin] : undefined}
+                className="w-full"
+                onMouseEnter={() => autoplayPlugin?.stop()}
+                onMouseLeave={() => autoplayPlugin?.reset()}
+                opts={{ align: 'start', loop: true }}
+              >
+                <CarouselContent className="-ml-4 md:-ml-6">
+                  {therapists.map((doc) => {
+                    const fullName = doc.user?.full_name || 'Mental Health Expert'
+                    const title = doc.specializations?.[0]?.name || 'Consultant Psychologist'
+                    const profileImg = normalizeProfileImage(doc.profile_image)
+                    const showFallback = failedImages.has(doc.id)
+
+                    return (
+                      <CarouselItem
+                        key={doc.id || doc.slug}
+                        className="pl-4 md:basis-1/2 md:pl-6 lg:basis-1/3 xl:basis-1/4"
+                      >
+                        <motion.div
+                          initial={{ opacity: 0, y: 16 }}
+                          whileInView={{ opacity: 1, y: 0 }}
+                          viewport={{ once: true, margin: '-40px' }}
+                          transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+                          className="h-full"
+                        >
+                          <div className="group flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200/70 bg-white shadow-soft transition-all duration-300 hover:-translate-y-1 hover:border-teal-200 hover:shadow-card">
+                            {/* ================= Portrait Container (Fixed Height & Scaled Image) ================= */}
+                            <div className="relative h-64 sm:h-72 w-full shrink-0 overflow-hidden bg-gradient-to-br from-teal-50/60 to-emerald-50/60 p-2">
+                              {profileImg && !showFallback ? (
+                                <>
+                                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                                  <img
+                                    src={profileImg}
+                                    alt={`Portrait of ${fullName}`}
+                                    loading="lazy"
+                                    decoding="async"
+                                    onError={() => handleImageError(doc.id)}
+                                    className="h-full w-full object-contain object-bottom transition-transform duration-500 group-hover:scale-105"
+                                  />
+                                  <div className="pointer-events-none absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-white/80 to-transparent" />
+                                </>
+                              ) : (
+                                <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-teal-50 to-emerald-100">
+                                  <div className="flex h-20 w-20 items-center justify-center rounded-full border border-teal-200 bg-white/90 shadow-sm">
+                                    <span className="text-3xl font-bold text-teal-700">
+                                      {fullName.charAt(0).toUpperCase()}
+                                    </span>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+
+                            {/* ================= Card Content ================= */}
+                            <div className="flex flex-1 flex-col p-5">
+                              <h3 className="line-clamp-1 text-lg font-bold leading-tight text-slate-800 transition-colors group-hover:text-teal-700">
+                                {fullName}
+                              </h3>
+                              <p className="mt-0.5 truncate text-sm font-medium text-slate-500">
+                                {title}
+                              </p>
+
+                              {/* Specialization Badge (fixed-height row keeps alignment) */}
+                              <div className="mt-3 flex min-h-[32px] items-start">
+                                {doc.specializations?.length > 0 && (
+                                  <span className="inline-flex max-w-full items-center rounded-full border border-teal-100 bg-teal-50 px-2.5 py-1 text-xs font-medium text-teal-700">
+                                    <span className="truncate">{doc.specializations[0].name}</span>
+                                  </span>
+                                )}
+                              </div>
+
+                              {/* Action Button */}
+                              <Link
+                                href={doc.slug ? `/consultant/${doc.slug}` : '/consultant'}
+                                className="mt-auto flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm font-semibold text-slate-700 transition-all duration-300 hover:border-teal-600 hover:bg-teal-700 hover:text-white"
+                              >
+                                <MessageCircle className="h-4 w-4" />
+                                Book Session
+                              </Link>
+                            </div>
+                          </div>
+                        </motion.div>
+                      </CarouselItem>
+                    )
+                  })}
+                </CarouselContent>
+
+                <div className="hidden md:block">
+                  <CarouselPrevious className="-left-12 h-11 w-11 border-slate-200 bg-white text-slate-600 transition-colors hover:border-teal-200 hover:bg-teal-50 hover:text-teal-700 lg:-left-14" />
+                  <CarouselNext className="-right-12 h-11 w-11 border-slate-200 bg-white text-slate-600 transition-colors hover:border-teal-200 hover:bg-teal-50 hover:text-teal-700 lg:-right-14" />
+                </div>
+
+                <CarouselDots count={therapists.length} className="mt-8" />
+              </Carousel>
+            )}
           </div>
         </Reveal>
 
@@ -158,7 +261,7 @@ const TherapistsSection = () => {
           <div className="mt-12 text-center">
             <Button asChild variant="ghost" className="group h-auto rounded-2xl px-8 py-4 text-base font-semibold text-teal-700 hover:bg-teal-50">
               <Link href="/consultant">
-                <span>View all 50+ specialists</span>
+                <span>View all specialists</span>
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
               </Link>
             </Button>
