@@ -64,7 +64,7 @@ export default function AssessmentNav({
         )}
       </div>
 
-      <p className="mt-3 text-center text-xs text-slate-400" aria-live="polite">
+      <p className="mt-3 text-center text-xs text-stone-400" aria-live="polite">
         {answeredCount} of {total} answered
       </p>
     </div>

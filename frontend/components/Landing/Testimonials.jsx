@@ -55,7 +55,7 @@ const Testimonials = () => {
           {testimonials.map((item) => (
               <figure
                 key={item.name}
-                className="flex flex-col rounded-2xl border border-slate-200/70 bg-slate-50/80 p-6 shadow-soft transition-all duration-300 hover:-translate-y-1 hover:border-teal-200 hover:shadow-card"
+                className="flex flex-col rounded-2xl border border-stone-200/70 bg-stone-50/80 p-6 shadow-soft transition-all duration-300 hover:-translate-y-1 hover:border-teal-200 hover:shadow-card"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1">
@@ -63,7 +63,7 @@ const Testimonials = () => {
                       <Star
                         key={i}
                         className={`h-4 w-4 ${
-                          i < item.rating ? 'fill-amber-400 text-amber-400' : 'text-slate-300'
+                          i < item.rating ? 'fill-amber-400 text-amber-400' : 'text-stone-300'
                         }`}
                       />
                     ))}
@@ -71,13 +71,13 @@ const Testimonials = () => {
                   <Quote className="h-5 w-5 text-teal-200" />
                 </div>
 
-                <blockquote className="mt-4 flex-1 text-sm leading-relaxed text-slate-700">
+                <blockquote className="mt-4 flex-1 text-sm leading-relaxed text-stone-700">
                   “{item.feedback}”
                 </blockquote>
 
-                <figcaption className="mt-5 border-t border-slate-100 pt-4">
-                  <p className="font-semibold text-slate-900">{item.name}</p>
-                  <p className="text-xs text-slate-500">{item.role}</p>
+                <figcaption className="mt-5 border-t border-stone-100 pt-4">
+                  <p className="font-semibold text-stone-900">{item.name}</p>
+                  <p className="text-xs text-stone-500">{item.role}</p>
                 </figcaption>
               </figure>
             ))}

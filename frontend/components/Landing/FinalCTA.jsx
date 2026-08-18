@@ -15,7 +15,7 @@ const FinalCTA = () => {
 
       <div className="section-shell relative z-10">
         <Reveal y={26} duration={0.7}>
-          <div className="relative mx-auto max-w-4xl overflow-hidden rounded-[2rem] border border-slate-200/70 bg-white shadow-card">
+          <div className="relative mx-auto max-w-4xl overflow-hidden rounded-[2rem] border border-stone-200/70 bg-white shadow-card">
             {/* Decorative banner */}
             <div className="relative h-40 overflow-hidden md:h-44">
               <Image
@@ -30,15 +30,15 @@ const FinalCTA = () => {
             </div>
 
             <div className="px-6 pb-8 pt-7 text-center md:px-12 md:pb-10">
-              <span className="inline-flex items-center gap-2 rounded-full border border-teal-100 bg-teal-50 px-4 py-1.5 text-sm font-medium text-teal-700">
+              <span className="inline-flex items-center gap-2 rounded-full border border-accent-warm-soft-border bg-accent-warm-soft px-4 py-1.5 text-sm font-medium text-accent-warm-soft-foreground">
                 <ShieldCheck className="h-4 w-4" />
                 Safe, secure, professional
               </span>
 
-              <h2 className="mt-5 text-2xl font-bold tracking-tight text-slate-900 md:text-3xl">
+              <h2 className="mt-5 text-2xl font-bold tracking-tight text-stone-900 md:text-3xl">
                 Ready to feel better?
               </h2>
-              <p className="mx-auto mt-3 max-w-xl text-slate-600">
+              <p className="mx-auto mt-3 max-w-xl text-stone-600">
                 Take the first step today – thousands have found peace with SereneMind.
               </p>
 

@@ -27,7 +27,7 @@ const blogs = [
 
 const BlogPreview = () => {
   return (
-    <section className="section-pad relative overflow-hidden bg-slate-50/70">
+    <section className="section-pad relative overflow-hidden bg-stone-50/70">
       <div className="pointer-events-none absolute inset-0" aria-hidden="true">
         <div className="absolute -left-24 -top-20 h-80 w-80 rounded-full bg-teal-50 blur-3xl" />
         <div className="absolute -bottom-24 -right-24 h-80 w-80 rounded-full bg-emerald-50 blur-3xl" />
@@ -47,23 +47,23 @@ const BlogPreview = () => {
           {blogs.map((post) => (
               <article
                 key={post.title}
-                className="group flex flex-col rounded-2xl border border-slate-200/70 bg-white p-6 shadow-soft transition-all duration-300 hover:-translate-y-1 hover:border-teal-200 hover:shadow-card"
+                className="group flex flex-col rounded-2xl border border-stone-200/70 bg-white p-6 shadow-soft transition-all duration-300 hover:-translate-y-1 hover:border-teal-200 hover:shadow-card"
               >
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-teal-50 transition-colors duration-300 group-hover:bg-teal-100">
                   <BookOpen className="h-5 w-5 text-teal-600" />
                 </div>
 
-                <div className="mt-4 flex items-center justify-between text-xs text-slate-500">
-                  <span className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 font-medium text-slate-600">
+                <div className="mt-4 flex items-center justify-between text-xs text-stone-500">
+                  <span className="rounded-full border border-stone-200 bg-stone-50 px-2.5 py-1 font-medium text-stone-600">
                     {post.tag}
                   </span>
-                  <time className="text-slate-400">{post.date}</time>
+                  <time className="text-stone-400">{post.date}</time>
                 </div>
 
-                <h3 className="mt-4 text-lg font-semibold leading-snug text-slate-900 transition-colors group-hover:text-teal-700">
+                <h3 className="mt-4 text-lg font-semibold leading-snug text-stone-900 transition-colors group-hover:text-teal-700">
                   {post.title}
                 </h3>
-                <p className="mt-2 flex-1 text-sm leading-relaxed text-slate-600">{post.desc}</p>
+                <p className="mt-2 flex-1 text-sm leading-relaxed text-stone-600">{post.desc}</p>
 
                 <Link
                   href="/blog"

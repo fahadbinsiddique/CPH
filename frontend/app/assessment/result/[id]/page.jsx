@@ -55,12 +55,12 @@ export default function ResultPage() {
         className="flex min-h-screen items-center justify-center bg-gradient-to-b from-white via-white to-teal-50/40 px-4"
         style={{ paddingTop: headerOffset }}
       >
-        <div className="w-full max-w-md rounded-3xl border border-slate-200/70 bg-white p-10 text-center shadow-soft">
-          <AlertCircle className="mx-auto mb-3 h-10 w-10 text-slate-300" aria-hidden="true" />
-          <h1 className="font-heading text-lg font-semibold text-slate-800">
+        <div className="w-full max-w-md rounded-3xl border border-stone-200/70 bg-white p-10 text-center shadow-soft">
+          <AlertCircle className="mx-auto mb-3 h-10 w-10 text-stone-300" aria-hidden="true" />
+          <h1 className="font-heading text-lg font-semibold text-stone-800">
             We couldn&apos;t find this result
           </h1>
-          <p className="mt-1 text-sm text-slate-500">
+          <p className="mt-1 text-sm text-stone-500">
             It may have been removed, or the link is invalid.
           </p>
           <Link href="/assessment" className="mt-6 inline-block">
@@ -92,22 +92,22 @@ export default function ResultPage() {
           />
 
           {answers.length > 0 && (
-            <section className="overflow-hidden rounded-3xl border border-slate-200/70 bg-white p-6 shadow-soft sm:p-7">
-              <h2 className="mb-5 flex items-center gap-2 font-heading text-base font-bold text-slate-800">
+            <section className="overflow-hidden rounded-3xl border border-stone-200/70 bg-white p-6 shadow-soft sm:p-7">
+              <h2 className="mb-5 flex items-center gap-2 font-heading text-base font-bold text-stone-800">
                 <ScrollText className="h-4 w-4 text-teal-700" aria-hidden="true" />
                 Your responses
               </h2>
               <ul className="space-y-3">
                 {answers.map(([qId, ans], i) => (
                   <li key={qId} className="flex gap-3 text-sm">
-                    <span className="mt-0.5 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-slate-100 text-xs font-semibold text-slate-500">
+                    <span className="mt-0.5 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-stone-100 text-xs font-semibold text-stone-500">
                       {i + 1}
                     </span>
                     <div className="min-w-0">
-                      <p className="leading-relaxed text-slate-600">{ans.question}</p>
-                      <p className="mt-0.5 text-xs text-slate-400">
+                      <p className="leading-relaxed text-stone-600">{ans.question}</p>
+                      <p className="mt-0.5 text-xs text-stone-400">
                         {ans.answer}
-                        <span className="ml-2 text-slate-300">({ans.score} pts)</span>
+                        <span className="ml-2 text-stone-300">({ans.score} pts)</span>
                       </p>
                     </div>
                   </li>

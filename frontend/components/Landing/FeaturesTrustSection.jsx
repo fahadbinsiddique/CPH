@@ -52,7 +52,7 @@ const FeaturesTrustSection = () => {
           {/* Left: Image */}
           <Reveal x={-24} y={0} duration={0.7}>
             <div className="relative mx-auto max-w-lg lg:max-w-none">
-              <div className="relative aspect-[4/3] w-full overflow-hidden rounded-[2rem] border border-slate-200/60 shadow-card">
+              <div className="relative aspect-[4/3] w-full overflow-hidden rounded-[2rem] border border-stone-200/60 shadow-card">
                 <Image
                   src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=800&h=600&fit=crop"
                   alt="Person meditating in nature"
@@ -68,8 +68,8 @@ const FeaturesTrustSection = () => {
                   <Heart className="h-4 w-4 text-teal-600" />
                 </div>
                 <div>
-                  <p className="text-xs font-semibold text-slate-700">98% of users</p>
-                  <p className="text-xs text-slate-500">feel better within 4 weeks</p>
+                  <p className="text-xs font-semibold text-stone-700">98% of users</p>
+                  <p className="text-xs text-stone-500">feel better within 4 weeks</p>
                 </div>
               </div>
             </div>
@@ -79,8 +79,8 @@ const FeaturesTrustSection = () => {
           <Reveal x={24} y={0} duration={0.7}>
             <div className="space-y-8">
               <div>
-                <h3 className="text-2xl font-semibold text-slate-900">Core features</h3>
-                <p className="mt-1 text-slate-500">Designed to fit your daily life, not complicate it.</p>
+                <h3 className="text-2xl font-semibold text-stone-900">Core features</h3>
+                <p className="mt-1 text-stone-500">Designed to fit your daily life, not complicate it.</p>
               </div>
 
               <div className="space-y-4">
@@ -95,16 +95,16 @@ const FeaturesTrustSection = () => {
                         <Icon className="h-5 w-5" />
                       </div>
                       <div>
-                        <h4 className="font-semibold text-slate-800">{feat.title}</h4>
-                        <p className="text-sm text-slate-500">{feat.desc}</p>
+                        <h4 className="font-semibold text-stone-800">{feat.title}</h4>
+                        <p className="text-sm text-stone-500">{feat.desc}</p>
                       </div>
                     </div>
                   )
                 })}
               </div>
 
-              <div className="border-t border-slate-100 pt-6">
-                <p className="mb-3 text-sm font-medium text-slate-600">
+              <div className="border-t border-stone-100 pt-6">
+                <p className="mb-3 text-sm font-medium text-stone-600">
                   Trusted by over 10,000+ people
                 </p>
                 <div className="flex flex-wrap gap-x-5 gap-y-2">
@@ -113,7 +113,7 @@ const FeaturesTrustSection = () => {
                     return (
                       <span
                         key={item.label}
-                        className="inline-flex items-center gap-1.5 text-xs text-slate-500"
+                        className="inline-flex items-center gap-1.5 text-xs text-stone-500"
                       >
                         <Icon className="h-3.5 w-3.5 text-teal-600" />
                         {item.label}

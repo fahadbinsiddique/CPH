@@ -84,7 +84,7 @@ const TherapistsSection = () => {
     <div className="flex gap-6 overflow-hidden">
       {Array.from({ length: 4 }).map((_, i) => (
         <div key={i} className="w-full flex-none md:basis-1/2 lg:basis-1/3 xl:basis-1/4">
-          <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200/70 bg-white shadow-soft">
+          <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-stone-200/70 bg-white shadow-soft">
             <Skeleton className="h-64 sm:h-72 w-full rounded-none" />
             <div className="flex flex-1 flex-col gap-3 p-5">
               <Skeleton className="h-4 w-3/4" />
@@ -127,17 +127,17 @@ const TherapistsSection = () => {
                   <UserX className="h-6 w-6 text-red-500" />
                 </div>
                 <div>
-                  <p className="text-base font-semibold text-slate-800">
+                  <p className="text-base font-semibold text-stone-800">
                     Could not load specialists
                   </p>
-                  <p className="mt-1 text-sm text-slate-500">
+                  <p className="mt-1 text-sm text-stone-500">
                     Something went wrong while fetching our specialists. Please try again.
                   </p>
                 </div>
                 <Button
                   variant="outline"
                   onClick={fetchTherapists}
-                  className="rounded-xl text-slate-700 hover:text-teal-700"
+                  className="rounded-xl text-stone-700 hover:text-teal-700"
                 >
                   <Loader2 className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
                   Try again
@@ -149,12 +149,12 @@ const TherapistsSection = () => {
                   <Sparkles className="h-6 w-6 text-teal-600" />
                 </div>
                 <div>
-                  <p className="text-base font-semibold text-slate-800">No specialists yet</p>
-                  <p className="mt-1 text-sm text-slate-500">
+                  <p className="text-base font-semibold text-stone-800">No specialists yet</p>
+                  <p className="mt-1 text-sm text-stone-500">
                     Our specialists will be listed here soon. Stay tuned!
                   </p>
                 </div>
-                <Button asChild variant="outline" className="rounded-xl text-slate-700 hover:text-teal-700">
+                <Button asChild variant="outline" className="rounded-xl text-stone-700 hover:text-teal-700">
                   <Link href="/consultant">Browse the directory</Link>
                 </Button>
               </div>
@@ -185,7 +185,7 @@ const TherapistsSection = () => {
                           transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
                           className="h-full"
                         >
-                          <div className="group flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200/70 bg-white shadow-soft transition-all duration-300 hover:-translate-y-1 hover:border-teal-200 hover:shadow-card">
+                          <div className="group flex h-full flex-col overflow-hidden rounded-2xl border border-stone-200/70 bg-white shadow-soft transition-all duration-300 hover:-translate-y-1 hover:border-teal-200 hover:shadow-card">
                             {/* ================= Portrait Container (Fixed Height & Scaled Image) ================= */}
                             <div className="relative h-64 sm:h-72 w-full shrink-0 overflow-hidden bg-gradient-to-br from-teal-50/60 to-emerald-50/60 p-2">
                               {profileImg && !showFallback ? (
@@ -214,10 +214,10 @@ const TherapistsSection = () => {
 
                             {/* ================= Card Content ================= */}
                             <div className="flex flex-1 flex-col p-5">
-                              <h3 className="line-clamp-1 text-lg font-bold leading-tight text-slate-800 transition-colors group-hover:text-teal-700">
+                              <h3 className="line-clamp-1 text-lg font-bold leading-tight text-stone-800 transition-colors group-hover:text-teal-700">
                                 {fullName}
                               </h3>
-                              <p className="mt-0.5 truncate text-sm font-medium text-slate-500">
+                              <p className="mt-0.5 truncate text-sm font-medium text-stone-500">
                                 {title}
                               </p>
 
@@ -233,7 +233,7 @@ const TherapistsSection = () => {
                               {/* Action Button */}
                               <Link
                                 href={doc.slug ? `/consultant/${doc.slug}` : '/consultant'}
-                                className="mt-auto flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm font-semibold text-slate-700 transition-all duration-300 hover:border-teal-600 hover:bg-teal-700 hover:text-white"
+                                className="mt-auto flex w-full items-center justify-center gap-2 rounded-xl border border-stone-200 bg-stone-50 px-4 py-2.5 text-sm font-semibold text-stone-700 transition-all duration-300 hover:border-teal-600 hover:bg-teal-700 hover:text-white"
                               >
                                 <MessageCircle className="h-4 w-4" />
                                 Book Session
@@ -247,8 +247,8 @@ const TherapistsSection = () => {
                 </CarouselContent>
 
                 <div className="hidden md:block">
-                  <CarouselPrevious className="-left-12 h-11 w-11 border-slate-200 bg-white text-slate-600 transition-colors hover:border-teal-200 hover:bg-teal-50 hover:text-teal-700 lg:-left-14" />
-                  <CarouselNext className="-right-12 h-11 w-11 border-slate-200 bg-white text-slate-600 transition-colors hover:border-teal-200 hover:bg-teal-50 hover:text-teal-700 lg:-right-14" />
+                  <CarouselPrevious className="-left-12 h-11 w-11 border-stone-200 bg-white text-stone-600 transition-colors hover:border-teal-200 hover:bg-teal-50 hover:text-teal-700 lg:-left-14" />
+                  <CarouselNext className="-right-12 h-11 w-11 border-stone-200 bg-white text-stone-600 transition-colors hover:border-teal-200 hover:bg-teal-50 hover:text-teal-700 lg:-right-14" />
                 </div>
 
                 <CarouselDots count={therapists.length} className="mt-8" />

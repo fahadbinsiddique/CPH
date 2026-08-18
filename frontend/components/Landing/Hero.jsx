@@ -80,7 +80,7 @@ const Hero = () => {
   return (
     <section
       ref={sectionRef}
-      className="relative overflow-hidden bg-gradient-to-b from-slate-50 via-white to-white pt-36 pb-20 md:pt-44 md:pb-28"
+      className="relative overflow-hidden bg-gradient-to-b from-stone-50 via-white to-white pt-36 pb-20 md:pt-44 md:pb-28"
     >
       {/* Static tonal background — calm, no looping motion */}
       <div className="pointer-events-none absolute inset-0" aria-hidden="true">
@@ -105,14 +105,16 @@ const Hero = () => {
               Your safe space for mental wellness
             </span>
 
-            <h1 data-hero-title className="text-hero font-bold text-slate-900">
-              <span className="block">Find calm, clarity,</span>
+            <h1 data-hero-title className="text-hero font-bold text-stone-900">
+              <span className="block">
+                Find <span className="text-accent-warm">calm</span>, clarity,
+              </span>
               <span className="block text-teal-700">and emotional balance</span>
             </h1>
 
             <p
               data-hero-sub
-              className="text-hero-lead mx-auto mt-6 max-w-xl font-normal text-slate-600 lg:mx-0"
+              className="text-hero-lead mx-auto mt-6 max-w-xl font-normal text-stone-600 lg:mx-0"
             >
               A modern mental wellness platform designed to support your mind with guided therapy,
               mindfulness tools, and professional care—anytime you need it.
@@ -137,7 +139,7 @@ const Hero = () => {
                 return (
                   <span
                     key={item.label}
-                    className="inline-flex items-center gap-1.5 text-sm text-slate-500"
+                    className="inline-flex items-center gap-1.5 text-sm text-stone-500"
                   >
                     <Icon className="h-4 w-4 text-teal-600" />
                     {item.label}
@@ -148,7 +150,7 @@ const Hero = () => {
 
             {/* Care path cards */}
             <div className="mt-10 pt-2">
-              <p className="mb-5 text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">
+              <p className="mb-5 text-xs font-semibold uppercase tracking-[0.14em] text-stone-500">
                 Choose your care path
               </p>
               <div data-hero-cards className="grid grid-cols-1 gap-4 sm:grid-cols-3">
@@ -158,7 +160,7 @@ const Hero = () => {
                     <Link
                       key={option.title}
                       href="/services"
-                      className={`group relative flex flex-col gap-4 rounded-2xl border border-slate-200/70 bg-white/80 p-5 text-left shadow-soft transition-all duration-300 hover:-translate-y-1 hover:shadow-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2 ${option.hover}`}
+                      className={`group relative flex flex-col gap-4 rounded-2xl border border-stone-200/70 bg-white/80 p-5 text-left shadow-soft transition-all duration-300 hover:-translate-y-1 hover:shadow-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2 ${option.hover}`}
                     >
                       <div className="flex items-center justify-between gap-3">
                         <span
@@ -166,15 +168,15 @@ const Hero = () => {
                         >
                           <Icon className="h-5 w-5" />
                         </span>
-                        <span className="rounded-full border border-slate-200 bg-white px-2.5 py-0.5 text-[11px] font-semibold text-slate-600">
+                        <span className="rounded-full border border-stone-200 bg-white px-2.5 py-0.5 text-[11px] font-semibold text-stone-600">
                           {option.tag}
                         </span>
                       </div>
                       <div>
-                        <h3 className="text-base font-bold leading-tight text-slate-800 transition-colors group-hover:text-teal-700">
+                        <h3 className="text-base font-bold leading-tight text-stone-800 transition-colors group-hover:text-teal-700">
                           {option.title}
                         </h3>
-                        <p className="mt-1 text-xs leading-relaxed text-slate-500">
+                        <p className="mt-1 text-xs leading-relaxed text-stone-500">
                           {option.desc}
                         </p>
                       </div>
@@ -187,7 +189,7 @@ const Hero = () => {
 
           {/* RIGHT — IMAGE + GLASS CARD */}
           <div data-hero-image className="relative mx-auto w-full max-w-md lg:max-w-none">
-            <div className="relative aspect-[4/5] w-full overflow-hidden rounded-[2rem] border border-slate-200/60 shadow-card">
+            <div className="relative aspect-[4/5] w-full overflow-hidden rounded-[2rem] border border-stone-200/60 shadow-card">
               <Image
                 src="/banner.jpg"
                 alt="Woman meditating in a serene nature setting"
@@ -199,7 +201,7 @@ const Hero = () => {
               <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-transparent" />
 
               {/* Static verified chip */}
-              <div className="absolute right-4 top-4 inline-flex items-center gap-1.5 rounded-full bg-white/85 px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-sm backdrop-blur">
+              <div className="absolute right-4 top-4 inline-flex items-center gap-1.5 rounded-full bg-white/85 px-3 py-1.5 text-xs font-semibold text-stone-700 shadow-sm backdrop-blur">
                 <ShieldCheck className="h-3.5 w-3.5 text-teal-600" />
                 Licensed & confidential
               </div>
@@ -215,14 +217,14 @@ const Hero = () => {
                   <Heart className="h-5 w-5 text-teal-600" />
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-slate-800">Daily check-in</p>
-                  <p className="text-xs text-slate-500">How are you feeling today?</p>
+                  <p className="text-sm font-semibold text-stone-800">Daily check-in</p>
+                  <p className="text-xs text-stone-500">How are you feeling today?</p>
                 </div>
                 <div className="ml-auto">
-                  <div className="h-2 w-20 overflow-hidden rounded-full bg-slate-200">
+                  <div className="h-2 w-20 overflow-hidden rounded-full bg-stone-200">
                     <div className="h-full w-2/3 rounded-full bg-teal-500" />
                   </div>
-                  <p className="mt-1 text-right text-xs text-slate-400">+23% stability</p>
+                  <p className="mt-1 text-right text-xs text-stone-400">+23% stability</p>
                 </div>
               </div>
             </div>

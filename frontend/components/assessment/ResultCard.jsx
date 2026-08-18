@@ -33,10 +33,10 @@ export default function ResultCard({ result, onRetake }) {
           <span className="mb-3 block text-5xl" aria-hidden="true">
             {quiz.icon}
           </span>
-          <h1 className="font-heading text-xl font-bold text-slate-800">
+          <h1 className="font-heading text-xl font-bold text-stone-800">
             {quiz.title}
           </h1>
-          <p className="mt-1 text-sm text-slate-500">{date}</p>
+          <p className="mt-1 text-sm text-stone-500">{date}</p>
         </motion.div>
       </div>
 
@@ -45,12 +45,12 @@ export default function ResultCard({ result, onRetake }) {
           <p className={`font-heading text-5xl font-bold tracking-tight ${meta.text}`}>
             {percentage}%
           </p>
-          <p className="mt-1.5 text-sm text-slate-400">
+          <p className="mt-1.5 text-sm text-stone-400">
             Score {score} / {max_score}
           </p>
         </div>
 
-        <div className="mb-6 h-2.5 overflow-hidden rounded-full bg-slate-100">
+        <div className="mb-6 h-2.5 overflow-hidden rounded-full bg-stone-100">
           <motion.div
             className={`h-full rounded-full ${meta.bar}`}
             initial={{ width: 0 }}
@@ -72,14 +72,14 @@ export default function ResultCard({ result, onRetake }) {
         )}
 
         {score_range?.description && (
-          <p className="mx-auto mb-5 max-w-md text-center text-sm leading-relaxed text-slate-600">
+          <p className="mx-auto mb-5 max-w-md text-center text-sm leading-relaxed text-stone-600">
             {score_range.description}
           </p>
         )}
 
         {score_range?.recommendation && (
           <div className={`mb-6 rounded-2xl border p-5 ${meta.bg} ${meta.border}`}>
-            <p className="mb-1.5 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-slate-500">
+            <p className="mb-1.5 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-stone-500">
               <Lightbulb className="h-3.5 w-3.5" aria-hidden="true" />
               Good next step
             </p>
@@ -99,14 +99,14 @@ export default function ResultCard({ result, onRetake }) {
           <Button
             variant="outline"
             onClick={onRetake}
-            className="h-12 min-w-0 flex-1 rounded-2xl border-slate-200 text-base font-semibold text-slate-700 hover:border-teal-300 hover:bg-teal-50/60 hover:text-teal-800"
+            className="h-12 min-w-0 flex-1 rounded-2xl border-stone-200 text-base font-semibold text-stone-700 hover:border-teal-300 hover:bg-teal-50/60 hover:text-teal-800"
           >
             <RotateCcw className="h-4 w-4" aria-hidden="true" />
             Retake
           </Button>
         </div>
 
-        <p className="mt-4 flex items-center justify-center gap-1.5 text-center text-xs text-slate-400">
+        <p className="mt-4 flex items-center justify-center gap-1.5 text-center text-xs text-stone-400">
           <CalendarCheck2 className="h-3.5 w-3.5" aria-hidden="true" />
           Results help guide a conversation — they are not a diagnosis.
         </p>

@@ -197,7 +197,7 @@ export default function AboutUsPage() {
   }, [selectedTeamMember])
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-indigo-50/30 pt-28 pb-16 font-sans">
+    <div className="min-h-screen bg-gradient-to-br from-stone-50 via-white to-orange-50/25 pt-28 pb-16 font-sans">
       
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-br from-teal-900 via-teal-800 to-emerald-800 text-white py-20">
@@ -262,13 +262,13 @@ export default function AboutUsPage() {
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 border border-slate-200/60 shadow-sm hover:shadow-md transition-all"
+            className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 border border-stone-200/60 shadow-sm hover:shadow-md transition-all"
           >
             <div className="w-14 h-14 rounded-2xl bg-teal-50 flex items-center justify-center mb-4">
               <Eye className="w-7 h-7 text-teal-600" />
             </div>
-            <h2 className="text-2xl font-bold text-slate-900 mb-3">Our Vision</h2>
-            <p className="text-slate-600 leading-relaxed">
+            <h2 className="text-2xl font-bold text-stone-900 mb-3">Our Vision</h2>
+            <p className="text-stone-600 leading-relaxed">
               To create a Bangladesh where mental health is prioritized, stigma is eliminated,
               and every individual has access to compassionate, high-quality psychological care.
             </p>
@@ -278,13 +278,13 @@ export default function AboutUsPage() {
             initial={{ opacity: 0, x: 30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 border border-slate-200/60 shadow-sm hover:shadow-md transition-all"
+            className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 border border-stone-200/60 shadow-sm hover:shadow-md transition-all"
           >
             <div className="w-14 h-14 rounded-2xl bg-emerald-50 flex items-center justify-center mb-4">
               <Target className="w-7 h-7 text-emerald-600" />
             </div>
-            <h2 className="text-2xl font-bold text-slate-900 mb-3">Our Mission</h2>
-            <p className="text-slate-600 leading-relaxed">
+            <h2 className="text-2xl font-bold text-stone-900 mb-3">Our Mission</h2>
+            <p className="text-stone-600 leading-relaxed">
               To deliver evidence-based, culturally-sensitive mental health services that empower
               individuals to achieve emotional well-being, build resilience, and lead fulfilling lives.
             </p>
@@ -293,7 +293,7 @@ export default function AboutUsPage() {
       </section>
 
       {/* Our Story Section */}
-      <section className="bg-white/60 backdrop-blur-sm py-16 border-t border-b border-slate-200/60">
+      <section className="bg-white/60 backdrop-blur-sm py-16 border-t border-b border-stone-200/60">
         <div className="container mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -302,8 +302,8 @@ export default function AboutUsPage() {
             className="text-center max-w-3xl mx-auto mb-12"
           >
             <Badge className="mb-3 bg-teal-50 text-teal-700 border-teal-200">Our Journey</Badge>
-            <h2 className="text-3xl sm:text-4xl font-bold text-slate-900">Our Story</h2>
-            <p className="text-slate-500 mt-2">
+            <h2 className="text-3xl sm:text-4xl font-bold text-stone-900">Our Story</h2>
+            <p className="text-stone-500 mt-2">
               From a single vision to a trusted mental health institution — our journey of compassion
               and commitment.
             </p>
@@ -328,15 +328,15 @@ export default function AboutUsPage() {
                 <div className="hidden md:block absolute left-1/2 -translate-x-1/2 w-4 h-4 bg-teal-500 rounded-full border-4 border-white shadow-md z-10" />
 
                 <div
-                  className={`w-full md:w-5/12 bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-slate-200/60 shadow-sm hover:shadow-md transition-all ${
+                  className={`w-full md:w-5/12 bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-stone-200/60 shadow-sm hover:shadow-md transition-all ${
                     idx % 2 === 0 ? 'md:text-right' : 'md:text-left'
                   }`}
                 >
                   <div className="inline-block px-3 py-1 rounded-full bg-teal-50 text-teal-700 font-bold text-sm mb-2">
                     {milestone.year}
                   </div>
-                  <h3 className="text-lg font-bold text-slate-800">{milestone.title}</h3>
-                  <p className="text-sm text-slate-500 mt-1">{milestone.description}</p>
+                  <h3 className="text-lg font-bold text-stone-800">{milestone.title}</h3>
+                  <p className="text-sm text-stone-500 mt-1">{milestone.description}</p>
                 </div>
               </motion.div>
             ))}
@@ -353,8 +353,8 @@ export default function AboutUsPage() {
           className="text-center max-w-2xl mx-auto mb-12"
         >
           <Badge className="mb-3 bg-amber-50 text-amber-700 border-amber-200">Our Values</Badge>
-          <h2 className="text-3xl sm:text-4xl font-bold text-slate-900">What We Stand For</h2>
-          <p className="text-slate-500 mt-2">The principles that guide everything we do.</p>
+          <h2 className="text-3xl sm:text-4xl font-bold text-stone-900">What We Stand For</h2>
+          <p className="text-stone-500 mt-2">The principles that guide everything we do.</p>
         </motion.div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">
@@ -367,15 +367,15 @@ export default function AboutUsPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.1 * idx }}
-                className="text-center p-6 rounded-2xl bg-white/70 backdrop-blur-sm border border-slate-200/60 hover:shadow-lg hover:border-teal-200 transition-all group"
+                className="text-center p-6 rounded-2xl bg-white/70 backdrop-blur-sm border border-stone-200/60 hover:shadow-lg hover:border-teal-200 transition-all group"
               >
                 <div
                   className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${value.color} flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform`}
                 >
                   <Icon className="w-7 h-7 text-white" />
                 </div>
-                <h3 className="font-bold text-slate-800">{value.title}</h3>
-                <p className="text-sm text-slate-500 mt-1">{value.description}</p>
+                <h3 className="font-bold text-stone-800">{value.title}</h3>
+                <p className="text-sm text-stone-500 mt-1">{value.description}</p>
               </motion.div>
             )
           })}
@@ -383,7 +383,7 @@ export default function AboutUsPage() {
       </section>
 
       {/* Team Section */}
-      <section className="bg-white/60 backdrop-blur-sm py-16 border-t border-b border-slate-200/60">
+      <section className="bg-white/60 backdrop-blur-sm py-16 border-t border-b border-stone-200/60">
         <div className="container mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -395,10 +395,10 @@ export default function AboutUsPage() {
               <Users className="w-3 h-3 mr-1" />
               Our Team
             </Badge>
-            <h2 className="text-3xl sm:text-4xl font-bold text-slate-900">
+            <h2 className="text-3xl sm:text-4xl font-bold text-stone-900">
               Meet Our Expert Consultants
             </h2>
-            <p className="text-slate-500 mt-2">
+            <p className="text-stone-500 mt-2">
               A dedicated team of licensed professionals committed to your well-being.
             </p>
           </motion.div>
@@ -408,7 +408,7 @@ export default function AboutUsPage() {
               Array.from({ length: 3 }).map((_, i) => (
                 <div
                   key={i}
-                  className="rounded-2xl border border-slate-200/60 bg-white/80 backdrop-blur-sm shadow-sm overflow-hidden"
+                  className="rounded-2xl border border-stone-200/60 bg-white/80 backdrop-blur-sm shadow-sm overflow-hidden"
                 >
                   <Skeleton className="h-48 w-full rounded-none" />
                   <div className="p-5 space-y-3">
@@ -420,8 +420,8 @@ export default function AboutUsPage() {
               ))
             ) : teamError || teamMembers.length === 0 ? (
               <div className="col-span-full text-center py-20">
-                <Users className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-                <p className="text-slate-500 font-medium">
+                <Users className="w-12 h-12 text-stone-300 mx-auto mb-3" />
+                <p className="text-stone-500 font-medium">
                   {teamError
                     ? 'Could not load our consultants right now.'
                     : 'Our consultants will be listed here soon.'}
@@ -429,7 +429,7 @@ export default function AboutUsPage() {
                 {teamError && (
                   <Button
                     variant="outline"
-                    className="mt-4 rounded-xl border-slate-200 text-slate-700"
+                    className="mt-4 rounded-xl border-stone-200 text-stone-700"
                     onClick={() => window.location.reload()}
                   >
                     Try again
@@ -448,7 +448,7 @@ export default function AboutUsPage() {
                 className="group cursor-pointer"
                 onClick={() => setSelectedTeamMember(member)}
               >
-                <Card className="h-full border border-slate-200/60 bg-white/80 backdrop-blur-sm shadow-sm hover:shadow-xl hover:border-teal-500/20 transition-all duration-500 overflow-hidden rounded-2xl">
+                <Card className="h-full border border-stone-200/60 bg-white/80 backdrop-blur-sm shadow-sm hover:shadow-xl hover:border-teal-500/20 transition-all duration-500 overflow-hidden rounded-2xl">
                   <div className="relative h-48 overflow-hidden bg-gradient-to-br from-teal-50 to-emerald-100">
                     {member.image ? (
                       <>
@@ -478,11 +478,11 @@ export default function AboutUsPage() {
                     </div>
                   </div>
                   <CardContent className="p-5">
-                    <h3 className="text-lg font-bold text-slate-800 group-hover:text-teal-600 transition-colors">
+                    <h3 className="text-lg font-bold text-stone-800 group-hover:text-teal-600 transition-colors">
                       {member.name}
                     </h3>
                     <p className="text-sm text-teal-600 font-medium">{member.role}</p>
-                    <p className="text-xs text-slate-500 mt-1">{member.specialization}</p>
+                    <p className="text-xs text-stone-500 mt-1">{member.specialization}</p>
                     <div className="mt-3 flex items-center text-teal-600 font-medium text-sm group-hover:gap-2 transition-all">
                       View Profile <ChevronRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
                     </div>
@@ -549,36 +549,36 @@ export default function AboutUsPage() {
 
                 <div className="p-6 space-y-5">
                   <div className="grid grid-cols-2 gap-3">
-                    <div className="bg-slate-50 rounded-xl p-3 text-center">
-                      <p className="text-xs text-slate-500">Experience</p>
-                      <p className="font-semibold text-slate-800">{selectedTeamMember.experience}</p>
+                    <div className="bg-stone-50 rounded-xl p-3 text-center">
+                      <p className="text-xs text-stone-500">Experience</p>
+                      <p className="font-semibold text-stone-800">{selectedTeamMember.experience}</p>
                     </div>
-                    <div className="bg-slate-50 rounded-xl p-3 text-center">
-                      <p className="text-xs text-slate-500">Education</p>
-                      <p className="text-xs font-medium text-slate-800">{selectedTeamMember.education}</p>
+                    <div className="bg-stone-50 rounded-xl p-3 text-center">
+                      <p className="text-xs text-stone-500">Education</p>
+                      <p className="text-xs font-medium text-stone-800">{selectedTeamMember.education}</p>
                     </div>
                   </div>
 
                   <div>
-                    <h3 className="font-semibold text-slate-800 mb-2">About</h3>
-                    <p className="text-slate-600 text-sm leading-relaxed">{selectedTeamMember.bio}</p>
+                    <h3 className="font-semibold text-stone-800 mb-2">About</h3>
+                    <p className="text-stone-600 text-sm leading-relaxed">{selectedTeamMember.bio}</p>
                   </div>
 
                   <div>
-                    <h3 className="font-semibold text-slate-800 mb-2">Specialization</h3>
+                    <h3 className="font-semibold text-stone-800 mb-2">Specialization</h3>
                     <Badge className="bg-teal-50 text-teal-700 border-teal-200">
                       {selectedTeamMember.specialization}
                     </Badge>
                   </div>
 
-                  <div className="pt-4 border-t border-slate-200 flex flex-col sm:flex-row gap-3">
+                  <div className="pt-4 border-t border-stone-200 flex flex-col sm:flex-row gap-3">
                     {selectedTeamMember.slug && (
                       <Link
                         href={`/consultant/${selectedTeamMember.slug}`}
                         className="flex-1"
                         onClick={() => setSelectedTeamMember(null)}
                       >
-                        <Button variant="outline" className="w-full rounded-xl border-slate-200">
+                        <Button variant="outline" className="w-full rounded-xl border-stone-200">
                           <ChevronRight className="mr-2 w-4 h-4" />
                           View Full Profile
                         </Button>
@@ -591,7 +591,7 @@ export default function AboutUsPage() {
                       </Button>
                     </Link>
                     <Link href="/contact" className="flex-1">
-                      <Button variant="outline" className="w-full rounded-xl border-slate-200">
+                      <Button variant="outline" className="w-full rounded-xl border-stone-200">
                         <Mail className="mr-2 w-4 h-4" />
                         Contact
                       </Button>
@@ -616,10 +616,10 @@ export default function AboutUsPage() {
             <CheckCircle className="w-3 h-3 mr-1" />
             Why Choose CPH
           </Badge>
-          <h2 className="text-3xl sm:text-4xl font-bold text-slate-900">
+          <h2 className="text-3xl sm:text-4xl font-bold text-stone-900">
             Why Families Trust CPH
           </h2>
-          <p className="text-slate-500 mt-2">
+          <p className="text-stone-500 mt-2">
             Experience the difference of compassionate, professional mental health care.
           </p>
         </motion.div>
@@ -639,13 +639,13 @@ export default function AboutUsPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.1 * idx }}
-                className="text-center p-6 rounded-2xl bg-white/70 backdrop-blur-sm border border-slate-200/60 hover:shadow-lg hover:border-teal-200 transition-all"
+                className="text-center p-6 rounded-2xl bg-white/70 backdrop-blur-sm border border-stone-200/60 hover:shadow-lg hover:border-teal-200 transition-all"
               >
                 <div className="w-14 h-14 rounded-full bg-teal-50 flex items-center justify-center mx-auto mb-3">
                   <Icon className="w-7 h-7 text-teal-600" />
                 </div>
-                <h3 className="font-bold text-slate-800">{item.title}</h3>
-                <p className="text-sm text-slate-500 mt-1">{item.desc}</p>
+                <h3 className="font-bold text-stone-800">{item.title}</h3>
+                <p className="text-sm text-stone-500 mt-1">{item.desc}</p>
               </motion.div>
             )
           })}

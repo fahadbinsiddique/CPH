@@ -24,7 +24,7 @@ const QuestionOption = forwardRef(function QuestionOption(
         'group flex w-full items-start gap-3.5 rounded-2xl border-2 p-4 text-left transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2 sm:p-5',
         selected
           ? 'border-teal-600 bg-teal-50/70 ring-1 ring-teal-600/20'
-          : 'border-slate-200 bg-white hover:border-teal-300 hover:bg-slate-50/60'
+          : 'border-stone-200 bg-white hover:border-teal-300 hover:bg-stone-50/60'
       )}
     >
       <span
@@ -33,7 +33,7 @@ const QuestionOption = forwardRef(function QuestionOption(
           'mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-colors',
           selected
             ? 'border-teal-600 bg-teal-600 text-white'
-            : 'border-slate-300 bg-white group-hover:border-teal-400'
+            : 'border-stone-300 bg-white group-hover:border-teal-400'
         )}
       >
         {selected && <Check className="h-3 w-3" strokeWidth={3} />}
@@ -41,7 +41,7 @@ const QuestionOption = forwardRef(function QuestionOption(
       <span
         className={cn(
           'text-[15px] leading-snug font-medium',
-          selected ? 'text-teal-900' : 'text-slate-700'
+          selected ? 'text-teal-900' : 'text-stone-700'
         )}
       >
         {option.text}

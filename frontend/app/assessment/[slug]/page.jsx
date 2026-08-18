@@ -105,8 +105,8 @@ export default function QuizPage() {
           <div className="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br from-amber-400 to-orange-500 shadow-lg shadow-amber-500/20">
             <WifiOff className="h-14 w-14 text-white" />
           </div>
-          <h1 className="text-3xl font-bold text-slate-900">Saved Offline</h1>
-          <p className="mt-3 text-slate-600">
+          <h1 className="text-3xl font-bold text-stone-900">Saved Offline</h1>
+          <p className="mt-3 text-stone-600">
             You&apos;re currently offline. Your answers have been saved and will be
             submitted automatically once you&apos;re back online.
           </p>
@@ -160,7 +160,7 @@ export default function QuizPage() {
         >
           <Link
             href="/assessment"
-            className="mb-6 inline-flex w-fit items-center gap-1.5 text-sm font-semibold text-slate-500 transition-colors hover:text-teal-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2 rounded-lg"
+            className="mb-6 inline-flex w-fit items-center gap-1.5 text-sm font-semibold text-stone-500 transition-colors hover:text-teal-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2 rounded-lg"
           >
             <ArrowLeft className="h-4 w-4" aria-hidden="true" />
             All assessments
@@ -170,7 +170,7 @@ export default function QuizPage() {
             initial={{ opacity: 0, scale: 0.98, y: 10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-            className="overflow-hidden rounded-3xl border border-slate-200/70 bg-white shadow-card"
+            className="overflow-hidden rounded-3xl border border-stone-200/70 bg-white shadow-card"
           >
             <div className="bg-gradient-to-br from-teal-700 to-emerald-700 px-6 py-10 text-center text-white">
               <span className="mb-4 block text-6xl" aria-hidden="true">
@@ -185,24 +185,24 @@ export default function QuizPage() {
             </div>
 
             <div className="p-6 sm:p-8">
-              <div className="mb-6 grid grid-cols-3 divide-x divide-slate-100 rounded-2xl bg-slate-50 py-4 text-center">
+              <div className="mb-6 grid grid-cols-3 divide-x divide-stone-100 rounded-2xl bg-stone-50 py-4 text-center">
                 <div>
-                  <p className="font-heading text-2xl font-bold text-slate-800">
+                  <p className="font-heading text-2xl font-bold text-stone-800">
                     {totalQ}
                   </p>
-                  <p className="mt-0.5 text-xs text-slate-400">Questions</p>
+                  <p className="mt-0.5 text-xs text-stone-400">Questions</p>
                 </div>
                 <div>
-                  <p className="font-heading text-2xl font-bold text-slate-800">
+                  <p className="font-heading text-2xl font-bold text-stone-800">
                     ~{quiz.duration_minutes}
                   </p>
-                  <p className="mt-0.5 text-xs text-slate-400">Minutes</p>
+                  <p className="mt-0.5 text-xs text-stone-400">Minutes</p>
                 </div>
                 <div>
-                  <p className="font-heading text-2xl font-bold text-slate-800">
+                  <p className="font-heading text-2xl font-bold text-stone-800">
                     Free
                   </p>
-                  <p className="mt-0.5 text-xs text-slate-400">No cost</p>
+                  <p className="mt-0.5 text-xs text-stone-400">No cost</p>
                 </div>
               </div>
 
@@ -218,7 +218,7 @@ export default function QuizPage() {
                 </div>
               )}
 
-              <div className="mb-6 space-y-2 text-xs text-slate-500">
+              <div className="mb-6 space-y-2 text-xs text-stone-500">
                 <p className="flex items-center gap-2">
                   <ListChecks className="h-3.5 w-3.5 text-teal-600" aria-hidden="true" />
                   Answer honestly — there are no right or wrong answers.
@@ -263,21 +263,21 @@ export default function QuizPage() {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -24 }}
             transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
-            className="overflow-hidden rounded-3xl border border-slate-200/70 bg-white p-6 shadow-soft sm:p-8"
+            className="overflow-hidden rounded-3xl border border-stone-200/70 bg-white p-6 shadow-soft sm:p-8"
             aria-labelledby="question-heading"
           >
             <div className="mb-4 flex items-center gap-2.5">
               <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-teal-700 font-heading text-sm font-bold text-white">
                 {currentQ + 1}
               </span>
-              <span className="text-xs font-medium text-slate-400">
+              <span className="text-xs font-medium text-stone-400">
                 of {totalQ} — take your time
               </span>
             </div>
 
             <h2
               id="question-heading"
-              className="font-heading text-xl font-bold leading-snug tracking-tight text-slate-900 sm:text-[1.35rem]"
+              className="font-heading text-xl font-bold leading-snug tracking-tight text-stone-900 sm:text-[1.35rem]"
             >
               {currentQuestion?.text}
             </h2>

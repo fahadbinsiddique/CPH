@@ -67,10 +67,10 @@ export default function AssessmentListPage() {
               <ShieldCheck className="h-3.5 w-3.5" aria-hidden="true" />
               Confidential screening
             </span>
-            <h1 className="mx-auto max-w-2xl font-heading text-3xl font-bold tracking-tight text-slate-900 md:text-4xl">
+            <h1 className="mx-auto max-w-2xl font-heading text-3xl font-bold tracking-tight text-stone-900 md:text-4xl">
               Understand how you&apos;re doing, gently
             </h1>
-            <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-slate-500 md:text-lg">
+            <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-stone-500 md:text-lg">
               Take a short, private self-assessment to reflect on your mental
               health. Your answers help you spot patterns — and give you a clear
               next step.
@@ -81,12 +81,12 @@ export default function AssessmentListPage() {
         {loading ? (
           <AssessmentListSkeleton />
         ) : error ? (
-          <div className="rounded-3xl border border-slate-200/70 bg-white p-10 text-center shadow-soft">
-            <AlertCircle className="mx-auto mb-3 h-10 w-10 text-slate-300" aria-hidden="true" />
-            <h2 className="font-heading text-lg font-semibold text-slate-800">
+          <div className="rounded-3xl border border-stone-200/70 bg-white p-10 text-center shadow-soft">
+            <AlertCircle className="mx-auto mb-3 h-10 w-10 text-stone-300" aria-hidden="true" />
+            <h2 className="font-heading text-lg font-semibold text-stone-800">
               We couldn&apos;t load the assessments
             </h2>
-            <p className="mt-1 text-sm text-slate-500">
+            <p className="mt-1 text-sm text-stone-500">
               Please try again in a moment.
             </p>
             <Button onClick={handleRetry} className="mt-5 rounded-2xl bg-teal-700 hover:bg-teal-800">
@@ -94,12 +94,12 @@ export default function AssessmentListPage() {
             </Button>
           </div>
         ) : quizzes.length === 0 ? (
-          <div className="rounded-3xl border border-slate-200/70 bg-white p-10 text-center shadow-soft">
-            <ClipboardList className="mx-auto mb-3 h-10 w-10 text-slate-300" aria-hidden="true" />
-            <h2 className="font-heading text-lg font-semibold text-slate-800">
+          <div className="rounded-3xl border border-stone-200/70 bg-white p-10 text-center shadow-soft">
+            <ClipboardList className="mx-auto mb-3 h-10 w-10 text-stone-300" aria-hidden="true" />
+            <h2 className="font-heading text-lg font-semibold text-stone-800">
               No assessments available right now
             </h2>
-            <p className="mt-1 text-sm text-slate-500">
+            <p className="mt-1 text-sm text-stone-500">
               Please check back soon.
             </p>
           </div>
@@ -122,15 +122,15 @@ export default function AssessmentListPage() {
           {TRUST_POINTS.map((point) => (
             <div
               key={point.title}
-              className="rounded-2xl border border-slate-200/70 bg-white/80 p-5 shadow-soft"
+              className="rounded-2xl border border-stone-200/70 bg-white/80 p-5 shadow-soft"
             >
               <div className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-teal-50 ring-1 ring-inset ring-teal-100">
                 <point.icon className="h-5 w-5 text-teal-700" aria-hidden="true" />
               </div>
-              <p className="font-heading text-sm font-semibold text-slate-800">
+              <p className="font-heading text-sm font-semibold text-stone-800">
                 {point.title}
               </p>
-              <p className="mt-1 text-xs leading-relaxed text-slate-500">{point.text}</p>
+              <p className="mt-1 text-xs leading-relaxed text-stone-500">{point.text}</p>
             </div>
           ))}
         </motion.section>

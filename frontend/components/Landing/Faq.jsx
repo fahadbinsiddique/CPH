@@ -65,7 +65,7 @@ const Faq = () => {
                 <div
                   key={index}
                   className={`rounded-2xl border bg-white shadow-soft transition-colors duration-300 ${
-                    isOpen ? 'border-teal-200' : 'border-slate-200/70 hover:border-teal-200/60'
+                    isOpen ? 'border-teal-200' : 'border-stone-200/70 hover:border-teal-200/60'
                   }`}
                 >
                   <h3>
@@ -77,10 +77,10 @@ const Faq = () => {
                       onClick={() => toggle(index)}
                       className="flex w-full items-center justify-between gap-4 p-5 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2"
                     >
-                      <span className="font-medium text-slate-900">{item.question}</span>
+                      <span className="font-medium text-stone-900">{item.question}</span>
                       <span
                         className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition-colors duration-300 ${
-                          isOpen ? 'bg-teal-600 text-white' : 'bg-slate-100 text-slate-500'
+                          isOpen ? 'bg-teal-600 text-white' : 'bg-stone-100 text-stone-500'
                         }`}
                       >
                         {isOpen ? (
@@ -104,7 +104,7 @@ const Faq = () => {
                         transition={{ duration: 0.25, ease: 'easeOut' }}
                         className="overflow-hidden"
                       >
-                        <div className="px-5 pb-5 text-sm leading-relaxed text-slate-600">
+                        <div className="px-5 pb-5 text-sm leading-relaxed text-stone-600">
                           {item.answer}
                         </div>
                       </motion.div>
