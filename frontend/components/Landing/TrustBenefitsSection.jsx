@@ -32,6 +32,7 @@ const TrustBenefitsSection = () => {
       <div className="pointer-events-none absolute inset-0" aria-hidden="true">
         <div className="absolute -right-24 -top-24 h-80 w-80 rounded-full bg-teal-100/40 blur-3xl" />
         <div className="absolute -bottom-28 -left-24 h-80 w-80 rounded-full bg-emerald-100/50 blur-3xl" />
+        <div className="absolute left-[38%] top-[10%] hidden h-64 w-64 rounded-full bg-accent-lavender/60 blur-3xl md:block" />
       </div>
 
       <div className="section-shell relative z-10">

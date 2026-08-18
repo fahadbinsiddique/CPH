@@ -2,24 +2,24 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { Heart, Brain, Sparkles, ShieldCheck, BadgeCheck, Clock, ArrowRight } from 'lucide-react'
+import { Heart, Sparkles, MessageCircle, ShieldCheck, BadgeCheck, Clock, ArrowRight } from 'lucide-react'
 import Reveal from '@/components/ui/Reveal'
 
 const coreFeatures = [
   {
     icon: Heart,
-    title: 'Emotional Support',
-    desc: 'Daily tools & reflections to understand your feelings.',
-  },
-  {
-    icon: Brain,
-    title: 'Mindfulness Training',
-    desc: 'Science‑backed practices to reduce stress.',
+    title: 'Start with a gentle check-in',
+    desc: 'Let us know how you feel in seconds — it shapes everything that follows.',
   },
   {
     icon: Sparkles,
-    title: 'AI‑Powered Insights',
-    desc: 'Personalized growth paths based on your progress.',
+    title: 'Grow with personal insights',
+    desc: 'Spot patterns in your mood through calm, science-based analysis.',
+  },
+  {
+    icon: MessageCircle,
+    title: 'Meet a therapist who fits',
+    desc: 'Step into a secure session with a professional matched to your needs.',
   },
 ]
 
@@ -79,8 +79,8 @@ const FeaturesTrustSection = () => {
           <Reveal x={24} y={0} duration={0.7}>
             <div className="space-y-8">
               <div>
-                <h3 className="text-2xl font-semibold text-stone-900">Core features</h3>
-                <p className="mt-1 text-stone-500">Designed to fit your daily life, not complicate it.</p>
+                <h3 className="text-2xl font-semibold text-stone-900">How your care journey works</h3>
+                <p className="mt-1 text-stone-500">From first check-in to your therapist — three simple steps.</p>
               </div>
 
               <div className="space-y-4">

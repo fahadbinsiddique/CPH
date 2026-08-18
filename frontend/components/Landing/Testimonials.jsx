@@ -40,6 +40,7 @@ const Testimonials = () => {
       <div className="pointer-events-none absolute inset-0" aria-hidden="true">
         <div className="absolute -top-24 -right-24 h-80 w-80 rounded-full bg-teal-50 blur-3xl" />
         <div className="absolute -bottom-24 -left-24 h-80 w-80 rounded-full bg-emerald-50 blur-3xl" />
+        <div className="absolute left-[20%] top-[16%] hidden h-72 w-72 rounded-full bg-accent-sky/50 blur-3xl md:block" />
       </div>
 
       <div className="section-shell relative z-10">

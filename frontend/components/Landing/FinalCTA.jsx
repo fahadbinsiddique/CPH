@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-import { ArrowRight, ShieldCheck, MessageCircle, Star } from 'lucide-react'
+import { ArrowRight, ShieldCheck, MessageCircle } from 'lucide-react'
 import Reveal from '@/components/ui/Reveal'
 
 const FinalCTA = () => {
@@ -41,7 +41,7 @@ const FinalCTA = () => {
                 Ready to feel better?
               </h2>
               <p className="mx-auto mt-3 max-w-xl text-stone-600">
-                Take the first step today – thousands have found peace with SereneMind.
+                Take the first step today – thousands have found peace with CPH.
               </p>
 
               <div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row sm:gap-4">
@@ -54,11 +54,7 @@ const FinalCTA = () => {
                   Ask a question
                 </a>
               </div>
-
-             
             </div>
-
-            
           </div>
         </Reveal>
       </div>

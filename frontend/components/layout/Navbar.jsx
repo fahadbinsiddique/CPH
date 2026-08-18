@@ -112,7 +112,7 @@ const Navbar = () => {
           scrolled
             ? 'bg-white/95 backdrop-blur-md shadow-lg py-2'
             : 'bg-white/98 backdrop-blur-sm py-3'
-        } border-b border-slate-200/80`}
+        } border-b border-stone-200/80`}
       >
         <div className="container mx-auto px-4 flex items-center justify-between">
           {/* Logo */}
@@ -126,7 +126,7 @@ const Navbar = () => {
               loading="eager"
               width={240}
               height={160}
-              alt="Centre For Psychological Health"
+              alt="Center For Psychological Health"
               className="object-contain h-auto w-auto max-w-[180px] sm:max-w-[220px] md:max-w-[260px]"
               priority
             />
@@ -143,7 +143,7 @@ const Navbar = () => {
                   className={`relative px-3 py-2 text-base xl:text-lg transition-all duration-300 hover:text-teal-600 tracking-tight rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2 ${
                     isActive
                       ? 'text-teal-700 font-bold bg-teal-50/50'
-                      : 'text-slate-700 font-medium hover:bg-slate-50'
+                      : 'text-stone-700 font-medium hover:bg-stone-50'
                   }`}
                 >
                   {link.name}
@@ -168,7 +168,7 @@ const Navbar = () => {
                   whileHover={{ scale: 1.03 }}
                   whileTap={{ scale: 0.97 }}
                   onClick={handleDashboard}
-                  className="flex items-center gap-2 px-4 py-2.5 rounded-full border-2 border-slate-200 text-slate-700 hover:border-teal-300 hover:bg-teal-50 transition-all font-semibold text-sm"
+                  className="flex items-center gap-2 px-4 py-2.5 rounded-full border-2 border-stone-200 text-stone-700 hover:border-teal-300 hover:bg-teal-50 transition-all font-semibold text-sm"
                 >
                   <LayoutDashboard size={16} />
                   Dashboard
@@ -184,17 +184,17 @@ const Navbar = () => {
                     <div className="w-8 h-8 rounded-full bg-gradient-to-br from-teal-600 to-emerald-600 text-white flex items-center justify-center text-sm font-bold">
                       {getInitials(user?.full_name)}
                     </div>
-                    <span className="text-sm font-semibold text-slate-700 max-w-[100px] truncate">
+                    <span className="text-sm font-semibold text-stone-700 max-w-[100px] truncate">
                       {user?.full_name?.split(' ')[0]}
                     </span>
-                    <ChevronDown size={14} className={`text-slate-400 transition-transform duration-200 ${dropdownOpen ? 'rotate-180' : ''}`} />
+                    <ChevronDown size={14} className={`text-stone-400 transition-transform duration-200 ${dropdownOpen ? 'rotate-180' : ''}`} />
                   </motion.button>
 
                   {/* Dropdown Menu */}
-                  <div className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-xl border border-slate-200/60 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 overflow-hidden">
-                    <div className="p-3 border-b border-slate-100">
-                      <p className="text-sm font-bold text-slate-800">{user?.full_name}</p>
-                      <p className="text-xs text-slate-500">{user?.email}</p>
+                  <div className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-xl border border-stone-200/60 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 overflow-hidden">
+                    <div className="p-3 border-b border-stone-100">
+                      <p className="text-sm font-bold text-stone-800">{user?.full_name}</p>
+                      <p className="text-xs text-stone-500">{user?.email}</p>
                       <span className="inline-block mt-1 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-teal-50 text-teal-700 border border-teal-200 capitalize">
                         {user?.role || 'User'}
                       </span>
@@ -202,26 +202,26 @@ const Navbar = () => {
                     <div className="p-2 space-y-1">
                       <button
                         onClick={handleDashboard}
-                        className="flex items-center gap-3 w-full px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 rounded-xl transition-all"
+                        className="flex items-center gap-3 w-full px-3 py-2 text-sm text-stone-700 hover:bg-stone-50 rounded-xl transition-all"
                       >
-                        <LayoutDashboard size={16} className="text-slate-400" />
+                        <LayoutDashboard size={16} className="text-stone-400" />
                         Dashboard
                       </button>
                       <button
                         onClick={() => router.push('/dashboard/profile')}
-                        className="flex items-center gap-3 w-full px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 rounded-xl transition-all"
+                        className="flex items-center gap-3 w-full px-3 py-2 text-sm text-stone-700 hover:bg-stone-50 rounded-xl transition-all"
                       >
-                        <Settings size={16} className="text-slate-400" />
+                        <Settings size={16} className="text-stone-400" />
                         Profile Settings
                       </button>
                       <button
                         onClick={() => router.push('/dashboard/bookings')}
-                        className="flex items-center gap-3 w-full px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 rounded-xl transition-all"
+                        className="flex items-center gap-3 w-full px-3 py-2 text-sm text-stone-700 hover:bg-stone-50 rounded-xl transition-all"
                       >
-                        <Calendar size={16} className="text-slate-400" />
+                        <Calendar size={16} className="text-stone-400" />
                         My Appointments
                       </button>
-                      <hr className="my-1 border-slate-100" />
+                      <hr className="my-1 border-stone-100" />
                       <button
                         onClick={handleLogout}
                         className="flex items-center gap-3 w-full px-3 py-2 text-sm text-rose-600 hover:bg-rose-50 rounded-xl transition-all"
@@ -260,7 +260,7 @@ const Navbar = () => {
 
           {/* Mobile Menu Toggle */}
           <button
-            className="lg:hidden text-slate-700 focus:outline-none p-2 hover:bg-slate-50 rounded-xl transition-all focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2"
+            className="lg:hidden text-stone-700 focus:outline-none p-2 hover:bg-stone-50 rounded-xl transition-all focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label="Toggle menu"
             aria-expanded={mobileMenuOpen}
@@ -277,18 +277,18 @@ const Navbar = () => {
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.3, ease: 'easeInOut' }}
-              className="lg:hidden bg-white border-t border-slate-100 shadow-2xl overflow-hidden"
+              className="lg:hidden bg-white border-t border-stone-100 shadow-2xl overflow-hidden"
             >
               <div className="container mx-auto px-4 py-6 flex flex-col gap-3">
                 {/* User info if authenticated */}
                 {isAuthenticated && (
-                  <div className="flex items-center gap-3 pb-4 mb-2 border-b border-slate-100">
+                  <div className="flex items-center gap-3 pb-4 mb-2 border-b border-stone-100">
                     <div className="w-14 h-14 rounded-full bg-gradient-to-br from-teal-600 to-emerald-600 text-white flex items-center justify-center text-xl font-bold shadow-md">
                       {getInitials(user?.full_name)}
                     </div>
                     <div>
-                      <p className="font-bold text-slate-800 text-base">{user?.full_name}</p>
-                      <p className="text-xs text-slate-500">{user?.email}</p>
+                      <p className="font-bold text-stone-800 text-base">{user?.full_name}</p>
+                      <p className="text-xs text-stone-500">{user?.email}</p>
                       <span className="inline-block mt-0.5 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-teal-50 text-teal-700 border border-teal-200 capitalize">
                         {user?.role || 'User'}
                       </span>
@@ -304,7 +304,7 @@ const Navbar = () => {
                     className={`text-base font-semibold py-2.5 px-3 rounded-xl transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 ${
                       isActiveLink(link.href, link.id)
                         ? 'text-teal-700 bg-teal-50 border-l-4 border-teal-500'
-                        : 'text-slate-700 hover:text-teal-600 hover:bg-slate-50'
+                        : 'text-stone-700 hover:text-teal-600 hover:bg-stone-50'
                     }`}
                     onClick={() => setMobileMenuOpen(false)}
                   >
@@ -313,7 +313,7 @@ const Navbar = () => {
                 ))}
 
                 {/* Mobile Auth / User Actions */}
-                <div className="flex flex-col gap-3 mt-4 pt-4 border-t border-slate-100">
+                <div className="flex flex-col gap-3 mt-4 pt-4 border-t border-stone-100">
                   {isAuthenticated ? (
                     <>
                       <button
@@ -352,7 +352,7 @@ const Navbar = () => {
                 </div>
 
                 {/* Mobile Footer */}
-                <div className="mt-2 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-400">
+                <div className="mt-2 pt-3 border-t border-stone-100 flex items-center justify-between text-xs text-stone-400">
                   <span className="flex items-center gap-1">
                     <Shield size={12} className="text-teal-400" />
                     Secure

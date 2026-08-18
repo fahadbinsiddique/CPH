@@ -42,6 +42,7 @@ const FeaturesShowcase = () => {
       <div className="pointer-events-none absolute inset-0" aria-hidden="true">
         <div className="absolute -left-24 top-1/3 h-80 w-80 rounded-full bg-teal-50 blur-3xl" />
         <div className="absolute -right-20 -bottom-24 h-80 w-80 rounded-full bg-emerald-50 blur-3xl" />
+        <div className="absolute right-[22%] top-[12%] hidden h-64 w-64 rounded-full bg-accent-sky/50 blur-3xl md:block" />
       </div>
 
       <div className="section-shell relative z-10">
