@@ -153,6 +153,12 @@
   --color-accent-warm-soft: var(--accent-warm-soft);
   --color-accent-warm-soft-foreground: var(--accent-warm-soft-foreground);
   --color-accent-warm-soft-border: var(--accent-warm-soft-border);
+  --color-accent-sky: var(--accent-sky);
+  --color-accent-sky-foreground: var(--accent-sky-foreground);
+  --color-accent-lavender: var(--accent-lavender);
+  --color-accent-lavender-foreground: var(--accent-lavender-foreground);
+  --color-accent-emerald: var(--accent-emerald);
+  --color-accent-emerald-foreground: var(--accent-emerald-foreground);
   --color-input: var(--input);
   --color-border: var(--border);
   --color-destructive: var(--destructive);
@@ -184,7 +190,7 @@
   --card-foreground: oklch(0.26 0.023 65);
   --popover: oklch(0.997 0.004 85);
   --popover-foreground: oklch(0.26 0.023 65);
-  --primary: oklch(0.638 0.118 182.4);
+  --primary: #0f766e;
   --primary-foreground: oklch(0.99 0.006 170);
   --secondary: oklch(0.955 0.016 85);
   --secondary-foreground: oklch(0.42 0.085 182.4);
@@ -201,7 +207,13 @@
   --accent-warm-soft: oklch(0.953 0.038 60);
   --accent-warm-soft-foreground: oklch(0.43 0.12 46);
   --accent-warm-soft-border: oklch(0.865 0.055 55);
-  --chart-1: oklch(0.638 0.118 182.4);
+  --accent-sky: #e0f2fe;
+  --accent-sky-foreground: #0c4a6e;
+  --accent-lavender: #f3e8ff;
+  --accent-lavender-foreground: #581c87;
+  --accent-emerald: #a7f3d0;
+  --accent-emerald-foreground: #064e3b;
+  --chart-1: #0f766e;
   --chart-2: oklch(0.586 0.164 162.2);
   --chart-3: oklch(0.769 0.188 70.08);
   --chart-4: oklch(0.587 0.187 235.6);
@@ -209,7 +221,7 @@
   --radius: 0.75rem;
   --sidebar: oklch(0.986 0.008 85);
   --sidebar-foreground: oklch(0.28 0.025 65);
-  --sidebar-primary: oklch(0.638 0.118 182.4);
+  --sidebar-primary: #0f766e;
   --sidebar-primary-foreground: oklch(0.99 0.006 170);
   --sidebar-accent: oklch(0.955 0.016 85);
   --sidebar-accent-foreground: oklch(0.42 0.085 182.4);
@@ -241,6 +253,12 @@
   --accent-warm-soft: oklch(0.33 0.045 55);
   --accent-warm-soft-foreground: oklch(0.87 0.07 55);
   --accent-warm-soft-border: oklch(0.45 0.05 55);
+  --accent-sky: oklch(0.32 0.05 245);
+  --accent-sky-foreground: oklch(0.92 0.035 230);
+  --accent-lavender: oklch(0.32 0.055 295);
+  --accent-lavender-foreground: oklch(0.93 0.04 295);
+  --accent-emerald: oklch(0.32 0.06 160);
+  --accent-emerald-foreground: oklch(0.94 0.03 165);
   --chart-1: oklch(0.777 0.152 181.9);
   --chart-2: oklch(0.696 0.185 162.5);
   --chart-3: oklch(0.795 0.171 70.08);

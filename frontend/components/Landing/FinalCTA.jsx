@@ -11,6 +11,8 @@ const FinalCTA = () => {
       <div className="pointer-events-none absolute inset-0" aria-hidden="true">
         <div className="absolute -bottom-28 -left-24 h-96 w-96 rounded-full bg-teal-100/50 blur-3xl" />
         <div className="absolute -right-24 -top-24 h-96 w-96 rounded-full bg-emerald-100/50 blur-3xl" />
+        <div className="absolute left-1/2 top-[18%] hidden h-80 w-80 -translate-x-1/2 rounded-full bg-accent-emerald/50 blur-3xl lg:block" />
+        <div className="absolute bottom-[8%] left-[16%] hidden h-64 w-64 rounded-full bg-accent-lavender/60 blur-3xl md:block" />
       </div>
 
       <div className="section-shell relative z-10">
