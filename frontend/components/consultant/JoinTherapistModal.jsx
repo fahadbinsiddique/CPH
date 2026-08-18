@@ -53,7 +53,7 @@ export default function JoinTherapistModal() {
             {/* Accessible dialog title/description (visible heading lives in the form). */}
             <DialogPrimitive.Title className="sr-only">Join as a Therapist</DialogPrimitive.Title>
             <DialogPrimitive.Description className="sr-only">
-              Two-step application to join the Center for Psychological Health therapist network.
+              Two-step application to join the Centre for Psychological Health therapist network.
             </DialogPrimitive.Description>
 
             {/* Close button — clear, comfortable target, with hover + focus states. */}

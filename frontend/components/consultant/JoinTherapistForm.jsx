@@ -281,7 +281,7 @@ export default function JoinTherapistForm({ mode = 'modal' }) {
 
         <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-teal-700">
           <Sparkles className="h-3.5 w-3.5" />
-          Center for Psychological Health
+          Centre for Psychological Health
         </p>
         <h1 className="mt-1.5 font-heading text-2xl font-bold tracking-tight text-slate-900 sm:text-[1.75rem]">
           Join as a Therapist

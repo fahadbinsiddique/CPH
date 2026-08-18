@@ -48,6 +48,14 @@ const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
+  // Lock body scroll while the mobile menu is open
+  useEffect(() => {
+    document.body.style.overflow = mobileMenuOpen ? 'hidden' : ''
+    return () => {
+      document.body.style.overflow = ''
+    }
+  }, [mobileMenuOpen])
+
   const navLinks = [
     { name: 'Home', href: '/', id: 'home' },
     { name: 'Consultants', href: '/consultant', id: 'consultant' },
@@ -118,7 +126,7 @@ const Navbar = () => {
           {/* Logo */}
           <Link
             href="/"
-            aria-label="Center For Psychological Health — Home"
+            aria-label="Centre For Psychological Health — Home"
             className="flex items-center rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2"
           >
             <Image
@@ -126,8 +134,8 @@ const Navbar = () => {
               loading="eager"
               width={240}
               height={160}
-              alt="Center For Psychological Health"
-              className="object-contain h-auto w-auto max-w-[180px] sm:max-w-[220px] md:max-w-[260px]"
+              alt="Centre For Psychological Health"
+              className="object-contain h-auto w-auto max-h-20 max-w-[180px] sm:max-w-[220px] md:max-h-24 md:max-w-[260px]"
               priority
             />
           </Link>
@@ -277,7 +285,7 @@ const Navbar = () => {
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.3, ease: 'easeInOut' }}
-              className="lg:hidden bg-white border-t border-stone-100 shadow-2xl overflow-hidden"
+              className="lg:hidden bg-white border-t border-stone-100 shadow-2xl overflow-x-hidden overflow-y-auto max-h-[calc(100dvh-7rem)]"
             >
               <div className="container mx-auto px-4 py-6 flex flex-col gap-3">
                 {/* User info if authenticated */}

@@ -217,7 +217,7 @@ self.addEventListener("push", (event) => {
   try {
     data = event.data.json();
   } catch {
-    data = { title: "Center for Psychology", body: event.data.text() };
+    data = { title: "Centre for Psychological Health", body: event.data.text() };
   }
 
   const options = {
@@ -239,7 +239,7 @@ self.addEventListener("push", (event) => {
 
   event.waitUntil(
     self.registration.showNotification(
-      data.title || "Center for Psychology",
+      data.title || "Centre for Psychological Health",
       options
     )
   );

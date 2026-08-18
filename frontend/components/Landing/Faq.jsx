@@ -79,7 +79,7 @@ const Faq = () => {
                     >
                       <span className="font-medium text-stone-900">{item.question}</span>
                       <span
-                        className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition-colors duration-300 ${
+                        className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition-colors duration-300 ${
                           isOpen ? 'bg-teal-600 text-white' : 'bg-stone-100 text-stone-500'
                         }`}
                       >

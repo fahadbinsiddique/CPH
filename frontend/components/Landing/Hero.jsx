@@ -80,7 +80,7 @@ const Hero = () => {
   return (
     <section
       ref={sectionRef}
-      className="relative overflow-hidden bg-gradient-to-b from-stone-50 via-white to-white pt-36 pb-20 md:pt-44 md:pb-28"
+      className="relative overflow-hidden bg-gradient-to-b from-stone-50 via-white to-white pt-40 pb-20 md:pt-44 md:pb-28"
     >
       {/* Static tonal background — calm, no looping motion */}
       <div className="pointer-events-none absolute inset-0" aria-hidden="true">

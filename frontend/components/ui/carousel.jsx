@@ -213,10 +213,10 @@ function CarouselDots({ count, className }) {
           onClick={() => api?.scrollTo(i)}
           aria-label={`Go to slide ${i + 1}`}
           className={cn(
-            'h-2.5 rounded-full transition-all duration-300',
+            'h-3 rounded-full transition-all duration-300',
             i === selected
               ? 'w-6 bg-teal-600'
-              : 'w-2.5 bg-slate-300 hover:bg-slate-400',
+              : 'w-3 bg-stone-200 hover:bg-stone-300',
           )}
         />
       ))}

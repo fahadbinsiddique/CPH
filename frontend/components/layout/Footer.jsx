@@ -115,7 +115,7 @@ const Footer = () => {
           transition={{ duration: 25, repeat: Infinity, repeatType: 'mirror' }}
           className="absolute bottom-[-150px] right-[-150px] w-[500px] h-[500px] bg-emerald-500/5 rounded-full blur-3xl"
         />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-500/5 rounded-full blur-3xl" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-teal-500/5 rounded-full blur-3xl" />
       </div>
 
       {/* Top Decorative Line */}
@@ -135,7 +135,7 @@ const Footer = () => {
                 src={'/logo.png'}
                 width={250}
                 height={150}
-                alt="Center For Psychological Health"
+                alt="Centre For Psychological Health"
                 className="object-contain brightness-100 "
               />
             </Link>
@@ -312,7 +312,7 @@ const Footer = () => {
         {/* Bottom Section */}
         <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-sm">
           <p className="text-stone-500">
-            © {new Date().getFullYear()} Center For Psychological Health. All rights reserved.
+            © {new Date().getFullYear()} Centre For Psychological Health. All rights reserved.
           </p>
           <div className="flex items-center gap-6 text-xs">
             <Link href="/privacy" className="text-stone-500 hover:text-teal-300 transition-colors">
@@ -339,7 +339,7 @@ const Footer = () => {
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          className="absolute bottom-8 right-8 p-3 rounded-full bg-teal-600/20 backdrop-blur-sm border border-teal-500/20 text-teal-400 hover:bg-teal-600/30 transition-all hover:border-teal-500/40 hidden lg:block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:ring-offset-2 focus-visible:ring-offset-stone-900"
+          className="absolute bottom-8 right-8 p-3 rounded-full bg-teal-600/20 backdrop-blur-sm border border-teal-500/20 text-teal-400 hover:bg-teal-600/30 transition-all hover:border-teal-500/40 hidden sm:block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:ring-offset-2 focus-visible:ring-offset-stone-900"
           aria-label="Back to top"
         >
           <ArrowUp className="w-4 h-4" />

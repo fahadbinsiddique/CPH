@@ -1,6 +1,6 @@
 export default function manifest() {
   return {
-    name: "Center for Psychology",
+    name: "Centre for Psychological Health",
     short_name: "CPH",
     description: "Mental wellness & online counseling platform",
     start_url: "/",
@@ -43,14 +43,14 @@ export default function manifest() {
         sizes: "1280x720",
         type: "image/png",
         form_factor: "wide",
-        label: "Desktop view of Center for Psychology",
+        label: "Desktop view of Centre for Psychological Health",
       },
       {
         src: "/screenshots/mobile.png",
         sizes: "750x1334",
         type: "image/png",
         form_factor: "narrow",
-        label: "Mobile view of Center for Psychology",
+        label: "Mobile view of Centre for Psychological Health",
       },
     ],
     shortcuts: [

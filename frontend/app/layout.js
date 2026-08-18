@@ -28,7 +28,7 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 })
 
 export const metadata = {
-  title: 'Center for Psychology',
+  title: 'Centre for Psychological Health',
   description: 'Mental wellness & online counseling platform',
   manifest: '/manifest.webmanifest',
 
@@ -42,7 +42,7 @@ export const metadata = {
   },
 
   appleWebApp: {
-    title: 'Cph',
+    title: 'CPH',
     capable: true,
     statusBarStyle: 'default',
   },
@@ -55,8 +55,6 @@ export const viewport = {
   themeColor: '#0d9488',
   width: 'device-width',
   initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
 }
 
 export default function RootLayout({ children, modal }) {

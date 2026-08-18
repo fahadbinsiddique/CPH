@@ -1,9 +1,9 @@
 import JoinTherapistForm from '@/components/consultant/JoinTherapistForm'
 
 export const metadata = {
-  title: 'Join as a Therapist | Center for Psychological Health',
+  title: 'Join as a Therapist | Centre for Psychological Health',
   description:
-    'Apply to join the Center for Psychological Health therapist network. A two-step application covering your account and professional information.',
+    'Apply to join the Centre for Psychological Health therapist network. A two-step application covering your account and professional information.',
 }
 
 /**
