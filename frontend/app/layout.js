@@ -10,6 +10,7 @@ import PWAInstallPrompt from '@/components/shared/PWAInstallPrompt'
 import ConnectionStatusBanner from '@/components/shared/ConnectionStatusBanner'
 import GTM from '@/components/analytics/GTM'
 import MetaPixel from '@/components/analytics/MetaPixel'
+import TawkTo from '@/components/analytics/TawkTo'
 import JsonLd from '@/components/seo/JsonLd'
 import {
   SITE_NAME,
@@ -145,6 +146,7 @@ export default function RootLayout({ children, modal }) {
         {/* Analytics (only load when env IDs are configured) */}
         <GTM />
         <MetaPixel />
+        <TawkTo />
         {/* Service Worker Auto Registration */}
         <ServiceWorkerRegister />
         <ConnectionStatusBanner />
