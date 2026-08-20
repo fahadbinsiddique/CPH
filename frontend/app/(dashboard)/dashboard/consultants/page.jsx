@@ -28,6 +28,7 @@ import EmptyState from '@/components/dashboard/ui/EmptyState';
 import ConfirmDialog from '@/components/dashboard/ui/ConfirmDialog';
 import { consultantService } from '@/services/consultantService';
 import { containerVariants, itemVariants } from '@/lib/motion';
+import Image from 'next/image';
 
 const EMPTY_FORM = {
   full_name: '', email: '', password: '',
@@ -340,7 +341,8 @@ export default function AdminConsultantsPage() {
                       <CardContent className="flex items-center gap-4 p-4">
                         <div className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-teal-100 to-emerald-100 font-bold text-teal-700">
                           {c.profile_image
-                            ? <img src={c.profile_image} alt="" className="h-full w-full object-cover" />
+                            ? <Image src={c.profile_image} alt="" height={50}
+                               width={50} className="h-full w-full object-cover" />
                             : c.user?.full_name?.charAt(0)
                           }
                         </div>

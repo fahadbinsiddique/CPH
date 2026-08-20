@@ -1,9 +1,19 @@
 import JoinTherapistForm from '@/components/consultant/JoinTherapistForm'
+import { baseOpenGraph } from '@/lib/seo'
 
 export const metadata = {
-  title: 'Join as a Therapist | Centre for Psychological Health',
+  title: 'Join as a Therapist',
   description:
     'Apply to join the Centre for Psychological Health therapist network. A two-step application covering your account and professional information.',
+  alternates: {
+    canonical: '/join-as-therapist',
+  },
+  openGraph: baseOpenGraph({
+    title: 'Join as a Therapist',
+    description:
+      'Apply to join the Centre for Psychological Health (CPH) therapist network.',
+    url: '/join-as-therapist',
+  }),
 }
 
 /**
