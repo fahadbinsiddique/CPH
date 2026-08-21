@@ -8,6 +8,7 @@ import GoogleOneTap from '@/components/auth/GoogleOneTap'
 import ServiceWorkerRegister from '@/components/shared/ServiceWorkerRegister'
 import PWAInstallPrompt from '@/components/shared/PWAInstallPrompt'
 import ConnectionStatusBanner from '@/components/shared/ConnectionStatusBanner'
+import ProductTourReturn from '@/components/product-tour/ProductTourReturn'
 import GTM from '@/components/analytics/GTM'
 import MetaPixel from '@/components/analytics/MetaPixel'
 import TawkTo from '@/components/analytics/TawkTo'
@@ -161,6 +162,7 @@ export default function RootLayout({ children, modal }) {
         {/* PWA Install Banner Popup */}
         {/* <PWAInstallPrompt /> */}
         <Toaster position="top-center" richColors closeButton />
+        <ProductTourReturn />
         <Footer />
       </body>
     </html>

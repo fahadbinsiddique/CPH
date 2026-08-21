@@ -23,6 +23,7 @@ import {
   ClipboardList,
   Tag,
   Bell,
+  Presentation,
 } from 'lucide-react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -86,6 +87,12 @@ const NAV_SECTIONS = {
         { href: '/dashboard/specializations', label: 'Specializations', icon: Tag, color: 'from-indigo-400 to-blue-500' },
         { href: '/dashboard/appointments', label: 'Appointments', icon: Calendar, color: 'from-amber-400 to-orange-500' },
         { href: '/dashboard/blogs', label: 'Blog & Articles', icon: BookOpen, color: 'from-rose-400 to-pink-500' },
+      ],
+    },
+    {
+      label: 'Tools',
+      items: [
+        { href: '/dashboard/product-tour', label: 'Product Tour', icon: Presentation, color: 'from-teal-400 to-emerald-500' },
       ],
     },
     {
