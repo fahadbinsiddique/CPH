@@ -138,6 +138,7 @@ SIMPLE_JWT = {
     'AUTH_COOKIE_REFRESH': 'refresh_token',
     # Local: False, Production: True (overridden under the `not DEBUG` rule).
     'AUTH_COOKIE_SECURE': not DEBUG,
+    
     'AUTH_COOKIE_SAMESITE': 'None',
     'AUTH_COOKIE_HTTP_ONLY': True,
 }

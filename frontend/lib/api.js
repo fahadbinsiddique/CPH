@@ -14,7 +14,7 @@ import {
 // Development console watermark.
 if (typeof window !== 'undefined') {
   console.log(
-    '%c Developed By: Fahad Bin Siddique',
+    '%c Developed By: Fahad Bin Siddique || fahad.com.bd',
     'background: #1e1e2f; color: #00ffcc; padding: 6px 12px; border-radius: 8px; font-weight: bold; font-family: sans-serif;'
   );
 }

@@ -41,9 +41,7 @@ def set_auth_cookies(response, access_token, refresh_token):
     return response
 
 
-def clear_auth_cookies(response):
-   
-
+def clear_auth_cookies(response):    
     jwt = settings.SIMPLE_JWT
 
     # Delete cookies according to the Django cookie configuration.
@@ -51,14 +49,14 @@ def clear_auth_cookies(response):
         "access_token", 
         path="/",
         samesite=jwt["AUTH_COOKIE_SAMESITE"],
-        # secure=True,
+        secure=jwt["AUTH_COOKIE_SECURE"],
     )
     
     response.delete_cookie(
         "refresh_token", 
         path="/", 
         samesite=jwt["AUTH_COOKIE_SAMESITE"],
-        # secure=True,
+        secure=jwt["AUTH_COOKIE_SECURE"],
     )   
 
     return response
@@ -160,7 +158,6 @@ class LogoutView(APIView):
 
 
 # Refresh access token view.
-
 class RefreshTokenView(APIView):
     permission_classes = [AllowAny]
 
@@ -361,7 +358,7 @@ class GoogleOneTapLoginView(APIView):
         full_name = f"{first_name} {last_name}".strip() or email.split('@')[0]
 
         # Match the stable Google user id first (survives email changes), then
-        # fall back to email for accounts that registered with Google before the
+        # fall back to email for accounts that registered before the
         # field existed.
         user = None
         if google_sub:
