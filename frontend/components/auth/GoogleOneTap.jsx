@@ -65,7 +65,7 @@ export default function GoogleOneTap({ onLoginSuccess }) {
         if (res.status === 200 && res.data.success) {
           await useAuthStore.getState().fetchMe()
 
-          useUiStore.getState().closeLoginDrawer()
+          useUiStore.getState().closeLoginModal()
 
           // Tear down the One Tap session so a stale iframe does not linger.
           if (window.google?.accounts?.id) {

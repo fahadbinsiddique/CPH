@@ -51,7 +51,7 @@ CPH/
 │   │   ├── about-us · services · join-as-therapist · booking/[slug] · consultant/[slug] · blog/[slug] · assessment/[slug] · assessment/result/[id]
 │   ├── components/
 │   │   ├── Landing/             # Landing page sections
-│   │   ├── auth/                # LoginDrawer, RegisterDrawer, GoogleOneTap
+│   │   ├── auth/                # LoginModal, RegisterModal, GoogleOneTap
 │   │   ├── shared/              # AuthGuard, BlogCard, Loaders...
 │   │   ├── dashboard/           # AdminDashboard, ConsultantDashboard, ui/* (StatCard, StatusBadge, PageHeader, EmptyState, LoadingState, ConfirmDialog, AppointmentCard, WellnessTip)
 │   │   ├── ui/                  # shadcn/ui primitives
@@ -159,7 +159,7 @@ JWT via SimpleJWT stored in **HttpOnly cookies** (`access_token`, `refresh_token
 Session handling on the frontend is now fully client-side — there is **no `middleware.js` / `proxy.js`**:
 - `AuthGuard` (`frontend/components/shared/AuthGuard.jsx`) verifies the session against `/api/auth/me/` and blocks by `allowedRoles`. Wraps every `/dashboard` page.
 - `(dashboard)/dashboard/layout.jsx` renders a role-aware sidebar (`NAV_SECTIONS`) and gates sections per role.
-- `lib/authGate.js` + `store/uiStore` open the **LoginDrawer** in place and store a resume path for post-login redirect.
+- `lib/authGate.js` + `store/uiStore` open the **LoginModal** in place and store a resume path for post-login redirect.
 
 ---
 

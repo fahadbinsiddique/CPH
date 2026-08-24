@@ -8,7 +8,7 @@ import useUiStore from '@/store/uiStore';
 
 export default function AuthGuard({ children, allowedRoles = [] }) {
   const { isAuthenticated, user, fetchMe } = useAuthStore();
-  const openLoginDrawer = useUiStore((s) => s.openLoginDrawer);
+  const openLoginModal = useUiStore((s) => s.openLoginModal);
   const [isHydrated, setIsHydrated] = useState(false);
   const hasFetched = useRef(false);
 
@@ -43,7 +43,7 @@ export default function AuthGuard({ children, allowedRoles = [] }) {
         if (!latest.isAuthenticated) {
           // Stay on the current page and prompt the user to log in in-place.
           toast.error('Please log in to proceed', { id: 'auth-toast' });
-          openLoginDrawer();
+          openLoginModal();
           return;
         }
 
@@ -55,12 +55,12 @@ export default function AuthGuard({ children, allowedRoles = [] }) {
         } catch {
           // Prompt the user to log back in when the session check fails or expired.
           toast.error('Please log in to proceed', { id: 'auth-toast' });
-          openLoginDrawer();
+          openLoginModal();
         }
     };
 
     verify();
-  }, [isHydrated, fetchMe, openLoginDrawer, allowedRoles]);
+  }, [isHydrated, fetchMe, openLoginModal, allowedRoles]);
 
   // Lock the screen with a loading spinner until the auth state is fully ready.
   // eslint-disable-next-line react-hooks/refs

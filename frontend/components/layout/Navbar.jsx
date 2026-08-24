@@ -12,8 +12,8 @@ import Image from 'next/image'
 import TopHeader from './TopHeader'
 import { useRouter, usePathname } from 'next/navigation'
 import Link from 'next/link'
-import LoginDrawer from '../auth/LoginDrawer'
-import RegisterDrawer from '../auth/RegisterDrawer'
+import LoginModal from '../auth/LoginModal'
+import RegisterModal from '../auth/RegisterModal'
 import useAuthStore from '@/store/authStore'
 import useUiStore from '@/store/uiStore'
 
@@ -21,7 +21,7 @@ const Navbar = () => {
   const router = useRouter()
   const pathname = usePathname()
   const { user, logout, isAuthenticated } = useAuthStore()
-  const { isLoginOpen, openLoginDrawer, closeLoginDrawer } = useUiStore()
+  const { isLoginOpen, openLoginModal, closeLoginModal } = useUiStore()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const [isRegisterOpen, setIsRegisterOpen] = useState(false)
@@ -74,7 +74,7 @@ const Navbar = () => {
 
   const handleAuth = (action) => {
     if (action === 'signin') {
-      openLoginDrawer()
+      openLoginModal()
       setMobileMenuOpen(false)
     } else if (action === 'signup') {
       setIsRegisterOpen(true)
@@ -372,19 +372,19 @@ const Navbar = () => {
           )}
         </AnimatePresence>
 
-        <LoginDrawer
+        <LoginModal
           isOpen={isLoginOpen}
-          setIsOpen={closeLoginDrawer}
+          setIsOpen={closeLoginModal}
           onRedirect={() => {
-            closeLoginDrawer()
+            closeLoginModal()
             setIsRegisterOpen(true)
           }}
         />
-        <RegisterDrawer
+        <RegisterModal
           isOpen={isRegisterOpen}
           setIsOpen={setIsRegisterOpen}
           onSuccessRedirect={() => {
-            openLoginDrawer()
+            openLoginModal()
           }}
         />
       </nav>

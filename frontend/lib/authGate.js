@@ -12,7 +12,7 @@ export function requireLogin({ resumePath = null, message = 'Please log in to pr
     }
   }
   toast.error(message, { id: 'auth-toast' });
-  useUiStore.getState().openLoginDrawer();
+  useUiStore.getState().openLoginModal();
 }
 
 export function consumeResumePath() {

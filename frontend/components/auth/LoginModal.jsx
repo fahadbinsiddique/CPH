@@ -10,22 +10,22 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-} from '@/components/ui/sheet';
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 
 import useAuthStore from '@/store/authStore';
 import Image from 'next/image';
 import { consumeResumePath } from '@/lib/authGate';
 import useUiStore from '@/store/uiStore';
 
-export default function LoginDrawer({ isOpen, setIsOpen, onRedirect }) {
+export default function LoginModal({ isOpen, setIsOpen, onRedirect }) {
   const router = useRouter();
   const { login, isLoading, error, clearError } = useAuthStore();
-  const closeLoginDrawer = useUiStore((s) => s.closeLoginDrawer);
+  const closeLoginModal = useUiStore((s) => s.closeLoginModal);
 
   const [formData, setFormData] = useState({
     username: '',
@@ -57,11 +57,11 @@ export default function LoginDrawer({ isOpen, setIsOpen, onRedirect }) {
     const result = await login(formData);
 
     if (result?.success) {
-      toast.success("Login successfully!", 
+      toast.success("Login successfully!",
             { description: "successfully Login with your secure credentials.",position: "top-right"}
-               
+
         );
-      closeLoginDrawer();
+      closeLoginModal();
 
       // Seamlessly resume the action the user intended to perform (e.g. booking).
       const resumePath = consumeResumePath();
@@ -78,17 +78,16 @@ export default function LoginDrawer({ isOpen, setIsOpen, onRedirect }) {
   };
 
   return (
-    <Sheet open={isOpen} onOpenChange={setIsOpen}>
-      <SheetContent 
-        side="right" 
-        className="w-full sm:max-w-md overflow-y-auto bg-slate-50/90 backdrop-blur-md p-0 shadow-2xl border-l border-slate-200/60 font-sans flex flex-col"
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogContent
+        className="sm:max-w-md overflow-y-auto bg-slate-50/90 backdrop-blur-md p-0 shadow-2xl font-sans flex flex-col max-h-[90vh]"
       >
         {/* Main Container with subtle top gradient */}
         <div className="bg-gradient-to-b from-blue-50/60 via-transparent to-transparent px-6 pt-10 pb-6 flex-1">
-          
+
           {/* Premium Brand Header */}
           <div className="flex flex-col items-center mb-8 text-center">
-            <motion.div 
+            <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ duration: 0.3 }}
@@ -101,11 +100,11 @@ export default function LoginDrawer({ isOpen, setIsOpen, onRedirect }) {
               width={150}
               />
             </motion.div>
-            
-            <SheetTitle className="text-2xl font-bold tracking-tight text-slate-900 font-sans">
+
+            <DialogTitle className="text-2xl font-bold tracking-tight text-slate-900 font-sans">
               Centre for Psychological Health
-            </SheetTitle>
-            
+            </DialogTitle>
+
           </div>
 
           {/* Decorative Divider */}
@@ -120,12 +119,12 @@ export default function LoginDrawer({ isOpen, setIsOpen, onRedirect }) {
 
           {/* Form Area */}
           <div className="mt-6">
-           
+
 
             <form onSubmit={handleSubmit} className="space-y-5">
               {/* Email Input */}
               <div className="space-y-2">
-                <Label htmlFor="drawer-username" className="text-xs font-semibold uppercase tracking-wider text-slate-600">
+                <Label htmlFor="modal-username" className="text-xs font-semibold uppercase tracking-wider text-slate-600">
                   Email Address
                 </Label>
                 <div className="relative group">
@@ -133,7 +132,7 @@ export default function LoginDrawer({ isOpen, setIsOpen, onRedirect }) {
                     <Mail size={18} />
                   </div>
                   <Input
-                    id="drawer-username"
+                    id="modal-username"
                     name="username"
                     type="email"
                     placeholder="name@example.com"
@@ -148,7 +147,7 @@ export default function LoginDrawer({ isOpen, setIsOpen, onRedirect }) {
               {/* Password Input */}
               <div className="space-y-2">
                 <div className="flex justify-between items-center">
-                  <Label htmlFor="drawer-password" className="text-xs font-semibold uppercase tracking-wider text-slate-600">
+                  <Label htmlFor="modal-password" className="text-xs font-semibold uppercase tracking-wider text-slate-600">
                     Password
                   </Label>
                   <Link
@@ -164,7 +163,7 @@ export default function LoginDrawer({ isOpen, setIsOpen, onRedirect }) {
                     <Lock size={18} />
                   </div>
                   <Input
-                    id="drawer-password"
+                    id="modal-password"
                     name="password"
                     type={showPassword ? 'text' : 'password'}
                     placeholder="••••••••"
@@ -231,7 +230,7 @@ export default function LoginDrawer({ isOpen, setIsOpen, onRedirect }) {
             </Button>
           </p>
         </div>
-      </SheetContent>
-    </Sheet>
+      </DialogContent>
+    </Dialog>
   );
 }

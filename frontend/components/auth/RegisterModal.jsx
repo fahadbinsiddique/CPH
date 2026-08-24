@@ -10,16 +10,17 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetTitle,
-} from '@/components/ui/sheet';
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 
 import useAuthStore from '@/store/authStore';
 import Image from 'next/image';
 
-export default function RegisterDrawer({ isOpen, setIsOpen, onSuccessRedirect }) {
+export default function RegisterModal({ isOpen, setIsOpen, onSuccessRedirect }) {
   const router = useRouter();
   const { register, isLoading, clearError } = useAuthStore();
 
@@ -64,14 +65,14 @@ export default function RegisterDrawer({ isOpen, setIsOpen, onSuccessRedirect })
 
     if (result?.success) {
 
-        toast.success("Account created successfully!", 
+        toast.success("Account created successfully!",
             { description: "Please sign in with your secure credentials.",position: "top-right"}
-              
+
         );
 
         setTimeout(() => {
         setIsOpen(false);
-        
+
         if (onSuccessRedirect) {
           onSuccessRedirect();
         }
@@ -99,14 +100,13 @@ export default function RegisterDrawer({ isOpen, setIsOpen, onSuccessRedirect })
   ];
 
   return (
-    <Sheet open={isOpen} onOpenChange={setIsOpen}>
-      <SheetContent
-        side="right"
-        className="w-full sm:max-w-md overflow-y-auto bg-slate-50/90 backdrop-blur-md p-0 shadow-2xl border-l border-slate-200/60 font-sans flex flex-col"
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogContent
+        className="sm:max-w-md overflow-y-auto bg-slate-50/90 backdrop-blur-md p-0 shadow-2xl font-sans flex flex-col max-h-[90vh]"
       >
         {/* Top Gradient Content Area */}
-        <div className="bg-gradient-to-b from-blue-50/60 via-transparent to-transparent px-6 pt-10 pb-6 flex-1">
-          
+        <div className="bg-gradient-to-b from-blue-50/60 via-transparent to-transparent px-6 pt-10  flex-1">
+
           {/* Brand Premium Header */}
           <div className="flex flex-col items-center mb-8 text-center">
             <motion.div
@@ -123,10 +123,10 @@ export default function RegisterDrawer({ isOpen, setIsOpen, onSuccessRedirect })
                 />
             </motion.div>
 
-            <SheetTitle className="text-2xl font-bold tracking-tight text-slate-900 font-sans">
+            <DialogTitle className="text-2xl font-bold tracking-tight text-slate-900 font-sans">
               Create Account
-            </SheetTitle>
-          
+            </DialogTitle>
+
           </div>
 
           {/* Decorative Divider */}
@@ -142,11 +142,11 @@ export default function RegisterDrawer({ isOpen, setIsOpen, onSuccessRedirect })
           {/* Form Content */}
           <div className="mt-4">
             <form onSubmit={handleSubmit} className="space-y-4">
-              
+
               {/* Render Full Name and Email */}
               {staticFields.map(({ name, label, placeholder, type, Icon }) => (
                 <div key={name} className="space-y-1.5">
-                  <Label htmlFor={`drawer-${name}`} className="text-xs font-semibold uppercase tracking-wider text-slate-600">
+                  <Label htmlFor={`modal-${name}`} className="text-xs font-semibold uppercase tracking-wider text-slate-600">
                     {label}
                   </Label>
                   <div className="relative group">
@@ -154,7 +154,7 @@ export default function RegisterDrawer({ isOpen, setIsOpen, onSuccessRedirect })
                       <Icon size={18} />
                     </div>
                     <Input
-                      id={`drawer-${name}`}
+                      id={`modal-${name}`}
                       name={name}
                       type={type}
                       placeholder={placeholder}
@@ -169,7 +169,7 @@ export default function RegisterDrawer({ isOpen, setIsOpen, onSuccessRedirect })
 
               {/* Password Field */}
               <div className="space-y-1.5">
-                <Label htmlFor="drawer-password" className="text-xs font-semibold uppercase tracking-wider text-slate-600">
+                <Label htmlFor="modal-password" className="text-xs font-semibold uppercase tracking-wider text-slate-600">
                   Password
                 </Label>
                 <div className="relative group">
@@ -177,7 +177,7 @@ export default function RegisterDrawer({ isOpen, setIsOpen, onSuccessRedirect })
                     <Lock size={18} />
                   </div>
                   <Input
-                    id="drawer-password"
+                    id="modal-password"
                     name="password"
                     type={showPassword ? 'text' : 'password'}
                     placeholder="Minimum 8 characters"
@@ -199,7 +199,7 @@ export default function RegisterDrawer({ isOpen, setIsOpen, onSuccessRedirect })
 
               {/* Confirm Password Field */}
               <div className="space-y-1.5">
-                <Label htmlFor="drawer-confirm-password" className="text-xs font-semibold uppercase tracking-wider text-slate-600">
+                <Label htmlFor="modal-confirm-password" className="text-xs font-semibold uppercase tracking-wider text-slate-600">
                   Confirm Password
                 </Label>
                 <div className="relative group">
@@ -207,7 +207,7 @@ export default function RegisterDrawer({ isOpen, setIsOpen, onSuccessRedirect })
                     <Lock size={18} />
                   </div>
                   <Input
-                    id="drawer-confirm-password"
+                    id="modal-confirm-password"
                     name="confirm_password"
                     type={showPassword ? 'text' : 'password'}
                     placeholder="Repeat your password"
@@ -250,11 +250,11 @@ export default function RegisterDrawer({ isOpen, setIsOpen, onSuccessRedirect })
         </div>
 
         {/* Sticky Footer */}
-        <div className="p-6 bg-slate-100/60 border-t border-slate-200/60 text-center">
+        <div className="p-6   bg-slate-100/60 border-t border-slate-200/60 text-center">
           <p className="text-sm text-slate-600 font-medium">
             Already have an account?{' '}
             <Button
-              
+
               variant="link"
               onClick={() => onSuccessRedirect()}
               className="font-bold text-teal-600 transition hover:text-teal-700 hover:underline"
@@ -263,7 +263,7 @@ export default function RegisterDrawer({ isOpen, setIsOpen, onSuccessRedirect })
             </Button>
           </p>
         </div>
-      </SheetContent>
-    </Sheet>
+      </DialogContent>
+    </Dialog>
   );
 }
