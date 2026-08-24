@@ -99,7 +99,7 @@ export default function ConsultantCard({ consultant }) {
 
           {/* Specialization Chips with Fixed Height Box */}
          
-          <div className="mt-2.5 flex min-h-[42px] flex-wrap items-start content-start gap-1">
+          <div className="mt-2.5 flex min-h-[42px] hidden sm:inline flex-wrap items-start content-start gap-1">
             {specializations?.length > 0 ? (
               <>
                 {specializations.slice(0, 2).map((s) => (
@@ -136,7 +136,7 @@ export default function ConsultantCard({ consultant }) {
               </span>
             </div>
             <span
-              className={`text-[10px] font-semibold ${
+              className={`text-[10px] font-semibold hidden sm:inline ${
                 is_available ? 'text-emerald-600' : 'text-slate-400'
               }`}
             >
