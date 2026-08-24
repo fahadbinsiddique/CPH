@@ -4,6 +4,7 @@ import { Phone, Mail, Clock, MapPin, UserPlus, ChevronDown, ChevronUp } from 'lu
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useState } from 'react'
+import { SOCIAL_LINKS } from '@/lib/social'
 
 const TopHeader = () => {
   const [showDetails, setShowDetails] = useState(false)
@@ -79,6 +80,25 @@ const TopHeader = () => {
               <span>Info</span>
               {showDetails ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
             </button>
+
+            {/* Social Icons - Desktop */}
+            <div className="hidden md:flex items-center gap-1.5">
+              {SOCIAL_LINKS.map((social) => {
+                const Icon = social.icon
+                return (
+                  <a
+                    key={social.label}
+                    href={social.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-1.5 rounded-full bg-white/10 hover:bg-white/20 text-white/70 hover:text-white transition-colors"
+                    aria-label={social.label}
+                  >
+                    <Icon size={13} />
+                  </a>
+                )
+              })}
+            </div>
 
             <span className="text-white/30 hidden sm:inline">|</span>
 

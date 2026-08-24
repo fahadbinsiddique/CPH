@@ -19,6 +19,7 @@ import {
   SITE_DESCRIPTION,
   DEFAULT_OG_IMAGE_URL,
 } from '@/lib/seo'
+import { SOCIAL_URLS } from '@/lib/social'
 
 // Geist Sans for body and general text.
 const geistSans = Geist({
@@ -126,6 +127,7 @@ const ORGANIZATION_SCHEMA = {
   url: SITE_URL,
   logo: new URL('/logo.png', SITE_URL).toString(),
   description: SITE_DESCRIPTION,
+  sameAs: Object.values(SOCIAL_URLS),
 }
 
 const WEBSITE_SCHEMA = {

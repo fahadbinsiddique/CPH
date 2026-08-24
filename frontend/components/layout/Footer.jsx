@@ -18,13 +18,7 @@ import {
   ArrowUp,
   CheckCircle2,
 } from 'lucide-react'
-import {
-  FiFacebook,
-  FiTwitter,
-  FiInstagram,
-  FiLinkedin,
-  FiYoutube,
-} from 'react-icons/fi'
+import { SOCIAL_LINKS } from '@/lib/social'
 
 const Input = ({ type = 'text', placeholder, className, ...props }) => (
   <input
@@ -87,13 +81,7 @@ const Footer = () => {
     ],
   }
 
-  const socialLinks = [
-    { icon: FiFacebook, href: 'https://facebook.com', label: 'Facebook' },
-    { icon: FiTwitter, href: 'https://twitter.com', label: 'Twitter' },
-    { icon: FiInstagram, href: 'https://instagram.com', label: 'Instagram' },
-    { icon: FiLinkedin, href: 'https://linkedin.com', label: 'LinkedIn' },
-    { icon: FiYoutube, href: 'https://youtube.com', label: 'YouTube' },
-  ]
+
 
   const trustBadges = [
     { icon: ShieldCheck, label: '100% Confidential' },
@@ -281,7 +269,7 @@ const Footer = () => {
                 Follow Us
               </p>
               <div className="flex items-center gap-3">
-                {socialLinks.map((social) => {
+                {SOCIAL_LINKS.map((social) => {
                   const Icon = social.icon
                   return (
                     <a
