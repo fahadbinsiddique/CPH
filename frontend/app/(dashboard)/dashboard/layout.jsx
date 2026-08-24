@@ -249,9 +249,9 @@ export default function DashboardLayout({ children }) {
   return (
     <AuthGuard>
       <div className="dash-shell">
-        <div className="mx-auto flex max-w-[1700px] pt-30">
+        <div className="mx-auto flex max-w-[1700px] pt-20 lg:pt-30">
           {/* Desktop Sidebar */}
-          <aside className="sticky top-30 hidden h-[calc(100vh-7.5rem)] w-[280px] shrink-0 flex-col border-r border-slate-200/60 lg:flex">
+          <aside className="sticky top-20 hidden h-[calc(100vh-5rem)] w-[280px] shrink-0 flex-col border-r border-slate-200/60 lg:top-30 lg:h-[calc(100vh-7.5rem)] lg:flex">
             <SidebarContent instanceId="desktop" />
           </aside>
 
@@ -260,7 +260,7 @@ export default function DashboardLayout({ children }) {
             {/* Top Header */}
             <header
               className={cn(
-                'sticky top-30 z-30 flex h-16 shrink-0 items-center gap-3 border-b px-4 transition-all duration-300 sm:px-6 lg:px-8',
+                'sticky top-20 z-30 flex h-16 shrink-0 items-center gap-3 border-b px-4 transition-all duration-300 sm:px-6 lg:top-28 sm:mt-0 mt-7 top-27 lg:px-8',
                 scrolled
                   ? 'border-slate-200/60 bg-white/90 shadow-sm backdrop-blur-md'
                   : 'border-slate-200/40 bg-white/70 backdrop-blur-sm'
@@ -281,11 +281,11 @@ export default function DashboardLayout({ children }) {
               </Sheet>
 
               {/* Mobile brand */}
-              <div className="flex items-center gap-2 lg:hidden">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-r from-teal-600 to-emerald-600 shadow-md shadow-teal-500/20">
-                  <Heart className="h-4 w-4 text-white" />
-                </div>
+              <div className="flex  items-center gap-2 lg:hidden">
+                
                 <span className="text-sm font-bold tracking-tight text-slate-900">Dashboard</span>
+                 <ChevronRight className="h-3.5 w-3.5 text-slate-300" />
+                <span className="text-sm font-bold text-slate-800">{pageLabel}</span>
               </div>
 
               {/* Desktop breadcrumb */}

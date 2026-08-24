@@ -368,12 +368,12 @@ export default function AppointmentsPage() {
           <LoadingState label="Loading appointments..." />
         ) : (
           <Tabs defaultValue="all" className="w-full">
-            <TabsList className="mb-6 flex w-fit flex-wrap gap-1 rounded-2xl border border-slate-200/60 bg-white/80 p-1.5 shadow-sm backdrop-blur-sm">
+            <TabsList className="sm:md-6 mb-14  flex w-fit flex-wrap sm:gap-2 gap-4 rounded-xl border border-slate-200/60 bg-white/80 p-1.5 shadow-sm backdrop-blur-sm">
               {tabs.map((tab) => (
                 <TabsTrigger
                   key={tab.value}
                   value={tab.value}
-                  className="flex items-center gap-1.5 rounded-xl px-4 py-2 text-sm font-medium transition-all data-[state=active]:bg-gradient-to-r data-[state=active]:from-teal-600 data-[state=active]:to-emerald-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-teal-600/20"
+                  className="flex items-center gap-1.5 rounded-xl px-4 py-3 text-center text-sm font-medium transition-all data-[state=active]:bg-gradient-to-r data-[state=active]:from-teal-600 data-[state=active]:to-emerald-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-teal-600/20"
                 >
                   {tab.label}
                   <Badge

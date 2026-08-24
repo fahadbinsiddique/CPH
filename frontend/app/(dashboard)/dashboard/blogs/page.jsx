@@ -146,21 +146,21 @@ function AdminBlogsPage() {
                         target="_blank"
                         rel="noopener noreferrer"
                         aria-label="View post"
-                        className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700"
+                        className="flex h-9 w-9 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700"
                       >
                         <Eye className="h-4 w-4" />
                       </Link>
                       <Link
                         href={`/dashboard/blogs/${blog.id}/edit`}
                         aria-label="Edit post"
-                        className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-teal-50 hover:text-teal-600"
+                        className="flex h-9 w-9 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-teal-50 hover:text-teal-600"
                       >
                         <Pencil className="h-4 w-4" />
                       </Link>
                       <Button
                         size="sm"
                         variant="ghost"
-                        className="h-8 w-8 p-0 text-slate-400 hover:bg-rose-50 hover:text-rose-500"
+                        className="h-9 w-9 p-0 text-slate-400 hover:bg-rose-50 hover:text-rose-500"
                         onClick={() => setConfirmDelete(blog)}
                         disabled={deletingId === blog.id}
                         aria-label="Delete post"

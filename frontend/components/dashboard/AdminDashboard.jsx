@@ -128,7 +128,7 @@ export default function AdminDashboard() {
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="flex min-h-[400px] items-center justify-center"
+        className="flex min-h-[200px] items-center justify-center sm:min-h-[300px] lg:min-h-[400px]"
       >
         <Card className="max-w-md rounded-2xl border-red-100 bg-red-50/50 shadow-sm">
           <CardContent className="space-y-4 p-8 text-center">

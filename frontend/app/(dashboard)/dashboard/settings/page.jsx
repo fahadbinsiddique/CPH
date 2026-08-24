@@ -219,7 +219,7 @@ export default function SettingsPage() {
               )}
             </AnimatePresence>
 
-            <Button onClick={handlePasswordChange} disabled={saving} className="dash-cta mt-5">
+            <Button onClick={handlePasswordChange} disabled={saving} className="dash-cta mt-5 w-full sm:w-auto">
               {saving ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Saving...

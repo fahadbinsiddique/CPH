@@ -155,7 +155,7 @@ export default function AnalyticsPage() {
                 <button
                   key={d}
                   onClick={() => changeDays(d)}
-                  className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
+                  className={`rounded-lg px-3 py-2 text-xs font-semibold transition-all ${
                     days === d
                       ? 'bg-gradient-to-r from-teal-600 to-emerald-600 text-white shadow-md shadow-teal-600/20'
                       : 'text-slate-500 hover:bg-slate-100'
@@ -237,7 +237,7 @@ export default function AnalyticsPage() {
                   <CardContent className="pt-4">
                     <div className="h-72">
                       <ResponsiveContainer width="100%" height="100%">
-                        <AreaChart data={data.series} margin={{ top: 10, right: 8, left: -20, bottom: 0 }}>
+                        <AreaChart data={data.series} margin={{ top: 10, right: 8, left: 0, bottom: 0 }}>
                           <defs>
                             <linearGradient id="gradAppt" x1="0" y1="0" x2="0" y2="1">
                               <stop offset="0%" stopColor="#0d9488" stopOpacity={0.35} />
@@ -433,14 +433,14 @@ export default function AnalyticsPage() {
                     {data.top_consultants.length > 0 ? (
                       <div className="h-64">
                         <ResponsiveContainer width="100%" height="100%">
-                          <BarChart data={data.top_consultants} layout="vertical" margin={{ top: 0, right: 16, left: 8, bottom: 0 }}>
+                          <BarChart data={data.top_consultants} layout="vertical" margin={{ top: 0, right: 16, left: 4, bottom: 0 }}>
                             <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" horizontal={false} />
                             <XAxis type="number" tick={{ fontSize: 11, fill: '#94a3b8' }} tickLine={false} axisLine={false} allowDecimals={false} />
                             <YAxis
                               type="category"
                               dataKey="name"
-                              width={90}
-                              tick={{ fontSize: 11, fill: '#475569' }}
+                              width={70}
+                              tick={{ fontSize: 10, fill: '#475569' }}
                               tickLine={false}
                               axisLine={false}
                             />

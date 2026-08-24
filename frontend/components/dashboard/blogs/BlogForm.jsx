@@ -184,7 +184,7 @@ export default function BlogForm({ initialData, setDirty, confirmLeave, onSaved 
               <Label htmlFor="blog-slug" className="text-sm font-medium text-slate-700">
                 Slug <span className="text-rose-500">*</span>
               </Label>
-              <div className="flex gap-2">
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
                 <div className="relative flex-1">
                   <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-slate-400">
                     /blog/
@@ -205,7 +205,7 @@ export default function BlogForm({ initialData, setDirty, confirmLeave, onSaved 
                   type="button"
                   variant="outline"
                   onClick={regenerateSlug}
-                  className="h-11 gap-2 border-slate-200 text-slate-600 hover:border-teal-300 hover:text-teal-700"
+                  className="h-11 gap-2 border-slate-200 text-slate-600 hover:border-teal-300 hover:text-teal-700 sm:shrink-0"
                 >
                   <Wand2 className="h-4 w-4" /> Regenerate
                 </Button>

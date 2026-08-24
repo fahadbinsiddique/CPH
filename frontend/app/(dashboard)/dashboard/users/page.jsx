@@ -73,7 +73,7 @@ export default function AdminUsersPage() {
         ) : (
           <motion.div variants={itemVariants}>
             <Tabs defaultValue="all">
-              <TabsList className="mb-5 bg-white/80 border border-slate-200/60 shadow-sm backdrop-blur-sm">
+              <TabsList className="mb-5 flex flex-wrap bg-white/80 border border-slate-200/60 shadow-sm backdrop-blur-sm">
                 <TabsTrigger value="all">All ({filtered.length})</TabsTrigger>
                 <TabsTrigger value="client">Clients ({byRole('client').length})</TabsTrigger>
                 <TabsTrigger value="consultant">Consultants ({byRole('consultant').length})</TabsTrigger>

@@ -8,7 +8,7 @@ export default function EmptyState({ icon: Icon, title, description, action, cla
   return (
     <motion.div variants={itemVariants}>
       <Card className={`border-dashed border-slate-200 bg-white/50 shadow-inner backdrop-blur-sm ${className}`}>
-        <CardContent className="mx-auto flex max-w-sm flex-col items-center p-12 text-center">
+        <CardContent className="mx-auto flex max-w-sm flex-col items-center p-6 text-center sm:p-8 lg:p-12">
           {Icon && (
             <div className="mb-5 flex h-20 w-20 items-center justify-center rounded-full border border-slate-200/60 bg-gradient-to-br from-slate-100 to-slate-50 text-slate-300">
               <Icon className="h-10 w-10" />

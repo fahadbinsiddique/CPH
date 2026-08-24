@@ -91,7 +91,7 @@ export default function ConsultantDashboard({ appointments = [] }) {
         <>
           <Button
             size="sm"
-            className="dash-cta h-8 px-4 text-xs"
+            className="dash-cta h-9 px-4 text-xs"
             disabled={processingId === appointment.id}
             onClick={() => updateStatus(appointment.id, 'confirmed')}
           >
@@ -100,7 +100,7 @@ export default function ConsultantDashboard({ appointments = [] }) {
           <Button
             size="sm"
             variant="outline"
-            className="h-8 border-rose-200 px-4 text-xs font-medium text-rose-600 hover:bg-rose-50"
+            className="h-9 border-rose-200 px-4 text-xs font-medium text-rose-600 hover:bg-rose-50"
             disabled={processingId === appointment.id}
             onClick={() => updateStatus(appointment.id, 'cancelled')}
           >
@@ -114,7 +114,7 @@ export default function ConsultantDashboard({ appointments = [] }) {
         <Button
           size="sm"
           variant="outline"
-          className="h-8 rounded-xl border-teal-200 text-xs font-medium text-teal-700 hover:bg-teal-50"
+          className="h-9 rounded-xl border-teal-200 text-xs font-medium text-teal-700 hover:bg-teal-50"
         >
           <Video className="mr-1.5 h-3 w-3" />
           Join Session

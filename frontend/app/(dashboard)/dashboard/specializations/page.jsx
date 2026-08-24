@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Plus, Pencil, Trash2, Tag } from 'lucide-react';
+import { Plus, Pencil, Trash2, Tag ,Search} from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -31,6 +31,8 @@ export default function SpecializationsPage() {
   const [deletingId, setDeletingId] = useState(null);
   const [confirmDelete, setConfirmDelete] = useState(null);
   const [error, setError] = useState('');
+  const [search, setSearch] = useState('');
+  
 
   const fetchData = () => {
     consultantService.adminGetSpecializations()
@@ -40,6 +42,10 @@ export default function SpecializationsPage() {
   };
 
   useEffect(() => { fetchData(); }, []);
+
+   const filtered = specializations.filter(
+    (u) =>
+      u.name?.toLowerCase().includes(search.toLowerCase()) );
 
   const openCreate = () => {
     setEditing(null);
@@ -113,47 +119,70 @@ export default function SpecializationsPage() {
         }
       />
 
+      {/* Search */}
+      <motion.div variants={itemVariants} className="relative">
+        <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+        <Input
+          placeholder="Search specializations..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="h-11 rounded-xl border-slate-200 bg-white/50 pl-10 shadow-sm focus-visible:border-teal-500 focus-visible:ring-teal-500/20"
+        />
+      </motion.div>
+
       {loading ? (
         <LoadingState label="Loading specializations..." />
       ) : specializations.length > 0 ? (
         <div className="space-y-3">
-          {specializations.map((spec) => (
+          {filtered.length > 0 ? filtered.map((spec) => (
             <motion.div key={spec.id} variants={itemVariants}>
               <Card className="group dash-card dash-card-hover relative overflow-hidden">
                 <div className="dash-accent" />
-                <CardContent className="flex items-center gap-3 p-4">
+                <CardContent className="flex flex-wrap items-center gap-3 p-4">
                   <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-teal-100 to-emerald-100 text-teal-600">
                     <Tag className="h-4 w-4" />
                   </div>
                   <div className="flex-1">
                     <p className="font-bold text-slate-800">{spec.name}</p>
                   </div>
-                  <Badge variant="secondary" className="rounded-full bg-slate-100 px-2.5 text-xs text-slate-600">
-                    {spec.blog_count ?? 0} used
+                  <Badge
+                    variant="secondary"
+                    className="rounded-full bg-slate-100 px-2.5 text-xs text-slate-600"
+                  >
+                    No. {spec.id ?? 0}
                   </Badge>
                   <div className="flex gap-1.5">
                     <Button
-                      size="sm" variant="ghost"
+                      size="sm"
+                      variant="ghost"
                       className="h-8 w-8 p-0 text-slate-400 hover:bg-teal-50 hover:text-teal-600"
                       onClick={() => openEdit(spec)}
                     >
                       <Pencil className="h-4 w-4" />
                     </Button>
                     <Button
-                      size="sm" variant="ghost"
+                      size="sm"
+                      variant="ghost"
                       className="h-8 w-8 p-0 text-slate-400 hover:bg-rose-50 hover:text-rose-500"
                       onClick={() => setConfirmDelete(spec)}
                     >
-                      {deletingId === spec.id
-                        ? <Trash2 className="h-4 w-4 animate-pulse text-rose-500" />
-                        : <Trash2 className="h-4 w-4" />
-                      }
+                      {deletingId === spec.id ? (
+                        <Trash2 className="h-4 w-4 animate-pulse text-rose-500" />
+                      ) : (
+                        <Trash2 className="h-4 w-4" />
+                      )}
                     </Button>
                   </div>
                 </CardContent>
               </Card>
             </motion.div>
-          ))}
+          )) : (
+            <EmptyState
+              icon={Tag}
+              title="No results found"
+              description={`No specializations match "${search}".`}
+            />
+          )}
         </div>
       ) : (
         <EmptyState
@@ -178,7 +207,7 @@ export default function SpecializationsPage() {
             <Input
               placeholder="e.g. Anxiety Disorders"
               value={name}
-              onChange={e => setName(e.target.value)}
+              onChange={(e) => setName(e.target.value)}
               className="h-11 rounded-xl border-slate-200 shadow-sm focus-visible:border-teal-500 focus-visible:ring-teal-500/20"
             />
             {error && (
@@ -186,7 +215,9 @@ export default function SpecializationsPage() {
             )}
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setModalOpen(false)}>Cancel</Button>
+            <Button variant="outline" onClick={() => setModalOpen(false)}>
+              Cancel
+            </Button>
             <Button className="dash-cta" onClick={handleSave} disabled={saving}>
               {saving ? 'Saving...' : 'Save'}
             </Button>
@@ -204,5 +235,5 @@ export default function SpecializationsPage() {
         loading={deletingId === confirmDelete?.id}
       />
     </motion.div>
-  );
+  )
 }

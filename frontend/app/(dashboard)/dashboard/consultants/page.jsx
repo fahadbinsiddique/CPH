@@ -439,13 +439,13 @@ export default function AdminConsultantsPage() {
       )}
 
       <Dialog open={modalOpen} onOpenChange={setModalOpen}>
-        <DialogContent className="cph-scroll max-h-[90vh] sm:max-w-3xl overflow-y-auto">
+        <DialogContent className="cph-scroll max-h-[85dvh] sm:max-h-[90vh] sm:max-w-3xl overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{editing ? 'Edit Consultant' : 'Add New Consultant'}</DialogTitle>
           </DialogHeader>
 
           <div className="space-y-4 py-2">
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <div className="space-y-1.5">
                 <Label className="text-sm font-medium text-slate-700">Full Name {!editing && '*'}</Label>
                 <Input
@@ -490,7 +490,7 @@ export default function AdminConsultantsPage() {
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <div className="space-y-1.5">
                 <Label className="text-sm font-medium text-slate-700">Experience (years)</Label>
                 <Input
@@ -511,7 +511,7 @@ export default function AdminConsultantsPage() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <div className="space-y-1.5">
                 <Label className="text-sm font-medium text-slate-700">Location</Label>
                 <Input
@@ -578,7 +578,7 @@ export default function AdminConsultantsPage() {
             </div>
 
             <div className="space-y-3 rounded-xl border border-slate-200 bg-slate-50/50 p-3.5">
-              <div className="flex items-center justify-between gap-3">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <Label className="flex items-center gap-2 text-sm font-medium text-slate-700">
                     <Clock className="h-4 w-4 text-teal-600" />
@@ -609,65 +609,71 @@ export default function AdminConsultantsPage() {
                   {availabilitySlots.map((slot, i) => (
                     <div
                       key={slot.key}
-                      className="grid grid-cols-12 items-center gap-2 rounded-xl border border-slate-200 bg-white p-2.5"
+                      className="rounded-xl border border-slate-200 bg-white p-2.5"
                     >
-                      <div className="col-span-3">
-                        <Select
-                          value={slot.day}
-                          onValueChange={v => updateSlot(slot.key, { day: v })}
-                        >
-                          <SelectTrigger className="h-9 rounded-lg border-slate-200 bg-white text-sm">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {DAYS.map(d => (
-                              <SelectItem
-                                key={d.value}
-                                value={d.value}
-                                disabled={usedAvailabilityDays.includes(d.value) && usedAvailabilityDays[i] !== d.value}
-                              >
-                                {d.label}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-
-                      <div className="col-span-2">
-                        <Select
-                          value={slot.start_time}
-                          onValueChange={v => updateSlot(slot.key, { start_time: v })}
-                        >
-                          <SelectTrigger className="h-9 rounded-lg border-slate-200 bg-white text-sm">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {TIME_OPTIONS.map(t => (
-                              <SelectItem key={t} value={t}>{t}</SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-
-                      <span className="col-span-1 text-center text-xs text-slate-400">to</span>
-
-                      <div className="col-span-2">
-                        <Select
-                          value={slot.end_time}
-                          onValueChange={v => updateSlot(slot.key, { end_time: v })}
-                        >
-                          <SelectTrigger className="h-9 rounded-lg border-slate-200 bg-white text-sm">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {TIME_OPTIONS.map(t => (
-                              <SelectItem key={t} value={t}>{t}</SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-
-                      <div className="col-span-3">
+                      {/* Mobile: stacked layout */}
+                      <div className="space-y-2 sm:hidden">
+                        <div className="flex items-center gap-2">
+                          <div className="min-w-0 flex-1">
+                            <Select
+                              value={slot.day}
+                              onValueChange={v => updateSlot(slot.key, { day: v })}
+                            >
+                              <SelectTrigger className="h-9 rounded-lg border-slate-200 bg-white text-sm">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {DAYS.map(d => (
+                                  <SelectItem
+                                    key={d.value}
+                                    value={d.value}
+                                    disabled={usedAvailabilityDays.includes(d.value) && usedAvailabilityDays[i] !== d.value}
+                                  >
+                                    {d.label}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon-sm"
+                            onClick={() => removeSlot(slot.key)}
+                            className="h-9 w-9 shrink-0 text-slate-400 hover:bg-rose-50 hover:text-rose-500"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                        <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-1.5">
+                          <Select
+                            value={slot.start_time}
+                            onValueChange={v => updateSlot(slot.key, { start_time: v })}
+                          >
+                            <SelectTrigger className="h-9 rounded-lg border-slate-200 bg-white text-sm">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {TIME_OPTIONS.map(t => (
+                                <SelectItem key={t} value={t}>{t}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <span className="text-xs text-slate-400">to</span>
+                          <Select
+                            value={slot.end_time}
+                            onValueChange={v => updateSlot(slot.key, { end_time: v })}
+                          >
+                            <SelectTrigger className="h-9 rounded-lg border-slate-200 bg-white text-sm">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {TIME_OPTIONS.map(t => (
+                                <SelectItem key={t} value={t}>{t}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
                         <Select
                           value={slot.session_type}
                           onValueChange={v => updateSlot(slot.key, { session_type: v })}
@@ -683,16 +689,91 @@ export default function AdminConsultantsPage() {
                         </Select>
                       </div>
 
-                      <div className="col-span-1 flex justify-end">
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="icon-sm"
-                          onClick={() => removeSlot(slot.key)}
-                          className="h-8 w-8 text-slate-400 hover:bg-rose-50 hover:text-rose-500"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                      {/* Desktop: horizontal layout */}
+                      <div className="hidden grid-cols-12 items-center gap-2 sm:grid">
+                        <div className="col-span-3">
+                          <Select
+                            value={slot.day}
+                            onValueChange={v => updateSlot(slot.key, { day: v })}
+                          >
+                            <SelectTrigger className="h-9 rounded-lg border-slate-200 bg-white text-sm">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {DAYS.map(d => (
+                                <SelectItem
+                                  key={d.value}
+                                  value={d.value}
+                                  disabled={usedAvailabilityDays.includes(d.value) && usedAvailabilityDays[i] !== d.value}
+                                >
+                                  {d.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        <div className="col-span-2">
+                          <Select
+                            value={slot.start_time}
+                            onValueChange={v => updateSlot(slot.key, { start_time: v })}
+                          >
+                            <SelectTrigger className="h-9 rounded-lg border-slate-200 bg-white text-sm">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {TIME_OPTIONS.map(t => (
+                                <SelectItem key={t} value={t}>{t}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        <span className="col-span-1 text-center text-xs text-slate-400">to</span>
+
+                        <div className="col-span-2">
+                          <Select
+                            value={slot.end_time}
+                            onValueChange={v => updateSlot(slot.key, { end_time: v })}
+                          >
+                            <SelectTrigger className="h-9 rounded-lg border-slate-200 bg-white text-sm">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {TIME_OPTIONS.map(t => (
+                                <SelectItem key={t} value={t}>{t}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        <div className="col-span-3">
+                          <Select
+                            value={slot.session_type}
+                            onValueChange={v => updateSlot(slot.key, { session_type: v })}
+                          >
+                            <SelectTrigger className="h-9 rounded-lg border-slate-200 bg-white text-sm">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {SESSION_TYPES.map(t => (
+                                <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        <div className="col-span-1 flex justify-end">
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon-sm"
+                            onClick={() => removeSlot(slot.key)}
+                            className="h-8 w-8 text-slate-400 hover:bg-rose-50 hover:text-rose-500"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
                       </div>
                     </div>
                   ))}

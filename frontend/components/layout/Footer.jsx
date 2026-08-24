@@ -302,7 +302,7 @@ const Footer = () => {
           <p className="text-stone-500">
             © {new Date().getFullYear()} Centre For Psychological Health. All rights reserved.
           </p>
-          <div className="flex items-center gap-6 text-xs">
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs">
             <Link href="/privacy" className="text-stone-500 hover:text-teal-300 transition-colors">
               Privacy Policy
             </Link>
