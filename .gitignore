@@ -45,7 +45,8 @@ htmlcov/
 .pyre/
 nosetests.xml
 coverage.xml
-
+skills-lock.json
+.agents
 # PyInstaller
 *.manifest
 *.spec
