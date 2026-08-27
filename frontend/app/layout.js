@@ -148,7 +148,7 @@ export default function RootLayout({ children, modal }) {
       <body className="min-h-full flex flex-col">
         {/* Analytics (only load when env IDs are configured) */}
         <GTM />
-        <MetaPixel />
+        {/* <MetaPixel /> */}
         <TawkTo />
         {/* Service Worker Auto Registration */}
         <ServiceWorkerRegister />
