@@ -40,7 +40,7 @@ export default function StepTime({ selectedDate, bookedSlots, selectedSlot, onSe
                   ? 'scale-105 border-teal-600 bg-gradient-to-r from-teal-600 to-emerald-600 text-white shadow-lg shadow-teal-600/25'
                   : isBooked
                     ? 'cursor-not-allowed border-slate-100 bg-slate-50 text-slate-300 line-through'
-                    : 'border-slate-200/70 bg-white text-slate-700 shadow-sm hover:border-teal-300 hover:bg-teal-50 hover:shadow-md'
+                    : 'cursor-pointer border-slate-200/70 bg-white text-slate-700 shadow-sm hover:border-teal-300 hover:bg-teal-50 hover:shadow-md'
               )}
             >
               {convertTo12Hour(slot)}

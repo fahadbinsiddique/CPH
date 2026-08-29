@@ -31,7 +31,7 @@ export default function ProductTourReturn() {
         router.push(TOUR_PATH);
       }}
       aria-label="Back to product tour"
-      className="fixed bottom-5 right-5 z-[70] inline-flex items-center gap-2 rounded-full border border-teal-300/60 bg-gradient-to-r from-teal-600 to-emerald-600 py-2.5 pl-3 pr-4 text-sm font-semibold text-white shadow-xl shadow-teal-900/20 transition-all duration-300 hover:shadow-2xl hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2"
+      className="fixed bottom-5 right-5 z-[70] inline-flex cursor-pointer items-center gap-2 rounded-full border border-teal-300/60 bg-gradient-to-r from-teal-600 to-emerald-600 py-2.5 pl-3 pr-4 text-sm font-semibold text-white shadow-xl shadow-teal-900/20 transition-all duration-300 hover:shadow-2xl hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2"
     >
       <ArrowLeft className="h-4 w-4" />
       Back to Product Tour

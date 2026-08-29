@@ -81,7 +81,7 @@ export default function ConnectionStatusBanner() {
               }
             }}
             disabled={syncing || isOnline()}
-            className="ml-1 flex items-center gap-1 rounded-full bg-teal-600 px-3 py-1 text-xs font-semibold hover:bg-teal-500 disabled:opacity-50"
+            className="ml-1 flex items-center gap-1 cursor-pointer rounded-full bg-teal-600 px-3 py-1 text-xs font-semibold hover:bg-teal-500 disabled:cursor-not-allowed disabled:opacity-50"
           >
             <RefreshCw className="h-3 w-3" />
             Sync now

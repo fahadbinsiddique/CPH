@@ -155,7 +155,7 @@ export default function AnalyticsPage() {
                 <button
                   key={d}
                   onClick={() => changeDays(d)}
-                  className={`rounded-lg px-3 py-2 text-xs font-semibold transition-all ${
+                  className={`rounded-lg cursor-pointer px-3 py-2 text-xs font-semibold transition-all ${
                     days === d
                       ? 'bg-gradient-to-r from-teal-600 to-emerald-600 text-white shadow-md shadow-teal-600/20'
                       : 'text-slate-500 hover:bg-slate-100'

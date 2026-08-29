@@ -20,7 +20,7 @@ const ToolbarButton = ({ active, disabled, onClick, label, children, className }
     onMouseDown={(e) => e.preventDefault()}
     onClick={onClick}
     className={cn(
-      'flex h-8 min-w-8 items-center justify-center rounded-lg px-1.5 text-slate-500 transition-colors',
+      'flex h-8 min-w-8 cursor-pointer items-center justify-center rounded-lg px-1.5 text-slate-500 transition-colors',
       'hover:bg-slate-100 hover:text-slate-800',
       active && 'bg-teal-100 text-teal-700',
       disabled && 'pointer-events-none opacity-40',
@@ -193,7 +193,7 @@ export default function EditorToolbar({ editor, onUploadImage }) {
             type="button"
             onClick={() => setMoreOpen(!moreOpen)}
             className={cn(
-              'flex h-8 items-center gap-0.5 rounded-lg px-2 text-xs font-medium text-slate-500 transition-colors',
+              'flex h-8 cursor-pointer items-center gap-0.5 rounded-lg px-2 text-xs font-medium text-slate-500 transition-colors',
               'hover:bg-slate-100 hover:text-slate-800',
               moreOpen && 'bg-slate-100 text-slate-800'
             )}
@@ -251,14 +251,14 @@ export default function EditorToolbar({ editor, onUploadImage }) {
           <button
             type="button"
             onClick={applyLink}
-            className="rounded-lg bg-teal-600 px-3 py-2 text-sm font-semibold text-white transition-colors hover:bg-teal-700"
+            className="cursor-pointer rounded-lg bg-teal-600 px-3 py-2 text-sm font-semibold text-white transition-colors hover:bg-teal-700"
           >
             Apply
           </button>
           <button
             type="button"
             onClick={() => setLinkOpen(false)}
-            className="rounded-lg border border-slate-200 px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50"
+            className="cursor-pointer rounded-lg border border-slate-200 px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50"
           >
             Cancel
           </button>

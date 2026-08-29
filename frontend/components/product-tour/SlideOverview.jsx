@@ -17,7 +17,7 @@ function SlideThumb({ slide, active, onClick }) {
       onClick={onClick}
       aria-label={`Jump to slide ${slide.index}: ${slide.title}`}
       className={cn(
-        'group flex flex-col items-start gap-2.5 rounded-2xl border bg-white p-3 text-left transition-all duration-200 hover:-translate-y-0.5 hover:border-teal-300 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500',
+        'group flex flex-col items-start gap-2.5 rounded-2xl border bg-white p-3 text-left transition-all duration-200 cursor-pointer hover:-translate-y-0.5 hover:border-teal-300 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500',
         active ? 'border-teal-400 ring-1 ring-teal-300' : 'border-slate-200/70'
       )}
     >
@@ -68,7 +68,7 @@ export default function SlideOverview({ open, onClose, slides, current, onSelect
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
-          className="absolute inset-0 z-30 bg-stone-900/40 backdrop-blur-sm"
+          className="absolute inset-0 z-30 cursor-pointer bg-stone-900/40 backdrop-blur-sm"
           onClick={onClose}
         >
           <motion.div
@@ -101,7 +101,7 @@ export default function SlideOverview({ open, onClose, slides, current, onSelect
                   type="button"
                   onClick={onClose}
                   aria-label="Close overview"
-                  className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500"
+                  className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl border border-slate-200 text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500"
                 >
                   <X className="h-4 w-4" />
                 </button>

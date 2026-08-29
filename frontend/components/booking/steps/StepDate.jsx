@@ -30,7 +30,7 @@ export default function StepDate({ currentMonth, onMonthChange, selectedDate, on
             aria-label="Previous month"
             disabled={!canGoPrev}
             onClick={() => onMonthChange(-1)}
-            className="flex h-7 w-7 items-center justify-center rounded-lg text-slate-600 transition-all hover:bg-white disabled:cursor-not-allowed disabled:opacity-40"
+            className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg text-slate-600 transition-all hover:bg-white disabled:cursor-not-allowed disabled:opacity-40"
           >
             <ChevronLeft className="h-4 w-4" />
           </button>
@@ -41,7 +41,7 @@ export default function StepDate({ currentMonth, onMonthChange, selectedDate, on
             type="button"
             aria-label="Next month"
             onClick={() => onMonthChange(1)}
-            className="flex h-7 w-7 items-center justify-center rounded-lg text-slate-600 transition-all hover:bg-white"
+            className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg text-slate-600 transition-all hover:bg-white"
           >
             <ChevronRight className="h-4 w-4" />
           </button>
@@ -81,7 +81,7 @@ export default function StepDate({ currentMonth, onMonthChange, selectedDate, on
                   ? 'scale-105 border-teal-600 bg-gradient-to-r from-teal-600 to-emerald-600 text-white shadow-lg shadow-teal-600/25'
                   : disabled
                     ? 'cursor-not-allowed border-transparent bg-slate-50/60 text-slate-300'
-                    : 'border-slate-200/70 bg-white text-slate-700 shadow-sm hover:border-teal-300 hover:bg-teal-50 hover:shadow-md'
+                    : 'cursor-pointer border-slate-200/70 bg-white text-slate-700 shadow-sm hover:border-teal-300 hover:bg-teal-50 hover:shadow-md'
               )}
             >
               {day}

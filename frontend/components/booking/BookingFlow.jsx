@@ -155,7 +155,7 @@ export default function BookingFlow({ consultant, onClose, onSubmittingChange })
               type="button"
               aria-label="Go back"
               onClick={() => router.back()}
-              className="shrink-0 rounded-xl border border-slate-200/80 bg-white p-2 text-slate-500 shadow-sm transition-colors hover:bg-slate-50 hover:text-slate-800"
+              className="shrink-0 cursor-pointer rounded-xl border border-slate-200/80 bg-white p-2 text-slate-500 shadow-sm transition-colors hover:bg-slate-50 hover:text-slate-800"
             >
               <ChevronLeft className="h-4 w-4" />
             </button>
@@ -180,7 +180,7 @@ export default function BookingFlow({ consultant, onClose, onSubmittingChange })
               type="button"
               aria-label="Close booking"
               onClick={onClose}
-              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-slate-400 transition-all hover:bg-slate-100 hover:text-slate-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500/40"
+              className="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-full text-slate-400 transition-all hover:bg-slate-100 hover:text-slate-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500/40"
             >
               <X className="h-4 w-4" />
             </button>

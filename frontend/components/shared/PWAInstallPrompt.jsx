@@ -136,7 +136,7 @@ export default function PWAInstallPrompt() {
 
             <button
               onClick={handleDismiss}
-              className="text-slate-300 hover:text-slate-500 flex-shrink-0 mt-0.5"
+              className="text-slate-300 hover:text-slate-500 flex-shrink-0 mt-0.5 cursor-pointer"
               aria-label="Dismiss"
             >
               <X className="w-4 h-4" />

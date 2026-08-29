@@ -464,7 +464,7 @@ export default function JoinTherapistForm({ mode = 'modal' }) {
                                 type="button"
                                 onClick={() => setShowPassword((prev) => !prev)}
                                 aria-label={showPassword ? 'Hide password' : 'Show password'}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 rounded-md p-1 text-slate-400 transition hover:text-slate-600"
+                                className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer rounded-md p-1 text-slate-400 transition hover:text-slate-600"
                               >
                                 {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                               </button>
@@ -656,7 +656,7 @@ export default function JoinTherapistForm({ mode = 'modal' }) {
                                     setSpecError('')
                                     setSpecRetry((n) => n + 1)
                                   }}
-                                  className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 transition-colors hover:border-teal-300 hover:bg-teal-50 hover:text-teal-700"
+                                  className="cursor-pointer rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 transition-colors hover:border-teal-300 hover:bg-teal-50 hover:text-teal-700"
                                 >
                                   Retry
                                 </button>

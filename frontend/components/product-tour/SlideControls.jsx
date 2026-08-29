@@ -11,7 +11,7 @@ function ControlButton({ label, hint, active, onClick, children }) {
       aria-label={label}
       title={hint || label}
       className={cn(
-        'inline-flex h-9 items-center gap-1.5 rounded-xl border border-slate-200/70 bg-white/80 px-3 text-xs font-semibold text-slate-600 shadow-sm transition-all duration-200 hover:border-teal-300 hover:bg-teal-50 hover:text-teal-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-1',
+        'inline-flex h-9 cursor-pointer items-center gap-1.5 rounded-xl border border-slate-200/70 bg-white/80 px-3 text-xs font-semibold text-slate-600 shadow-sm transition-all duration-200 hover:border-teal-300 hover:bg-teal-50 hover:text-teal-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-1',
         active && 'border-teal-300 bg-teal-50 text-teal-700'
       )}
     >

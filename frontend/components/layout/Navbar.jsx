@@ -176,7 +176,7 @@ const Navbar = () => {
                   whileHover={{ scale: 1.03 }}
                   whileTap={{ scale: 0.97 }}
                   onClick={handleDashboard}
-                  className="flex items-center gap-2 px-4 py-2.5 rounded-full border-2 border-stone-200 text-stone-700 hover:border-teal-300 hover:bg-teal-50 transition-all font-semibold text-sm"
+                  className="flex cursor-pointer items-center gap-2 px-4 py-2.5 rounded-full border-2 border-stone-200 text-stone-700 hover:border-teal-300 hover:bg-teal-50 transition-all font-semibold text-sm"
                 >
                   <LayoutDashboard size={16} />
                   Dashboard
@@ -187,7 +187,7 @@ const Navbar = () => {
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    className="flex items-center gap-2 px-2 py-1 rounded-full bg-gradient-to-r from-teal-50 to-emerald-50 border-2 border-teal-200 hover:border-teal-400 transition-all"
+                    className="flex cursor-pointer items-center gap-2 px-2 py-1 rounded-full bg-gradient-to-r from-teal-50 to-emerald-50 border-2 border-teal-200 hover:border-teal-400 transition-all"
                   >
                     <div className="w-8 h-8 rounded-full bg-gradient-to-br from-teal-600 to-emerald-600 text-white flex items-center justify-center text-sm font-bold">
                       {getInitials(user?.full_name)}
@@ -210,21 +210,21 @@ const Navbar = () => {
                     <div className="p-2 space-y-1">
                       <button
                         onClick={handleDashboard}
-                        className="flex items-center gap-3 w-full px-3 py-2 text-sm text-stone-700 hover:bg-stone-50 rounded-xl transition-all"
+                        className="flex cursor-pointer items-center gap-3 w-full px-3 py-2 text-sm text-stone-700 hover:bg-stone-50 rounded-xl transition-all"
                       >
                         <LayoutDashboard size={16} className="text-stone-400" />
                         Dashboard
                       </button>
                       <button
                         onClick={() => router.push('/dashboard/profile')}
-                        className="flex items-center gap-3 w-full px-3 py-2 text-sm text-stone-700 hover:bg-stone-50 rounded-xl transition-all"
+                        className="flex cursor-pointer items-center gap-3 w-full px-3 py-2 text-sm text-stone-700 hover:bg-stone-50 rounded-xl transition-all"
                       >
                         <Settings size={16} className="text-stone-400" />
                         Profile Settings
                       </button>
                       <button
                         onClick={() => router.push('/dashboard/bookings')}
-                        className="flex items-center gap-3 w-full px-3 py-2 text-sm text-stone-700 hover:bg-stone-50 rounded-xl transition-all"
+                        className="flex cursor-pointer items-center gap-3 w-full px-3 py-2 text-sm text-stone-700 hover:bg-stone-50 rounded-xl transition-all"
                       >
                         <Calendar size={16} className="text-stone-400" />
                         My Appointments
@@ -232,7 +232,7 @@ const Navbar = () => {
                       <hr className="my-1 border-stone-100" />
                       <button
                         onClick={handleLogout}
-                        className="flex items-center gap-3 w-full px-3 py-2 text-sm text-rose-600 hover:bg-rose-50 rounded-xl transition-all"
+                        className="flex cursor-pointer items-center gap-3 w-full px-3 py-2 text-sm text-rose-600 hover:bg-rose-50 rounded-xl transition-all"
                       >
                         <LogOut size={16} />
                         Sign Out
@@ -247,7 +247,7 @@ const Navbar = () => {
                   whileHover={{ scale: 1.03 }}
                   whileTap={{ scale: 0.97 }}
                   onClick={() => handleAuth('signin')}
-                  className="flex items-center gap-2 px-5 py-2.5 rounded-full border-2 border-teal-600 text-teal-700 hover:bg-teal-50 transition-all font-semibold text-sm shadow-sm"
+                  className="flex cursor-pointer items-center gap-2 px-5 py-2.5 rounded-full border-2 border-teal-600 text-teal-700 hover:bg-teal-50 transition-all font-semibold text-sm shadow-sm"
                 >
                   <LogIn size={16} />
                   Login
@@ -257,7 +257,7 @@ const Navbar = () => {
                   whileHover={{ scale: 1.03, y: -1 }}
                   whileTap={{ scale: 0.97 }}
                   onClick={() => handleAuth('signup')}
-                  className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-teal-600 to-emerald-600 text-white font-bold text-sm shadow-md shadow-teal-600/20 hover:shadow-lg hover:shadow-teal-600/30 transition-all"
+                  className="flex cursor-pointer items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-teal-600 to-emerald-600 text-white font-bold text-sm shadow-md shadow-teal-600/20 hover:shadow-lg hover:shadow-teal-600/30 transition-all"
                 >
                   <UserPlus size={16} />
                   Sign Up
@@ -268,7 +268,7 @@ const Navbar = () => {
 
           {/* Mobile Menu Toggle */}
           <button
-            className="lg:hidden text-stone-700 focus:outline-none p-2 hover:bg-stone-50 rounded-xl transition-all focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2"
+            className="lg:hidden cursor-pointer text-stone-700 focus:outline-none p-2 hover:bg-stone-50 rounded-xl transition-all focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label="Toggle menu"
             aria-expanded={mobileMenuOpen}
@@ -326,14 +326,14 @@ const Navbar = () => {
                     <>
                       <button
                         onClick={handleDashboard}
-                        className="flex items-center justify-center gap-2 w-full bg-gradient-to-r from-teal-600 to-emerald-600 text-white py-3.5 rounded-xl hover:shadow-lg transition-all font-bold text-base"
+                        className="flex cursor-pointer items-center justify-center gap-2 w-full bg-gradient-to-r from-teal-600 to-emerald-600 text-white py-3.5 rounded-xl hover:shadow-lg transition-all font-bold text-base"
                       >
                         <LayoutDashboard size={18} />
                         Dashboard
                       </button>
                       <button
                         onClick={handleLogout}
-                        className="flex items-center justify-center gap-2 w-full border-2 border-rose-600 text-rose-600 py-3.5 rounded-xl hover:bg-rose-50 transition-all font-semibold text-base"
+                        className="flex cursor-pointer items-center justify-center gap-2 w-full border-2 border-rose-600 text-rose-600 py-3.5 rounded-xl hover:bg-rose-50 transition-all font-semibold text-base"
                       >
                         <LogOut size={18} />
                         Sign Out
@@ -343,14 +343,14 @@ const Navbar = () => {
                     <>
                       <button
                         onClick={() => handleAuth('signin')}
-                        className="flex items-center justify-center gap-2 w-full border-2 border-teal-600 text-teal-700 py-3.5 rounded-xl hover:bg-teal-50 transition-all font-semibold text-base"
+                        className="flex cursor-pointer items-center justify-center gap-2 w-full border-2 border-teal-600 text-teal-700 py-3.5 rounded-xl hover:bg-teal-50 transition-all font-semibold text-base"
                       >
                         <LogIn size={18} />
                         Login
                       </button>
                       <button
                         onClick={() => handleAuth('signup')}
-                        className="flex items-center justify-center gap-2 w-full bg-gradient-to-r from-teal-600 to-emerald-600 text-white py-3.5 rounded-xl hover:shadow-lg transition-all font-bold text-base"
+                        className="flex cursor-pointer items-center justify-center gap-2 w-full bg-gradient-to-r from-teal-600 to-emerald-600 text-white py-3.5 rounded-xl hover:shadow-lg transition-all font-bold text-base"
                       >
                         <UserPlus size={18} />
                         Sign Up

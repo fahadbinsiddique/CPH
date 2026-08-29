@@ -30,7 +30,7 @@ export default function StepDetails({ sessionType, onSessionTypeChange, message,
                 type="button"
                 onClick={() => onSessionTypeChange(value)}
                 className={cn(
-                  'relative overflow-hidden rounded-2xl border-2 p-4 text-left transition-all duration-300',
+                  'relative cursor-pointer overflow-hidden rounded-2xl border-2 p-4 text-left transition-all duration-300',
                   active
                     ? 'border-teal-500 bg-gradient-to-br from-teal-50/80 to-emerald-50/40 shadow-lg shadow-teal-500/10'
                     : 'border-slate-200 bg-white hover:border-teal-200 hover:bg-slate-50/50'

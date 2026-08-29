@@ -95,14 +95,14 @@ export default function ImageUploader({
               <button
                 type="button"
                 onClick={() => inputRef.current?.click()}
-                className="inline-flex items-center gap-1.5 rounded-lg bg-white/90 px-3 py-2 text-xs font-semibold text-slate-700 shadow-sm backdrop-blur-sm transition-colors hover:bg-white"
+                className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-white/90 px-3 py-2 text-xs font-semibold text-slate-700 shadow-sm backdrop-blur-sm transition-colors hover:bg-white"
               >
                 <ImagePlus className="h-3.5 w-3.5" /> Replace
               </button>
               <button
                 type="button"
                 onClick={handleRemove}
-                className="inline-flex items-center gap-1.5 rounded-lg bg-rose-500/90 px-3 py-2 text-xs font-semibold text-white shadow-sm backdrop-blur-sm transition-colors hover:bg-rose-600"
+                className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-rose-500/90 px-3 py-2 text-xs font-semibold text-white shadow-sm backdrop-blur-sm transition-colors hover:bg-rose-600"
               >
                 <X className="h-3.5 w-3.5" /> Remove
               </button>

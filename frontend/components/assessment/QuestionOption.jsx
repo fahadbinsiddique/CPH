@@ -21,7 +21,7 @@ const QuestionOption = forwardRef(function QuestionOption(
       tabIndex={tabIndex}
       onClick={() => onSelect()}
       className={cn(
-        'group flex w-full items-start gap-3.5 rounded-2xl border-2 p-4 text-left transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2 sm:p-5',
+        'group flex w-full cursor-pointer items-start gap-3.5 rounded-2xl border-2 p-4 text-left transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2 sm:p-5',
         selected
           ? 'border-teal-600 bg-teal-50/70 ring-1 ring-teal-600/20'
           : 'border-stone-200 bg-white hover:border-teal-300 hover:bg-stone-50/60'

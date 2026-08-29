@@ -139,7 +139,7 @@ export default function ConsultantProfileModal({ slug }) {
                 <button
                   type="button"
                   aria-label="Close profile"
-                  className="absolute right-4 top-4 z-20 flex h-8 w-8 items-center justify-center rounded-full text-slate-400 transition-all hover:bg-slate-100 hover:text-slate-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500/40 sm:right-6 sm:top-5"
+                  className="absolute right-4 top-4 z-20 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full text-slate-400 transition-all hover:bg-slate-100 hover:text-slate-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500/40 sm:right-6 sm:top-5"
                 >
                   <X className="h-4 w-4" />
                 </button>
@@ -259,7 +259,7 @@ export default function ConsultantProfileModal({ slug }) {
                       <button
                         key={tab.id}
                         onClick={() => setActiveTab(tab.id)}
-                        className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg px-3 py-2 text-xs font-medium transition-all sm:text-sm ${
+                        className={`flex flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-lg px-3 py-2 text-xs font-medium transition-all sm:text-sm ${
                           isActive
                             ? 'bg-teal-600 text-white shadow-sm shadow-teal-600/20'
                             : 'text-slate-500 hover:bg-white hover:text-slate-700'

@@ -74,7 +74,7 @@ const TopHeader = () => {
             {/* Mobile Info Toggle Button */}
             <button
               onClick={() => setShowDetails(!showDetails)}
-              className="md:hidden flex items-center gap-1 text-xs bg-white/10 px-2.5 py-2 rounded-md text-teal-200 hover:bg-white/20 transition-colors"
+              className="md:hidden flex cursor-pointer items-center gap-1 text-xs bg-white/10 px-2.5 py-2 rounded-md text-teal-200 hover:bg-white/20 transition-colors"
               aria-expanded={showDetails}
             >
               <span>Info</span>
@@ -106,7 +106,7 @@ const TopHeader = () => {
             <button
               type="button"
               onClick={handleJoinAsTherapist}
-              className="flex items-center gap-1.5 bg-emerald-600/60 hover:bg-emerald-600/80 px-2.5 py-2 rounded-full transition-colors border border-emerald-400/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-teal-900"
+              className="flex cursor-pointer items-center gap-1.5 bg-emerald-600/60 hover:bg-emerald-600/80 px-2.5 py-2 rounded-full transition-colors border border-emerald-400/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-teal-900"
             >
               <UserPlus size={12} className="text-emerald-200" />
               <span className="text-[11px] sm:text-xs text-white font-medium whitespace-nowrap">

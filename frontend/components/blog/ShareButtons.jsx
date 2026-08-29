@@ -51,7 +51,7 @@ export default function ShareButtons({ title }) {
         type="button"
         onClick={copyLink}
         aria-label="Copy article link"
-        className="flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 transition-all hover:border-teal-300 hover:bg-teal-50 hover:text-teal-600"
+        className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 transition-all hover:border-teal-300 hover:bg-teal-50 hover:text-teal-600"
       >
         {copied ? <Check className="h-4 w-4 text-teal-600" /> : <Link2 className="h-4 w-4" />}
       </button>

@@ -327,7 +327,7 @@ const Footer = () => {
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          className="absolute bottom-8 right-8 p-3 rounded-full bg-teal-600/20 backdrop-blur-sm border border-teal-500/20 text-teal-400 hover:bg-teal-600/30 transition-all hover:border-teal-500/40 hidden sm:block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:ring-offset-2 focus-visible:ring-offset-stone-900"
+          className="absolute bottom-8 right-8 cursor-pointer p-3 rounded-full bg-teal-600/20 backdrop-blur-sm border border-teal-500/20 text-teal-400 hover:bg-teal-600/30 transition-all hover:border-teal-500/40 hidden sm:block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:ring-offset-2 focus-visible:ring-offset-stone-900"
           aria-label="Back to top"
         >
           <ArrowUp className="w-4 h-4" />
