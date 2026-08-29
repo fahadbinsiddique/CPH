@@ -77,6 +77,8 @@ next-env.d.ts
 backend/.env
 frontend/.env.local
 frontend/.env*.local
+AGENTS.md
+.opencode
 PROJECT_SUMMARY.md
 .dockerignore
 # ---------------------------------------------------------------------------
