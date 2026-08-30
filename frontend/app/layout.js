@@ -1,7 +1,5 @@
 import { Geist, Geist_Mono, Plus_Jakarta_Sans } from 'next/font/google'
 import './globals.css'
-import Navbar from '@/components/layout/Navbar'
-import Footer from '@/components/layout/Footer'
 import MotionProvider from '@/components/layout/MotionProvider'
 import { Toaster } from 'sonner'
 import GoogleOneTap from '@/components/auth/GoogleOneTap'
@@ -155,7 +153,6 @@ export default function RootLayout({ children, modal }) {
         <ConnectionStatusBanner />
         <JsonLd data={ORGANIZATION_SCHEMA} />
         <JsonLd data={WEBSITE_SCHEMA} />
-        <Navbar />
         <MotionProvider>
           <GoogleOneTap />
           {children}
@@ -165,7 +162,6 @@ export default function RootLayout({ children, modal }) {
         {/* <PWAInstallPrompt /> */}
         <Toaster position="top-center" richColors closeButton />
         <ProductTourReturn />
-        <Footer />
       </body>
     </html>
   )
