@@ -86,7 +86,7 @@ const Footer = () => {
   const trustBadges = [
     { icon: ShieldCheck, label: '100% Confidential' },
     { icon: Award, label: 'Licensed Experts' },
-    { icon: Clock, label: '24/7 Support' },
+    // { icon: Clock, label: '24/7 Support' },
   ]
 
   return (
@@ -110,13 +110,13 @@ const Footer = () => {
       <div className="relative h-1 bg-gradient-to-r from-transparent via-teal-500/50 to-transparent" />
 
       <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8 py-16">
-        <div className="grid lg:grid-cols-12 gap-10">
+        <div className="grid lg:grid-cols-12 sm:gap-10 gap-2">
           {/* Brand Column - 4 columns */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="lg:col-span-4"
+            className="lg:col-span-4 col-span-3"
           >
             <Link href="/" className="inline-block">
               <Image
@@ -133,7 +133,7 @@ const Footer = () => {
             </p>
 
             {/* Trust Badges */}
-            <div className="flex flex-wrap gap-3 mt-5">
+            <div className="flex flex-wrap sm:gap-3 gap-2 mt-5">
               {trustBadges.map((badge, idx) => {
                 const Icon = badge.icon
                 return (
@@ -189,7 +189,7 @@ const Footer = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.1 }}
-            className="lg:col-span-2"
+            className="lg:col-span-2 col-span-1"
           >
             <h3 className="text-white font-semibold mb-4 text-lg">Quick Links</h3>
             <ul className="space-y-2.5">
@@ -291,10 +291,8 @@ const Footer = () => {
 
         {/* Divider with gradient */}
         <div className="relative my-10">
-          <div className="border-t border-stone-800" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-stone-900 px-4">
-            <Heart className="w-3 h-3 text-teal-500" />
-          </div>
+          <div className="border-t border-stone-700" />
+          
         </div>
 
         {/* Bottom Section */}
@@ -315,7 +313,7 @@ const Footer = () => {
               Cookie Policy
             </Link>
             <span className="text-stone-700">|</span>
-            <span className="flex items-center gap-1 text-stone-600">
+            <span className="sm:flex hidden sm:block items-center gap-1 text-stone-600">
               <ShieldCheck className="w-3 h-3 text-teal-500" />
               Secure
             </span>
@@ -327,7 +325,7 @@ const Footer = () => {
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          className="absolute bottom-8 right-8 cursor-pointer p-3 rounded-full bg-teal-600/20 backdrop-blur-sm border border-teal-500/20 text-teal-400 hover:bg-teal-600/30 transition-all hover:border-teal-500/40 hidden sm:block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:ring-offset-2 focus-visible:ring-offset-stone-900"
+          className="absolute  sm:bottom-32 bottom-40 left-8 cursor-pointer p-3 rounded-full bg-teal-600/20 backdrop-blur-sm border border-teal-500/20 text-teal-400 hover:bg-teal-600/30 transition-all hover:border-teal-500/40  sm:block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:ring-offset-2 focus-visible:ring-offset-stone-900"
           aria-label="Back to top"
         >
           <ArrowUp className="w-4 h-4" />

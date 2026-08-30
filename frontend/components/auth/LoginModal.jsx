@@ -58,7 +58,7 @@ export default function LoginModal({ isOpen, setIsOpen, onRedirect }) {
 
     if (result?.success) {
       toast.success("Login successfully!",
-            { description: "successfully Login with your secure credentials.",position: "top-right"}
+            { description: "successfully Login with your secure credentials.",position: "top-center"}
 
         );
       closeLoginModal();
