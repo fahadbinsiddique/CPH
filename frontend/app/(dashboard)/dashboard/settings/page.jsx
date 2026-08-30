@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Loader2, Lock, Bell, BellOff, Shield, Eye, EyeOff, CheckCircle, AlertCircle, Settings } from 'lucide-react';
+import { Loader2, Lock, Bell, BellOff, Shield, Eye, EyeOff, CheckCircle, AlertCircle, Settings, Check, X } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,6 +11,7 @@ import PageHeader from '@/components/dashboard/ui/PageHeader';
 import api from '@/lib/api';
 import { containerVariants, itemVariants } from '@/lib/motion';
 import { usePushNotifications } from '@/hooks/usePushNotifications';
+import { PASSWORD_RULES, isPasswordValid } from '@/lib/passwordValidation';
 
 function Toggle({ checked, onChange }) {
   return (
@@ -110,8 +111,8 @@ export default function SettingsPage() {
 
   const handlePasswordChange = async () => {
     setError('');
-    if (passwords.new_password.length < 8) {
-      setError('Password must be at least 8 characters.');
+    if (!isPasswordValid(passwords.new_password)) {
+      setError('Password must meet all requirements: 8+ chars, letter, number, and special character.');
       return;
     }
     if (passwords.new_password !== passwords.confirm_password) {
@@ -190,6 +191,25 @@ export default function SettingsPage() {
                       {show ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>
                   </div>
+                  {name === 'new_password' && passwords.new_password.length > 0 && (
+                    <div className="mt-2 space-y-1">
+                      {Object.entries(PASSWORD_RULES).map(([key, rule]) => {
+                        const passed = rule.test(passwords.new_password);
+                        return (
+                          <div key={key} className="flex items-center gap-1.5 text-xs">
+                            {passed ? (
+                              <Check className="h-3 w-3 text-emerald-500" />
+                            ) : (
+                              <X className="h-3 w-3 text-slate-300" />
+                            )}
+                            <span className={passed ? 'text-emerald-600' : 'text-slate-400'}>
+                              {rule.label}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
               ))}
             </div>

@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { Eye, EyeOff, Brain, Loader2, User, Mail, Lock } from 'lucide-react';
+import { Eye, EyeOff, Brain, Loader2, User, Mail, Lock, Check, X } from 'lucide-react';
 import { toast } from "sonner"
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -19,6 +19,7 @@ import {
 
 import useAuthStore from '@/store/authStore';
 import Image from 'next/image';
+import { PASSWORD_RULES, isPasswordValid } from '@/lib/passwordValidation';
 
 export default function RegisterModal({ isOpen, setIsOpen, onSuccessRedirect }) {
   const router = useRouter();
@@ -51,8 +52,8 @@ export default function RegisterModal({ isOpen, setIsOpen, onSuccessRedirect }) 
       return;
     }
 
-    if (formData.password.length < 8) {
-      setFormError('Password must be at least 8 characters long.');
+    if (!isPasswordValid(formData.password)) {
+      setFormError('Password must meet all requirements: 8+ chars, letter, number, and special character.');
       return;
     }
 
@@ -195,6 +196,25 @@ export default function RegisterModal({ isOpen, setIsOpen, onSuccessRedirect }) 
                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
                 </div>
+                {formData.password.length > 0 && (
+                  <div className="mt-2 space-y-1">
+                    {Object.entries(PASSWORD_RULES).map(([key, rule]) => {
+                      const passed = rule.test(formData.password);
+                      return (
+                        <div key={key} className="flex items-center gap-1.5 text-xs">
+                          {passed ? (
+                            <Check className="h-3 w-3 text-emerald-500" />
+                          ) : (
+                            <X className="h-3 w-3 text-slate-300" />
+                          )}
+                          <span className={passed ? 'text-emerald-600' : 'text-slate-400'}>
+                            {rule.label}
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
 
               {/* Confirm Password Field */}

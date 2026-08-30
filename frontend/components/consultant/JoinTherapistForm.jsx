@@ -21,6 +21,7 @@ import {
   Phone,
   Sparkles,
   User,
+  X,
 } from 'lucide-react'
 
 import {
@@ -34,6 +35,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { consultantService } from '@/services/consultantService'
+import { PASSWORD_RULES, isPasswordValid } from '@/lib/passwordValidation'
 
 const STEP1_FIELDS = ['full_name', 'email', 'phone_number', 'password', 'confirm_password']
 
@@ -52,8 +54,11 @@ const formSchema = z
       )
       .optional()
       .or(z.literal('')),
-    password: z.string().min(6, { message: 'Password must be at least 6 characters.' }),
-    confirm_password: z.string().min(6, { message: 'Please confirm your password.' }),
+    password: z.string().min(8, { message: 'Password must be at least 8 characters.' })
+      .regex(/[A-Za-z]/, { message: 'Password must contain at least one letter.' })
+      .regex(/\d/, { message: 'Password must contain at least one number.' })
+      .regex(/[@$!%*#?&^~\-_=+\[\]{}|;:'",.<>\/\\`]/, { message: 'Password must contain at least one special character.' }),
+    confirm_password: z.string().min(8, { message: 'Please confirm your password.' }),
 
     // Step 2 — consultant profile
     bio: z.string().min(10, { message: 'Bio must be at least 10 characters.' }),
@@ -454,7 +459,7 @@ export default function JoinTherapistForm({ mode = 'modal' }) {
                               </div>
                               <Input
                                 type={showPassword ? 'text' : 'password'}
-                                placeholder="At least 6 characters"
+                                placeholder="At least 8 characters"
                                 autoComplete="new-password"
                                 aria-label="Password"
                                 className={inputClass + ' pr-12'}
@@ -470,6 +475,25 @@ export default function JoinTherapistForm({ mode = 'modal' }) {
                               </button>
                             </div>
                           </FormControl>
+                          {field.value && field.value.length > 0 && (
+                            <div className="mt-2 space-y-1">
+                              {Object.entries(PASSWORD_RULES).map(([key, rule]) => {
+                                const passed = rule.test(field.value);
+                                return (
+                                  <div key={key} className="flex items-center gap-1.5 text-xs">
+                                    {passed ? (
+                                      <Check className="h-3 w-3 text-emerald-500" />
+                                    ) : (
+                                      <X className="h-3 w-3 text-slate-300" />
+                                    )}
+                                    <span className={passed ? 'text-emerald-600' : 'text-slate-400'}>
+                                      {rule.label}
+                                    </span>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          )}
                           <FormMessage />
                         </FormItem>
                       )}

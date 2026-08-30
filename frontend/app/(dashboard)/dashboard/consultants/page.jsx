@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import {
   Search, Loader2, CheckCircle2, XCircle, Shield,
-  Plus, Pencil, Trash2, Users, Check, Clock, UploadCloud
+  Plus, Pencil, Trash2, Users, Check, X, Clock, UploadCloud
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -28,6 +28,7 @@ import EmptyState from '@/components/dashboard/ui/EmptyState';
 import ConfirmDialog from '@/components/dashboard/ui/ConfirmDialog';
 import { consultantService } from '@/services/consultantService';
 import { containerVariants, itemVariants } from '@/lib/motion';
+import { PASSWORD_RULES, isPasswordValid } from '@/lib/passwordValidation';
 import Image from 'next/image';
 import UserAvatar from '@/components/ui/user-avatar';
 
@@ -200,6 +201,11 @@ export default function AdminConsultantsPage() {
   const handleSave = async () => {
     if (!editing && (!form.full_name || !form.email || !form.password)) {
       setError('Name, email and password are required for new consultants.');
+      return;
+    }
+
+    if (!editing && !isPasswordValid(form.password)) {
+      setError('Password must meet all requirements: 8+ chars, letter, number, and special character.');
       return;
     }
 
@@ -475,8 +481,27 @@ export default function AdminConsultantsPage() {
                   value={form.password}
                   onChange={e => setForm(p => ({ ...p, password: e.target.value }))}
                   className={inputCls}
-                  placeholder="Minimum 8 characters"
+                  placeholder="Minimum 8 characters-eg. Cph@2026"
                 />
+                {form.password.length > 0 && (
+                  <div className="mt-2 space-y-1">
+                    {Object.entries(PASSWORD_RULES).map(([key, rule]) => {
+                      const passed = rule.test(form.password);
+                      return (
+                        <div key={key} className="flex items-center gap-1.5 text-xs">
+                          {passed ? (
+                            <Check className="h-3 w-3 text-emerald-500" />
+                          ) : (
+                            <X className="h-3 w-3 text-slate-300" />
+                          )}
+                          <span className={passed ? 'text-emerald-600' : 'text-slate-400'}>
+                            {rule.label}
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             )}
 

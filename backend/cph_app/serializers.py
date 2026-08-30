@@ -11,7 +11,7 @@ User = get_user_model()
 # Register serializer.
   
 class RegisterSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True, )
+    password = serializers.CharField(write_only=True, min_length=8)
     confirm_password = serializers.CharField(write_only=True)
 
     class Meta:
@@ -36,6 +36,8 @@ class RegisterSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 {"confirm_password": "Passwords do not match"}
             )
+
+        validate_password(password)
 
         return data
 

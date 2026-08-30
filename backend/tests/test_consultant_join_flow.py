@@ -33,7 +33,7 @@ def test_public_consultant_create_returns_201(api_client):
 
     resp = api_client.post('/api/consultants/create/', {
         'email': 'therapist@example.com',
-        'password': 'secret123',
+        'password': 'Secret@123',
         'full_name': 'Jane Smith',
         'bio': 'Licensed clinical psychologist with eight years of experience.',
         'experience_years': 8,
@@ -64,7 +64,7 @@ def test_public_consultant_create_duplicate_email_400(api_client):
 
     resp = api_client.post('/api/consultants/create/', {
         'email': 'therapist@example.com',
-        'password': 'secret123',
+        'password': 'Secret@123',
         'full_name': 'Jane Smith',
         'bio': 'Licensed clinical psychologist with eight years of experience.',
         'specializations': [spec.id],
@@ -78,7 +78,7 @@ def test_public_consultant_create_duplicate_email_400(api_client):
 def test_public_consultant_create_requires_specialization(api_client):
     resp = api_client.post('/api/consultants/create/', {
         'email': 'nobody@example.com',
-        'password': 'secret123',
+        'password': 'Secret@123',
         'full_name': 'Jane Smith',
         'bio': 'Licensed clinical psychologist with eight years of experience.',
         'specializations': [],

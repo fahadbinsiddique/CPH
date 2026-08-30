@@ -2,6 +2,8 @@ import re
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 from django.contrib.auth import get_user_model
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError as DjangoValidationError
 from .models import Consultant, Specialization, ConsultantAvailability
 from cph_app.serializers import UserSerializer
 from django.utils.text import slugify
@@ -127,7 +129,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
 class ConsultantCreateSerializer(serializers.ModelSerializer):
     # User Model Fields
     email = serializers.EmailField(write_only=True)
-    password = serializers.CharField(write_only=True, min_length=6)
+    password = serializers.CharField(write_only=True, min_length=8)
     full_name = serializers.CharField(write_only=True)
     phone_number = serializers.CharField(
         write_only=True, required=False, allow_blank=True, max_length=20
@@ -167,6 +169,15 @@ class ConsultantCreateSerializer(serializers.ModelSerializer):
                 "Select at least one specialization."
             )
         return value
+
+    def validate(self, data):
+        password = data.get("password")
+        if password:
+            try:
+                validate_password(password)
+            except DjangoValidationError as e:
+                raise serializers.ValidationError({"password": e.messages})
+        return data
 
     @transaction.atomic
     def create(self, validated_data):
@@ -215,7 +226,7 @@ class ConsultantCreateSerializer(serializers.ModelSerializer):
 class ConsultantCreateUpdateSerializer(serializers.ModelSerializer):
     
     email = serializers.EmailField(write_only=True, required=False)
-    password = serializers.CharField(write_only=True, min_length=6, required=False)
+    password = serializers.CharField(write_only=True, min_length=8, required=False)
     full_name = serializers.CharField(write_only=True, required=False)
 
     specializations = serializers.PrimaryKeyRelatedField(
@@ -272,6 +283,14 @@ class ConsultantCreateUpdateSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError({'email': 'Email is required for creating a consultant.'})
             if not attrs.get('password'):
                 raise serializers.ValidationError({'password': 'Password is required for creating a consultant.'})
+
+        password = attrs.get('password')
+        if password:
+            try:
+                validate_password(password)
+            except DjangoValidationError as e:
+                raise serializers.ValidationError({"password": e.messages})
+
         return attrs
 
     @transaction.atomic

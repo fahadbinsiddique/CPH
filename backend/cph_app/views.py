@@ -1,4 +1,6 @@
 from django.conf import settings
+from django.core.exceptions import ValidationError as DjangoValidationError
+from django.contrib.auth.password_validation import validate_password
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import generics, status
@@ -284,9 +286,11 @@ class ChangePasswordView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        if len(new_password) < 8:
+        try:
+            validate_password(new_password)
+        except DjangoValidationError as e:
             return Response(
-                {'error': 'Password must be at least 8 characters.'},
+                {'error': e.messages[0]},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
