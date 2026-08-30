@@ -4,6 +4,7 @@ import { Calendar, Clock, Video, MapPin } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { Card, CardContent } from '@/components/ui/card';
+import UserAvatar from '@/components/ui/user-avatar';
 import { getStatusConfig } from '@/lib/status';
 import { cardVariants } from '@/lib/motion';
 import StatusBadge from './StatusBadge';
@@ -17,7 +18,6 @@ export default function AppointmentCard({
   appointment,
   personKey = 'consultant',
   actions,
-  avatarClassName = 'from-teal-100 to-emerald-100 text-teal-700',
   statusConfig,
   showSessionType = true,
   footerClassName,
@@ -36,14 +36,11 @@ export default function AppointmentCard({
           <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
             <div className="flex items-center gap-4">
               <div className="relative">
-                <div
-                  className={cn(
-                    'flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br text-lg font-bold shadow-inner transition-transform duration-300 group-hover:scale-105',
-                    avatarClassName
-                  )}
-                >
-                  {displayName.charAt(0)}
-                </div>
+                <UserAvatar
+                  name={displayName}
+                  size="lg"
+                  className="h-14 w-14 rounded-2xl transition-transform duration-300 group-hover:scale-105"
+                />
                 <span
                   className={cn(
                     'absolute -right-0.5 -bottom-0.5 h-3.5 w-3.5 rounded-full border-2 border-white shadow-sm',

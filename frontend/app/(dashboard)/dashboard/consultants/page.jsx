@@ -29,6 +29,7 @@ import ConfirmDialog from '@/components/dashboard/ui/ConfirmDialog';
 import { consultantService } from '@/services/consultantService';
 import { containerVariants, itemVariants } from '@/lib/motion';
 import Image from 'next/image';
+import UserAvatar from '@/components/ui/user-avatar';
 
 const EMPTY_FORM = {
   full_name: '', email: '', password: '',
@@ -339,13 +340,12 @@ export default function AdminConsultantsPage() {
                     <Card key={c.id} className="group dash-card dash-card-hover relative overflow-hidden">
                       <div className="dash-accent" />
                       <CardContent className="flex items-center gap-4 p-4">
-                        <div className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-teal-100 to-emerald-100 font-bold text-teal-700">
-                          {c.profile_image
-                            ? <Image src={c.profile_image} alt="" height={50}
-                               width={50} className="h-full w-full object-cover" />
-                            : c.user?.full_name?.charAt(0)
-                          }
-                        </div>
+                        <UserAvatar
+                          src={c.profile_image}
+                          name={c.user?.full_name}
+                          size="lg"
+                          className="h-11 w-11 shrink-0"
+                        />
 
                         <div className="min-w-0 flex-1">
                           <div className="flex items-center gap-2">

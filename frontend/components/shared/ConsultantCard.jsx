@@ -7,6 +7,7 @@ import { motion } from 'framer-motion';
 import { Clock, ChevronRight } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import UserAvatar from '@/components/ui/user-avatar';
 import useAuthStore from '@/store/authStore';
 import { requireLogin } from '@/lib/authGate';
 import BookingModal from '@/components/booking/BookingModal';
@@ -14,6 +15,7 @@ import BookingModal from '@/components/booking/BookingModal';
 export default function ConsultantCard({ consultant }) {
   const { isAuthenticated } = useAuthStore();
   const [bookingOpen, setBookingOpen] = useState(false);
+  const [imgError, setImgError] = useState(false);
   const {
     slug,
     user,
@@ -45,7 +47,7 @@ export default function ConsultantCard({ consultant }) {
         
         {/* IMAGE CONTAINER  */}
         <div className="relative h-56 w-full shrink-0 overflow-hidden bg-slate-100/80 sm:h-60">
-          {profile_image ? (
+          {profile_image && !imgError ? (
             <Image
               src={profile_image}
               alt={user?.full_name ? `Portrait of ${user.full_name}` : 'Consultant portrait'}
@@ -53,14 +55,17 @@ export default function ConsultantCard({ consultant }) {
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
               className="object-contain object-bottom p-2 transition-transform duration-500 group-hover:scale-105"
               priority
+              onError={() => setImgError(true)}
             />
           ) : (
             <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-teal-50 to-emerald-100">
-              <div className="flex h-16 w-16 items-center justify-center rounded-full border border-teal-200 bg-white/90 shadow-sm">
-                <span className="text-2xl font-bold text-teal-600">
-                  {user?.full_name?.charAt(0) || 'C'}
-                </span>
-              </div>
+              <UserAvatar
+                name={user?.full_name}
+                title="Consultant"
+                size="3xl"
+                className="h-20 w-20 border-2 border-teal-200 bg-white/90 shadow-sm"
+                fallbackClassName="text-2xl font-bold"
+              />
             </div>
           )}
 

@@ -13,6 +13,7 @@ import TopHeader from './TopHeader'
 import { useRouter, usePathname } from 'next/navigation'
 import Link from 'next/link'
 import LoginModal from '../auth/LoginModal'
+import UserAvatar from '@/components/ui/user-avatar'
 import RegisterModal from '../auth/RegisterModal'
 import useAuthStore from '@/store/authStore'
 import useUiStore from '@/store/uiStore'
@@ -100,17 +101,6 @@ const Navbar = () => {
     setMobileMenuOpen(false)
   }
 
-  // Get user initials
-  const getInitials = (name) => {
-    if (!name) return 'U'
-    return name
-      .split(' ')
-      .map(n => n[0])
-      .join('')
-      .toUpperCase()
-      .slice(0, 2)
-  }
-
   return (
     <header className="fixed top-0 left-0 w-full z-50 font-sans">
       <TopHeader />
@@ -189,9 +179,11 @@ const Navbar = () => {
                     whileTap={{ scale: 0.95 }}
                     className="flex cursor-pointer items-center gap-2 px-2 py-1 rounded-full bg-gradient-to-r from-teal-50 to-emerald-50 border-2 border-teal-200 hover:border-teal-400 transition-all"
                   >
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-teal-600 to-emerald-600 text-white flex items-center justify-center text-sm font-bold">
-                      {getInitials(user?.full_name)}
-                    </div>
+                    <UserAvatar
+                      name={user?.full_name}
+                      size="default"
+                      className="h-8 w-8"
+                    />
                     <span className="text-sm font-semibold text-stone-700 max-w-[100px] truncate">
                       {user?.full_name?.split(' ')[0]}
                     </span>
@@ -291,9 +283,11 @@ const Navbar = () => {
                 {/* User info if authenticated */}
                 {isAuthenticated && (
                   <div className="flex items-center gap-3 pb-4 mb-2 border-b border-stone-100">
-                    <div className="w-14 h-14 rounded-full bg-gradient-to-br from-teal-600 to-emerald-600 text-white flex items-center justify-center text-xl font-bold shadow-md">
-                      {getInitials(user?.full_name)}
-                    </div>
+                    <UserAvatar
+                      name={user?.full_name}
+                      size="xl"
+                      className="h-14 w-14 shadow-md"
+                    />
                     <div>
                       <p className="font-bold text-stone-800 text-base">{user?.full_name}</p>
                       <p className="text-xs text-stone-500">{user?.email}</p>

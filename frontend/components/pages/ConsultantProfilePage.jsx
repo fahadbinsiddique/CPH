@@ -28,6 +28,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import UserAvatar from '@/components/ui/user-avatar';
 import { consultantService } from '@/services/consultantService';
 import useAuthStore from '@/store/authStore';
 import { requireLogin } from '@/lib/authGate';
@@ -140,22 +141,13 @@ export default function ConsultantProfilePage() {
                 <CardContent className="p-6 text-center">
                   {/* Avatar with Availability */}
                   <div className="relative inline-block mb-4">
-                    <div className="w-32 h-32 rounded-full overflow-hidden bg-gradient-to-br from-teal-50 to-emerald-50 p-1 mx-auto shadow-lg shadow-teal-500/10">
-                      {profile_image ? (
-                        <Image
-                          src={profile_image}
-                          alt={user?.full_name || 'Consultant'}
-                          width={128}
-                          height={128}
-                          className="object-cover w-full h-full rounded-full"
-                          priority
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-teal-100 to-emerald-100 text-teal-700 text-4xl font-bold rounded-full">
-                          {user?.full_name?.charAt(0)}
-                        </div>
-                      )}
-                    </div>
+                    <UserAvatar
+                      src={profile_image}
+                      name={user?.full_name}
+                      title="Consultant"
+                      size="3xl"
+                      className="mx-auto h-32 w-32 ring-4 ring-teal-50/80 shadow-lg shadow-teal-500/10"
+                    />
                     <span
                       className={`absolute bottom-2 right-2 w-4.5 h-4.5 rounded-full border-2 border-white shadow-md ${
                         is_available ? 'bg-emerald-500 animate-pulse' : 'bg-slate-300'

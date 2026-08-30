@@ -23,6 +23,7 @@ import {
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
+import UserAvatar from '@/components/ui/user-avatar'
 import {
   Dialog,
   DialogClose,
@@ -147,22 +148,13 @@ export default function ConsultantProfileModal({ slug }) {
 
               <div className="flex items-center gap-4 pr-8 sm:gap-5">
                 <div className="relative shrink-0">
-                  <div className="flex h-28 w-28 items-center justify-center overflow-hidden rounded-2xl bg-slate-100 shadow-sm ring-1 ring-slate-200/70 sm:h-36 sm:w-36">
-                    {consultant.profile_image ? (
-                      <Image
-                        src={consultant.profile_image}
-                        alt={consultant.user?.full_name || 'Consultant'}
-                        width={144}
-                        height={144}
-                        className="h-full w-full  object-center"
-                        priority
-                      />
-                    ) : (
-                      <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-teal-100 to-emerald-100 text-4xl font-bold text-teal-700">
-                        {consultant.user?.full_name?.charAt(0) || 'C'}
-                      </div>
-                    )}
-                  </div>
+                  <UserAvatar
+                    src={consultant.profile_image}
+                    name={consultant.user?.full_name}
+                    title="Consultant"
+                    size="3xl"
+                    className="h-28 w-28 rounded-2xl sm:h-36 sm:w-36"
+                  />
                   <span
                     className={`absolute bottom-1.5 right-1.5 h-4 w-4 rounded-full border-2 border-white shadow-sm ${
                       consultant.is_available ? 'animate-pulse bg-emerald-500' : 'bg-slate-300'

@@ -44,6 +44,7 @@ import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { consultantService } from '@/services/consultantService'
+import { normalizeProfileImage } from '@/lib/utils'
 
 // Animation variants
 const containerVariants = {
@@ -138,16 +139,6 @@ const milestones = [
     description: 'Grew our team to 6 expert consultants, expanding our range of services.',
   },
 ]
-
-// http:// -> https:// and protocol-relative -> https, safe for <img>.
-function normalizeProfileImage(src) {
-  if (!src || typeof src !== 'string') return undefined
-  const trimmed = src.trim()
-  if (!trimmed) return undefined
-  if (trimmed.startsWith('http://')) return trimmed.replace('http://', 'https://')
-  if (trimmed.startsWith('//')) return `https:${trimmed}`
-  return trimmed
-}
 
 export default function AboutUsPage() {
   const [selectedTeamMember, setSelectedTeamMember] = useState(null)

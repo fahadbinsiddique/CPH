@@ -17,16 +17,7 @@ import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import Reveal from '@/components/ui/Reveal'
 import { consultantService } from '@/services/consultantService'
-
-// 🖼 http:// -> https:// and protocol-relative -> https, safe for <img> (no Next optimizer).
-function normalizeProfileImage(src) {
-  if (!src || typeof src !== 'string') return undefined
-  const trimmed = src.trim()
-  if (!trimmed) return undefined
-  if (trimmed.startsWith('http://')) return trimmed.replace('http://', 'https://')
-  if (trimmed.startsWith('//')) return `https:${trimmed}`
-  return trimmed
-}
+import { normalizeProfileImage } from '@/lib/utils'
 
 function extractConsultantList(payload) {
   if (Array.isArray(payload)) return payload
