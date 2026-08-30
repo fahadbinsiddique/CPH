@@ -120,7 +120,7 @@ const Navbar = () => {
             className="flex items-center rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2"
           >
             <Image
-              src={'/logo.png'}
+              src={'/logo1.png'}
               loading="eager"
               width={240}
               height={160}
