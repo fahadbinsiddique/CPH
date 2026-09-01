@@ -195,7 +195,10 @@ class AdminConsultantVerifyView(APIView):
     def patch(self, request, pk):
         try:
             consultant = Consultant.objects.get(pk=pk)
-            consultant.is_verified = request.data.get('is_verified', False)
+            is_verified = request.data.get('is_verified', False)
+            consultant.is_verified = is_verified
+            consultant.user.role = 'consultant' if is_verified else 'client'
+            consultant.user.save(update_fields=['role'])
             consultant.save()
             return Response({'status': 'updated'})
         except Consultant.DoesNotExist:

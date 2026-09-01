@@ -196,7 +196,7 @@ class ConsultantCreateSerializer(serializers.ModelSerializer):
                 password=password,
                 full_name=full_name,
                 phone_number=phone_number,
-                role='consultant'
+                role='client'
             )
         except IntegrityError:
             raise serializers.ValidationError(
