@@ -120,7 +120,7 @@ class ConsultantAvailabilityView(APIView):
             end_dt = datetime.combine(target_date, avail.end_time)
             current = start_dt
 
-            while current + timedelta(hours=1) <= end_dt:
+            while current + timedelta(minutes=30) <= end_dt:
                 slot_time = current.time()
                 is_booked = any(
                     bt.hour == slot_time.hour and bt.minute == slot_time.minute
@@ -130,11 +130,11 @@ class ConsultantAvailabilityView(APIView):
                 if not is_booked:
                     available_slots.append({
                         'start_time': current.strftime('%H:%M'),
-                        'end_time': (current + timedelta(hours=1)).strftime('%H:%M'),
+                        'end_time': (current + timedelta(minutes=30)).strftime('%H:%M'),
                         'session_type': avail.session_type,
                     })
 
-                current += timedelta(hours=1)
+                current += timedelta(minutes=30)
 
         return Response({
             'consultant': consultant.slug,
