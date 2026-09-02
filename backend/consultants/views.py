@@ -1,11 +1,13 @@
 from rest_framework import generics, filters, status
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.throttling import ScopedRateThrottle
 from core.permissions import IsRoleAdmin
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
+from django.utils import timezone
 
 from .models import Consultant, Specialization, ConsultantAvailability
 from .serializers import (
@@ -50,6 +52,96 @@ class ConsultantDetailView(generics.RetrieveAPIView):
         return Consultant.objects.select_related('user').prefetch_related(
             'specializations', 'availability'
         )
+
+
+class ConsultantAvailabilityView(APIView):
+    """
+    Public endpoint to check a consultant's available slots for a specific date.
+
+    GET /api/consultants/<slug>/availability/?date=2026-09-01
+
+    Returns available time slots for the given date, excluding already booked slots.
+    """
+    permission_classes = [AllowAny]
+
+    def get(self, request, slug):
+        consultant = get_object_or_404(
+            Consultant.objects.select_related('user'),
+            slug=slug,
+            is_verified=True
+        )
+
+        date_str = request.query_params.get('date')
+        if not date_str:
+            return Response(
+                {'error': 'date query parameter is required (YYYY-MM-DD)'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            from datetime import datetime as dt
+            target_date = dt.strptime(date_str, '%Y-%m-%d').date()
+        except ValueError:
+            return Response(
+                {'error': 'Invalid date format. Use YYYY-MM-DD.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        day_name = target_date.strftime('%A').lower()
+
+        availability_slots = ConsultantAvailability.objects.filter(
+            consultant=consultant,
+            day=day_name
+        )
+
+        if not availability_slots.exists():
+            return Response({
+                'consultant': consultant.slug,
+                'date': date_str,
+                'day': day_name,
+                'available_slots': [],
+                'message': 'Consultant is not available on this day.'
+            })
+
+        from datetime import datetime, timedelta
+        from appointments.models import Appointment
+
+        booked_times = set(
+            Appointment.objects.filter(
+                consultant=consultant,
+                appointment_date=target_date,
+                status__in=['pending', 'confirmed']
+            ).values_list('appointment_time', flat=True)
+        )
+
+        available_slots = []
+        for avail in availability_slots:
+            start_dt = datetime.combine(target_date, avail.start_time)
+            end_dt = datetime.combine(target_date, avail.end_time)
+            current = start_dt
+
+            while current + timedelta(hours=1) <= end_dt:
+                slot_time = current.time()
+                is_booked = any(
+                    bt.hour == slot_time.hour and bt.minute == slot_time.minute
+                    for bt in booked_times
+                )
+
+                if not is_booked:
+                    available_slots.append({
+                        'start_time': current.strftime('%H:%M'),
+                        'end_time': (current + timedelta(hours=1)).strftime('%H:%M'),
+                        'session_type': avail.session_type,
+                    })
+
+                current += timedelta(hours=1)
+
+        return Response({
+            'consultant': consultant.slug,
+            'date': date_str,
+            'day': day_name,
+            'available_slots': available_slots,
+        })
 
 
 class ConsultantMeView(APIView):
@@ -153,7 +245,9 @@ class ConsultantCreateView(generics.CreateAPIView):
     Public Endpoint: Anyone can register directly as a Consultant along with user creation.
     """
     serializer_class = ConsultantCreateSerializer
-    permission_classes = []  # Publicly accessible endpoint for registration
+    permission_classes = [AllowAny]
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = 'auth_action'
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -182,6 +276,11 @@ class AvailabilityDeleteView(generics.DestroyAPIView):
 class AdminConsultantListView(generics.ListAPIView):
     serializer_class = ConsultantDetailSerializer
     permission_classes = [IsRoleAdmin]
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filterset_fields = ['is_verified', 'is_available', 'specializations__slug']
+    search_fields = ['user__full_name', 'user__email', 'location']
+    ordering_fields = ['created_at', 'experience_years', 'consultation_fee']
+    ordering = ['-created_at']
 
     def get_queryset(self):
         return Consultant.objects.select_related('user').prefetch_related(

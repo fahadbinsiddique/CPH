@@ -22,29 +22,31 @@ export const consultantService = {
 
   // Availability Routes
   getAvailability: () => api.get('/api/consultants/availability/'),
+  getAvailabilityForDate: (slug, date) =>
+    api.get(`/api/consultants/${slug}/availability/`, { params: { date } }),
   deleteAvailability: (id) => api.delete(`/api/consultants/availability/${id}/`),
 
   // Admin — Consultant Management
-  adminGetAll: () => api.get('/api/consultants/admin/list/'),
-  adminGetOne: (id) => api.get(`/api/consultants/admin/${id}/`),
+  adminGetAll: () => api.get('/api/admin/consultants/'),
+  adminGetOne: (id) => api.get(`/api/admin/consultants/${id}/`),
   adminCreate: (data, config = {}) =>
-    api.post('/api/consultants/admin/create/', data, {
+    api.post('/api/admin/consultants/create/', data, {
       headers: { 'Content-Type': 'multipart/form-data' },
       ...config,
     }),
   adminUpdate: (id, data, config = {}) =>
-    api.patch(`/api/consultants/admin/${id}/`, data, {
+    api.patch(`/api/admin/consultants/${id}/`, data, {
       headers: { 'Content-Type': 'multipart/form-data' },
       ...config,
     }),
-  adminDelete: (id) => api.delete(`/api/consultants/admin/${id}/`),
+  adminDelete: (id) => api.delete(`/api/admin/consultants/${id}/`),
   adminVerify: (id, value) =>
-    api.patch(`/api/consultants/admin/${id}/verify/`, { is_verified: value }),
+    api.patch(`/api/admin/consultants/${id}/verify/`, { is_verified: value }),
 
   // Admin — Specialization Management
-  adminGetSpecializations: () => api.get('/api/consultants/admin/specializations/'),
-  adminCreateSpecialization: (data) => api.post('/api/consultants/admin/specializations/', data),
+  adminGetSpecializations: () => api.get('/api/admin/consultants/specializations/'),
+  adminCreateSpecialization: (data) => api.post('/api/admin/consultants/specializations/', data),
   adminUpdateSpecialization: (id, data) =>
-    api.patch(`/api/consultants/admin/specializations/${id}/`, data),
-  adminDeleteSpecialization: (id) => api.delete(`/api/consultants/admin/specializations/${id}/`),
+    api.patch(`/api/admin/consultants/specializations/${id}/`, data),
+  adminDeleteSpecialization: (id) => api.delete(`/api/admin/consultants/specializations/${id}/`),
 }

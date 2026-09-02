@@ -47,7 +47,7 @@ def test_public_consultant_create_returns_201(api_client):
     assert resp.data['message']
 
     user = User.objects.get(email='therapist@example.com')
-    assert user.role == 'consultant'
+    assert user.role == 'client'
     assert user.username == 'therapist@example.com'
 
     consultant = Consultant.objects.get(user=user)
@@ -99,10 +99,10 @@ def test_specialization_duplicate_name_gets_unique_slug(api_client):
     api_client.force_authenticate(user=admin)
 
     first = api_client.post(
-        '/api/consultants/admin/specializations/', {'name': 'Anxiety'}
+        '/api/admin/consultants/specializations/', {'name': 'Anxiety'}
     )
     second = api_client.post(
-        '/api/consultants/admin/specializations/', {'name': 'Anxiety'}
+        '/api/admin/consultants/specializations/', {'name': 'Anxiety'}
     )
 
     assert first.status_code == status.HTTP_201_CREATED
@@ -121,7 +121,7 @@ def test_specialization_update_avoids_slug_collision(api_client):
     Specialization.objects.create(name='Stress', slug='stress')
 
     resp = api_client.patch(
-        f'/api/consultants/admin/specializations/{spec.id}/',
+        f'/api/admin/consultants/specializations/{spec.id}/',
         {'name': 'Stress'},
     )
 
@@ -137,7 +137,7 @@ def test_specialization_create_handles_empty_slug_name(api_client):
     api_client.force_authenticate(user=admin)
 
     resp = api_client.post(
-        '/api/consultants/admin/specializations/', {'name': '!!'}
+        '/api/admin/consultants/specializations/', {'name': '!!'}
     )
 
     assert resp.status_code == status.HTTP_201_CREATED

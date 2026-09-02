@@ -67,7 +67,7 @@ yarn-error.log*
 .pnpm-debug.log*
 *.tsbuildinfo
 next-env.d.ts
-
+prompt.md
 # ---------------------------------------------------------------------------
 # Environment variables (secrets) - never commit
 # ---------------------------------------------------------------------------

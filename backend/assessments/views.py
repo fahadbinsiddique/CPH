@@ -28,8 +28,13 @@ class QuizDetailView(generics.RetrieveAPIView):
         ).prefetch_related('questions__options', 'score_ranges')
 
 
+from rest_framework.throttling import ScopedRateThrottle
+
+
 class QuizSubmitView(APIView):
     permission_classes = [AllowAny]
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = 'assessment_submit'
 
     def post(self, request):
         serializer = QuizSubmitSerializer(data=request.data)
@@ -58,7 +63,9 @@ class QuizResultListView(generics.ListAPIView):
 
 class QuizResultDetailView(generics.RetrieveAPIView):
     serializer_class = QuizResultSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return QuizResult.objects.select_related('quiz', 'score_range')
+        return QuizResult.objects.filter(
+            user=self.request.user
+        ).select_related('quiz', 'score_range')

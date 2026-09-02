@@ -115,6 +115,8 @@ REST_FRAMEWORK = {
     # against token-replay / credential abuse).
     'DEFAULT_THROTTLE_RATES': {
         'google_login': '10/hour',
+        'auth_action': '30/hour',
+        'assessment_submit': '20/hour',
     },
 }
 

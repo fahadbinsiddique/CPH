@@ -14,6 +14,7 @@ import {
   X,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { consultantService } from '@/services/consultantService';
 import { appointmentService } from '@/services/appointmentService';
 import BookingStepper from './BookingStepper';
 import StepDate from './steps/StepDate';
@@ -50,7 +51,7 @@ export default function BookingFlow({ consultant, onClose, onSubmittingChange })
   const [selectedSlot, setSelectedSlot] = useState('');
   const [sessionType, setSessionType] = useState('online');
   const [message, setMessage] = useState('');
-  const [bookedSlots, setBookedSlots] = useState([]);
+  const [availableSlots, setAvailableSlots] = useState([]);
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [queued, setQueued] = useState(false);
@@ -61,15 +62,15 @@ export default function BookingFlow({ consultant, onClose, onSubmittingChange })
   }, [submitting, onSubmittingChange]);
 
   useEffect(() => {
-    if (!selectedDate || !consultant?.id) return;
+    if (!selectedDate || !consultant?.slug) return;
     let active = true;
-    appointmentService
-      .getBookedSlots(consultant.id, formatDate(selectedDate))
+    consultantService
+      .getAvailabilityForDate(consultant.slug, formatDate(selectedDate))
       .then((res) => {
-        if (active) setBookedSlots(res.data.booked_slots || []);
+        if (active) setAvailableSlots(res.data.available_slots || []);
       })
       .catch(() => {
-        if (active) setBookedSlots([]);
+        if (active) setAvailableSlots([]);
       });
     return () => {
       active = false;
@@ -218,7 +219,7 @@ export default function BookingFlow({ consultant, onClose, onSubmittingChange })
             {step === 2 && (
               <StepTime
                 selectedDate={selectedDate}
-                bookedSlots={bookedSlots}
+                availableSlots={availableSlots}
                 selectedSlot={selectedSlot}
                 onSelect={setSelectedSlot}
               />

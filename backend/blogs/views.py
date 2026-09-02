@@ -5,6 +5,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.pagination import PageNumberPagination
 from core.permissions import IsRoleAdmin
 from django_filters.rest_framework import DjangoFilterBackend
+from django.db.models import F
 from .models import Blog, Category, Tag
 from .serializers import (
     BlogListSerializer, BlogDetailSerializer,
@@ -46,8 +47,9 @@ class BlogDetailView(generics.RetrieveAPIView):
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
-        # Increment view count
-        Blog.objects.filter(pk=instance.pk).update(views=instance.views + 1)
+        # Increment view count atomically
+        Blog.objects.filter(pk=instance.pk).update(views=F('views') + 1)
+        instance.refresh_from_db()
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
 

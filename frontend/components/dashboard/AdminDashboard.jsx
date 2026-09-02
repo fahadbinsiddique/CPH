@@ -112,7 +112,7 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     api
-      .get('/api/appointments/admin/stats/')
+      .get('/api/admin/appointments/stats/')
       .then((res) => setStats(res.data))
       .catch((err) => {
         console.error(err);

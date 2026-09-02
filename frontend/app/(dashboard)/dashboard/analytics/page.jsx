@@ -77,7 +77,7 @@ export default function AnalyticsPage() {
   useEffect(() => {
     let active = true;
     api
-      .get('/api/appointments/admin/analytics/', { params: { days } })
+      .get('/api/admin/appointments/analytics/', { params: { days } })
       .then((res) => {
         if (active) setData(res.data);
       })

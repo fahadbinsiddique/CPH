@@ -2,9 +2,9 @@
 
 import { Clock } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { ALL_SLOTS, convertTo12Hour, formatDate } from '../helpers';
+import { convertTo12Hour, formatDate } from '../helpers';
 
-export default function StepTime({ selectedDate, bookedSlots, selectedSlot, onSelect }) {
+export default function StepTime({ selectedDate, availableSlots, selectedSlot, onSelect }) {
   return (
     <div>
       <div className="mb-5 flex items-center justify-between gap-3">
@@ -24,30 +24,34 @@ export default function StepTime({ selectedDate, bookedSlots, selectedSlot, onSe
         )}
       </div>
 
-      <div className="grid grid-cols-3 gap-2.5 sm:grid-cols-4">
-        {ALL_SLOTS.map((slot) => {
-          const isBooked = bookedSlots.includes(slot + ':00') || bookedSlots.includes(slot);
-          const isSelected = selectedSlot === slot;
-          return (
-            <button
-              key={slot}
-              type="button"
-              disabled={isBooked}
-              onClick={() => onSelect(slot)}
-              className={cn(
-                'rounded-xl border-2 px-2 py-2.5 text-center text-[13px] font-semibold transition-all duration-200',
-                isSelected
-                  ? 'scale-105 border-teal-600 bg-gradient-to-r from-teal-600 to-emerald-600 text-white shadow-lg shadow-teal-600/25'
-                  : isBooked
-                    ? 'cursor-not-allowed border-slate-100 bg-slate-50 text-slate-300 line-through'
+      {availableSlots.length === 0 ? (
+        <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-slate-200 bg-slate-50/50 py-12 text-center">
+          <Clock className="mb-3 h-8 w-8 text-slate-300" />
+          <p className="text-sm font-medium text-slate-500">No available slots for this date</p>
+          <p className="mt-1 text-xs text-slate-400">Try selecting a different date</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-3 gap-2.5 sm:grid-cols-4">
+          {availableSlots.map((slot) => {
+            const isSelected = selectedSlot === slot.start_time;
+            return (
+              <button
+                key={slot.start_time}
+                type="button"
+                onClick={() => onSelect(slot.start_time)}
+                className={cn(
+                  'rounded-xl border-2 px-2 py-2.5 text-center text-[13px] font-semibold transition-all duration-200',
+                  isSelected
+                    ? 'scale-105 border-teal-600 bg-gradient-to-r from-teal-600 to-emerald-600 text-white shadow-lg shadow-teal-600/25'
                     : 'cursor-pointer border-slate-200/70 bg-white text-slate-700 shadow-sm hover:border-teal-300 hover:bg-teal-50 hover:shadow-md'
-              )}
-            >
-              {convertTo12Hour(slot)}
-            </button>
-          );
-        })}
-      </div>
+                )}
+              >
+                {convertTo12Hour(slot.start_time)}
+              </button>
+            );
+          })}
+        </div>
+      )}
 
       <div className="mt-5 flex flex-wrap items-center gap-4 border-t border-slate-100 pt-4">
         <span className="text-[11px] font-medium text-slate-400">Legend:</span>
@@ -58,10 +62,6 @@ export default function StepTime({ selectedDate, bookedSlots, selectedSlot, onSe
         <span className="flex items-center gap-1.5 text-xs text-slate-600">
           <span className="h-3.5 w-3.5 rounded-md border-2 border-slate-200 bg-white" />
           Available
-        </span>
-        <span className="flex items-center gap-1.5 text-xs text-slate-400">
-          <span className="h-3.5 w-3.5 rounded-md bg-slate-100" />
-          Booked
         </span>
       </div>
     </div>

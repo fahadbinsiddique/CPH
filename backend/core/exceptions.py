@@ -1,10 +1,11 @@
 """
 Custom DRF exception handler.
 
-The frontend reads DRF's default error payload directly (e.g. ``error?.error``
-or iterating the response keys), so we intentionally forward the default
-handler's output unchanged. This module exists as the single extension point for
-global error handling / logging without touching every view.
+Wraps all error responses in a consistent envelope:
+{
+  "success": false,
+  "errors": { ... }
+}
 """
 import logging
 
@@ -14,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 def custom_exception_handler(exc, context):
-    """Pass-through DRF exception handler with centralised logging."""
+    """Wrap DRF exception responses in a standardised error envelope."""
     response = exception_handler(exc, context)
 
     if response is not None:
@@ -24,5 +25,14 @@ def custom_exception_handler(exc, context):
             getattr(response, 'status_code', None),
             getattr(response, 'data', None),
         )
+
+        # Normalise the data into {"errors": ...} format.
+        data = response.data
+        if isinstance(data, dict) and 'errors' not in data:
+            # DRF returns {"field": ["error"]} or {"detail": "error"}.
+            # Wrap it so the frontend always reads response.data.errors.
+            response.data = {'success': False, 'errors': data}
+        elif isinstance(data, list):
+            response.data = {'success': False, 'errors': {'detail': data}}
 
     return response

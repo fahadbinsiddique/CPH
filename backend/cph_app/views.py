@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from rest_framework import generics, status
 from rest_framework.viewsets import ModelViewSet 
 from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.throttling import ScopedRateThrottle
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.exceptions import TokenError
 from config.email_utils import welcome_email
@@ -69,6 +70,8 @@ def clear_auth_cookies(response):
 class RegisterView(generics.CreateAPIView):
     serializer_class = RegisterSerializer
     permission_classes = [AllowAny]
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = 'auth_action'
 
     def create(self, request, *args, **kwargs):
 
@@ -103,6 +106,8 @@ class RegisterView(generics.CreateAPIView):
 class LoginView(generics.GenericAPIView):
     serializer_class = LoginSerializer
     permission_classes = [AllowAny]
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = 'auth_action'
 
     def post(self, request, *args, **kwargs):
 
@@ -183,9 +188,8 @@ class RefreshTokenView(APIView):
             # Rotate the refresh token: blacklist the old one and mint a fresh
             # refresh token, honoring ROTATE_REFRESH_TOKENS / BLACKLIST_AFTER_ROTATION.
             if settings.SIMPLE_JWT.get('ROTATE_REFRESH_TOKENS', False):
-                old_refresh = RefreshToken(refresh_token)
-                old_refresh.blacklist()
-                refresh = RefreshToken.for_user(old_refresh.user)
+                refresh.blacklist()
+                refresh = RefreshToken.for_user(refresh.user)
 
             access = refresh.access_token
 
@@ -250,16 +254,13 @@ class UpdateProfileView(APIView):
     permission_classes = [IsAuthenticated]
 
     def patch(self, request):
-        user = request.user
-        data = request.data
+        serializer = UpdateProfileSerializer(
+            request.user, data=request.data, partial=True
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
 
-        allowed_fields = ['full_name']
-        for field in allowed_fields:
-            if field in data:
-                setattr(user, field, data[field])
-        user.save()
-
-        return Response(UserSerializer(user).data)
+        return Response(UserSerializer(request.user).data)
 
 from core.permissions import IsRoleAdmin
 from django.contrib.auth import get_user_model

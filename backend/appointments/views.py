@@ -91,6 +91,22 @@ class AppointmentStatusUpdateView(generics.UpdateAPIView):
                     status=status.HTTP_403_FORBIDDEN
                 )
 
+            # Prevent same-day cancellation (policy: must cancel 24h in advance)
+            from django.utils import timezone
+            from datetime import timedelta
+            now = timezone.now()
+            appointment_datetime = timezone.make_aware(
+                timezone.datetime.combine(
+                    appointment.appointment_date,
+                    appointment.appointment_time
+                )
+            )
+            if appointment_datetime - now < timedelta(hours=24):
+                return Response(
+                    {'error': 'Appointments must be cancelled at least 24 hours in advance.'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
         response = super().patch(request, *args, **kwargs)
 
         # Email notification only if update is successful

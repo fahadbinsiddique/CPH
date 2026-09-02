@@ -87,4 +87,11 @@ class UserSerializer(serializers.ModelSerializer):
         ]
 
 
-
+class UpdateProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["full_name", "phone_number"]
+        extra_kwargs = {
+            "full_name": {"required": False, "max_length": 255},
+            "phone_number": {"required": False, "max_length": 20},
+        }
