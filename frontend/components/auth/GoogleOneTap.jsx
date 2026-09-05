@@ -110,7 +110,12 @@ export default function GoogleOneTap({ onLoginSuccess }) {
   const showOneTap = useCallback(async () => {
     if (promptedRef.current || !GOOGLE_CLIENT_ID) return
 
-    const google = await loadGsiScript()
+    let google
+    try {
+      google = await loadGsiScript()
+    } catch {
+      return
+    }
     if (!google?.accounts?.id) return
 
     nonceRef.current = crypto.randomUUID()

@@ -5,6 +5,9 @@ const nextConfig = {
 
   output: 'standalone',
 
+  // caching issue remove
+  skipTrailingSlashRedirect: true,
+
   images: {
     remotePatterns: [
       {
@@ -49,6 +52,22 @@ const nextConfig = {
             value: "/",
           },
         ],
+      },
+    ];
+  },
+
+  // Proxy /api/* and /static/* requests to the Django backend so cookies stay
+  // same-origin and DRF browsable API assets resolve correctly.
+  async rewrites() {
+    const backendUrl = process.env.API_BACKEND_URL || 'http://localhost:8000';
+    return [
+      {
+        source: '/static/:path*',
+        destination: `${backendUrl}/static/:path*`,
+      },
+      {
+        source: '/api/:path*',
+        destination: `${backendUrl}/api/:path*/`,
       },
     ];
   },

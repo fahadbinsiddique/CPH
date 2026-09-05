@@ -63,8 +63,7 @@ export default function AuthGuard({ children, allowedRoles = [] }) {
   }, [isHydrated, fetchMe, openLoginModal, allowedRoles]);
 
   // Lock the screen with a loading spinner until the auth state is fully ready.
-  // eslint-disable-next-line react-hooks/refs
-  if (!isHydrated || (!isAuthenticated && hasFetched.current === false)) {
+  if (!isHydrated || !hasFetched.current) {
     return (
       <div className="fixed inset-0 bg-slate-50/80 backdrop-blur-sm flex flex-col items-center justify-center z-50">
         <Loader2 className="w-8 h-8 text-indigo-600 animate-spin" />

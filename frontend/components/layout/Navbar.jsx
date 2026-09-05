@@ -21,7 +21,7 @@ import useUiStore from '@/store/uiStore'
 const Navbar = () => {
   const router = useRouter()
   const pathname = usePathname()
-  const { user, logout, isAuthenticated } = useAuthStore()
+  const { user, logout, isAuthenticated, isHydrated } = useAuthStore()
   const { isLoginOpen, openLoginModal, closeLoginModal } = useUiStore()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
@@ -159,7 +159,9 @@ const Navbar = () => {
 
           {/* Desktop Auth / User Menu */}
           <div className="hidden lg:flex items-center gap-3">
-            {isAuthenticated ? (
+            {!isHydrated ? (
+              <div className="h-10 w-24 bg-stone-100 rounded-full animate-pulse" />
+            ) : isAuthenticated ? (
               <>
                 {/* Dashboard Button */}
                 <motion.button
@@ -316,7 +318,9 @@ const Navbar = () => {
 
                 {/* Mobile Auth / User Actions */}
                 <div className="flex flex-col gap-3 mt-4 pt-4 border-t border-stone-100">
-                  {isAuthenticated ? (
+                  {!isHydrated ? (
+                    <div className="h-12 w-full bg-stone-100 rounded-xl animate-pulse" />
+                  ) : isAuthenticated ? (
                     <>
                       <button
                         onClick={handleDashboard}

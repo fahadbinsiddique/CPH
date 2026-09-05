@@ -8,6 +8,7 @@ const useAuthStore = create(
       user: null,
       isAuthenticated: false,
       isLoading: false,
+      isHydrated: false,
       error: null,
 
       register: async (data) => {
@@ -57,7 +58,7 @@ const useAuthStore = create(
           console.warn("Backend logout endpoint failed or session already cleared:", err);
         } finally {
           // Reset the frontend auth state completely.
-          set({ user: null, isAuthenticated: false, error: null });
+          set({ user: null, isAuthenticated: false, error: null, isHydrated: false });
           
           if (typeof window !== 'undefined') {
 
@@ -87,6 +88,7 @@ const useAuthStore = create(
           set({ user: actualUser, isAuthenticated: true });
         } catch {
           set({ user: null, isAuthenticated: false });
+          localStorage.removeItem('auth-storage');
         }
       },
 
@@ -101,7 +103,9 @@ const useAuthStore = create(
       // Reload the persisted state into memory after rehydration.
       onRehydrateStorage: () => (state) => {
         if (state) {
-          state.isLoading = false;
+          state.isHydrated = true;
+          // Validate the restored session against the backend.
+          state.fetchMe().catch(() => {});
         }
       },
     }

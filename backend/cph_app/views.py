@@ -52,14 +52,12 @@ def clear_auth_cookies(response):
         "access_token", 
         path="/",
         samesite=jwt["AUTH_COOKIE_SAMESITE"],
-        secure=jwt["AUTH_COOKIE_SECURE"],
     )
     
     response.delete_cookie(
         "refresh_token", 
         path="/", 
         samesite=jwt["AUTH_COOKIE_SAMESITE"],
-        secure=jwt["AUTH_COOKIE_SECURE"],
     )   
 
     return response

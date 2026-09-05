@@ -136,7 +136,7 @@ export default function DashboardSidebar({ instanceId = 'desktop', onNavigate })
       <div className="shrink-0 border-b border-slate-200/60 px-4 py-4">
         <Link href="/" className="flex items-center gap-2.5 transition-opacity hover:opacity-80">
           <Image
-            src="/logo.png"
+            src="/logo1.png"
             alt="CPH"
             width={210}
             height={100}

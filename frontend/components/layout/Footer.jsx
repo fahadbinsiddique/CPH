@@ -120,11 +120,11 @@ const Footer = () => {
           >
             <Link href="/" className="inline-block">
               <Image
-                src={'/logo.png'}
+                src={'/logo1.png'}
                 width={250}
                 height={150}
                 alt="Centre For Psychological Health"
-                className="object-contain brightness-100 "
+                className="object-contain brightness-100 bg-white"
               />
             </Link>
             <p className="text-sm text-stone-400 leading-relaxed max-w-sm mt-3">

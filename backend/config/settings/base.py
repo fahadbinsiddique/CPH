@@ -26,6 +26,8 @@ SECRET_KEY = os.getenv(
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env_bool('DEBUG', default=True)
 
+# APPEND_SLASH = False
+
 ALLOWED_HOSTS = [
     host.strip()
     for host in os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
@@ -108,6 +110,12 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticatedOrReadOnly',
     ),
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+    ] if not DEBUG else [
+        'rest_framework.renderers.BrowsableAPIRenderer',
+        'rest_framework.renderers.JSONRenderer',
+    ],
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
     # Keep DRF's default exception payload for frontend compatibility.
     'EXCEPTION_HANDLER': 'core.exceptions.custom_exception_handler',
@@ -141,7 +149,7 @@ SIMPLE_JWT = {
     # Local: False, Production: True (overridden under the `not DEBUG` rule).
     'AUTH_COOKIE_SECURE': not DEBUG,
     
-    'AUTH_COOKIE_SAMESITE': 'None',
+    'AUTH_COOKIE_SAMESITE': 'Lax',
     'AUTH_COOKIE_HTTP_ONLY': True,
 }
 

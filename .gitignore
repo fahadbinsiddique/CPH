@@ -72,8 +72,8 @@ prompt.md
 # Environment variables (secrets) - never commit
 # ---------------------------------------------------------------------------
 .env
+AUDIT_REPORT.md
 .env.*
-!.env.example
 backend/.env
 frontend/.env.local
 frontend/.env*.local
