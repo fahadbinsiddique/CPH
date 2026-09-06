@@ -10,43 +10,8 @@ import {
   ShieldCheck,
   BadgeCheck,
   HeartHandshake,
-  Heart,
-  User,
-  Sparkles,
 } from 'lucide-react'
 
-const careOptions = [
-  {
-    title: 'Personal Care',
-    desc: 'Tailored support for my own journey',
-    tag: 'Individual',
-    icon: User,
-    chip: 'bg-emerald-100 text-emerald-700',
-    hover: 'group-hover:border-emerald-200',
-  },
-  {
-    title: 'Relational Wellness',
-    desc: 'Strengthening the bond with my partner',
-    tag: 'Couples',
-    icon: HeartHandshake,
-    chip: 'bg-rose-100 text-rose-700',
-    hover: 'group-hover:border-rose-200',
-  },
-  {
-    title: 'Youth Support',
-    desc: 'Guidance for my child or teen',
-    tag: 'Teen / Child',
-    icon: Sparkles,
-    chip: 'bg-amber-100 text-amber-700',
-    hover: 'group-hover:border-amber-200',
-  },
-]
-
-const trustSignals = [
-  { icon: BadgeCheck, label: 'Licensed therapists' },
-  { icon: ShieldCheck, label: 'Confidential & private' },
-  { icon: HeartHandshake, label: 'Evidence-based care' },
-]
 
 const Hero = () => {
   const sectionRef = useRef(null)
@@ -65,14 +30,11 @@ const Hero = () => {
         )
         .from('[data-hero-sub]', { y: 24, opacity: 0, duration: 0.7 }, '-=0.5')
         .from('[data-hero-cta]', { y: 20, opacity: 0, duration: 0.6, stagger: 0.1 }, '-=0.45')
-        .from('[data-hero-trust]', { y: 16, opacity: 0, duration: 0.5 }, '-=0.35')
-        .from('[data-hero-cards]', { y: 28, opacity: 0, duration: 0.7 }, '-=0.3')
         .from(
           '[data-hero-image]',
           { scale: 0.96, opacity: 0, duration: 0.9, ease: 'power2.out' },
           '-=0.7'
         )
-        .from('[data-hero-glass]', { y: 24, opacity: 0, duration: 0.6 }, '-=0.45')
     },
     { scope: sectionRef }
   )
@@ -132,103 +94,20 @@ const Hero = () => {
               </Link>
             </div>
 
-            <div
-              data-hero-trust
-              className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 lg:justify-start"
-            >
-              {trustSignals.map((item) => {
-                const Icon = item.icon
-                return (
-                  <span
-                    key={item.label}
-                    className="inline-flex items-center gap-1.5 text-sm text-stone-500"
-                  >
-                    <Icon className="h-4 w-4 text-teal-600" />
-                    {item.label}
-                  </span>
-                )
-              })}
-            </div>
-
-            {/* Care path cards */}
-            <div className="mt-10 pt-2">
-              <p className="mb-5 text-xs font-semibold uppercase tracking-[0.14em] text-stone-500">
-                Choose your care path
-              </p>
-              <div data-hero-cards className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-                {careOptions.map((option) => {
-                  const Icon = option.icon
-                  return (
-                    <Link
-                      key={option.title}
-                      href="/services"
-                      className={`group relative flex flex-col gap-4 rounded-2xl border border-stone-200/70 bg-white/80 p-5 text-left shadow-soft transition-all duration-300 hover:-translate-y-1 hover:shadow-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2 ${option.hover}`}
-                    >
-                      <div className="flex items-center justify-between gap-3">
-                        <span
-                          className={`flex h-10 w-10 items-center justify-center rounded-xl transition-transform duration-300 group-hover:scale-105 ${option.chip}`}
-                        >
-                          <Icon className="h-5 w-5" />
-                        </span>
-                        <span className="rounded-full border border-stone-200 bg-white px-2.5 py-0.5 text-[11px] font-semibold text-stone-600">
-                          {option.tag}
-                        </span>
-                      </div>
-                      <div>
-                        <h3 className="text-base font-bold leading-tight text-stone-800 transition-colors group-hover:text-teal-700">
-                          {option.title}
-                        </h3>
-                        <p className="mt-1 text-xs leading-relaxed text-stone-500">
-                          {option.desc}
-                        </p>
-                      </div>
-                    </Link>
-                  )
-                })}
-              </div>
-            </div>
+          
           </div>
 
-          {/* RIGHT — IMAGE + GLASS CARD */}
-          <div data-hero-image className="relative mx-auto w-full max-w-md lg:max-w-none">
-            <div className="relative aspect-[4/5] w-full overflow-hidden rounded-[2rem] border border-stone-200/60 shadow-card">
+          {/* RIGHT — IMAGE */}
+          <div data-hero-image className="relative mx-auto w-full lg:max-w-none">
+            <div className="relative aspect-[16/10] w-full overflow-hidden rounded-[2rem] ring-1 ring-teal-100/50 shadow-card">
               <Image
-                src="/banner.jpg"
-                alt="Woman meditating in a serene nature setting"
+                src="/banner1.png"
+                alt="CPH mental wellness platform — assessment, chat, booking, and therapist profiles"
                 fill
                 priority
-                sizes="(max-width: 1024px) 80vw, 44vw"
-                className="object-cover "
+                sizes="(max-width: 1024px) 90vw, 48vw"
+                className="object-cover object-center"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-transparent" />
-
-              {/* Static verified chip */}
-              <div className="absolute right-4 top-4 inline-flex items-center gap-1.5 rounded-full bg-white/85 px-3 py-1.5 text-xs font-semibold text-stone-700 shadow-sm backdrop-blur">
-                <ShieldCheck className="h-3.5 w-3.5 text-teal-600" />
-                Licensed & confidential
-              </div>
-            </div>
-
-            {/* Static glass card */}
-            <div
-              data-hero-glass
-              className="absolute -bottom-6 left-1/2 w-[86%] -translate-x-1/2 rounded-2xl border border-white/60 bg-white/85 p-4 shadow-float backdrop-blur-xl"
-            >
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-teal-100">
-                  <Heart className="h-5 w-5 text-teal-600" />
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-stone-800">Daily check-in</p>
-                  <p className="text-xs text-stone-500">How are you feeling today?</p>
-                </div>
-                <div className="ml-auto">
-                  <div className="h-2 w-20 overflow-hidden rounded-full bg-stone-200">
-                    <div className="h-full w-2/3 rounded-full bg-teal-500" />
-                  </div>
-                  <p className="mt-1 text-right text-xs text-stone-400">+23% stability</p>
-                </div>
-              </div>
             </div>
           </div>
         </div>

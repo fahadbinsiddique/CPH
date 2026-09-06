@@ -47,6 +47,7 @@ export default function GoogleOneTap({ onLoginSuccess }) {
   const nonceRef = useRef(null)
   const promptedRef = useRef(false)
   const promptParentRef = useRef(null)
+  const initTimerRef = useRef(null)
   const pathname = usePathname()
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated)
 
@@ -139,7 +140,10 @@ export default function GoogleOneTap({ onLoginSuccess }) {
       if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
         const reason =
           notification.getNotDisplayedReason() || notification.getSkippedReason()
-        if (reason !== 'user_skipped' && reason !== 'user_closed' && reason !== 'browser_not_supported') {
+        if (reason === 'unknown_reason') {
+          // FedCM blocked by browser/ad-blocker — not actionable, log at debug level.
+          console.debug('[Google One Tap] FedCM unavailable:', reason)
+        } else if (reason !== 'user_skipped' && reason !== 'user_closed' && reason !== 'browser_not_supported') {
           console.warn('[Google One Tap] prompt suppressed:', reason)
         }
         // Reset so a later drawer open can retry.
@@ -152,13 +156,17 @@ export default function GoogleOneTap({ onLoginSuccess }) {
   // stay quiet so the prompt is never spammy (Google suppresses it otherwise).
   useEffect(() => {
     if (pathname === '/' && !isAuthenticated) {
-      showOneTap()
+      // Delay slightly to avoid StrictMode double-mount firing two FedCM prompts.
+      initTimerRef.current = setTimeout(() => showOneTap(), 300)
     } else {
       if (window.google?.accounts?.id) {
         window.google.accounts.id.cancel()
       }
       promptedRef.current = false
       nonceRef.current = null
+    }
+    return () => {
+      clearTimeout(initTimerRef.current)
     }
   }, [pathname, isAuthenticated, showOneTap])
 
@@ -177,18 +185,6 @@ export default function GoogleOneTap({ onLoginSuccess }) {
     window.addEventListener('message', onMessage)
     return () => window.removeEventListener('message', onMessage)
   }, [exchangeCredential])
-
-  // Preload the GSI script eagerly so One Tap is instant when the drawer opens.
-  useEffect(() => {
-    loadGsiScript().catch((err) => console.error('[Google One Tap]', err.message))
-
-    return () => {
-      if (window.google?.accounts?.id) {
-        window.google.accounts.id.cancel()
-      }
-      promptedRef.current = false
-    }
-  }, [])
 
   return (
     <div
