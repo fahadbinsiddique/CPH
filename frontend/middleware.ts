@@ -21,7 +21,6 @@ export function middleware(request: NextRequest) {
   response.headers.set('X-Forwarded-Proto', 'https');
 
   // ── Security Headers ──────────────────────────────────────────────
-  response.headers.set('X-Frame-Options', 'DENY');
   response.headers.set('X-Content-Type-Options', 'nosniff');
   response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
   response.headers.set(
@@ -47,6 +46,7 @@ export function middleware(request: NextRequest) {
       "font-src 'self' https://*.tawk.to",
       "connect-src 'self' http://localhost:8000 https://psychology-backend-29vm.onrender.com https://www.google-analytics.com https://analytics.google.com https://*.tawk.to wss://*.tawk.to https://accounts.google.com https://connect.facebook.net https://www.facebook.com",
       "frame-src https://www.googletagmanager.com https://*.tawk.to https://accounts.google.com",
+      "frame-ancestors 'self'",
       "object-src 'none'",
       "base-uri 'self'",
       "form-action 'self'",
