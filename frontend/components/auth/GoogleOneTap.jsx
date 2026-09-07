@@ -7,7 +7,7 @@ import useAuthStore from '@/store/authStore'
 import useUiStore from '@/store/uiStore'
 import { consumeResumePath } from '@/lib/authGate'
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000'
+const API_BASE_URL = (process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000').replace(/\/+$/, '')
 const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID
 
 // Guard: a missing client ID is the #1 silent instant-failure for One Tap. Surf
@@ -127,9 +127,10 @@ export default function GoogleOneTap({ onLoginSuccess }) {
       callback: handleGoogleResponse,
       nonce: nonceRef.current,
       // One account pre-selected without friction for returning users.
-      auto_select: true,
-      // FedCM works in the Chrome ecosystem where 3P cookies are blocked.
-      use_fedcm_for_prompt: true,
+      auto_select: false,
+      // FedCM only works in secure contexts (HTTPS). On HTTP localhost it fails
+      // with NetworkError, so we gate on protocol.
+      use_fedcm_for_prompt: window.location.protocol === 'https:',
       // iOS Safari / ITP fallback — redirects through the handler page below.
       itp_support: true,
       login_uri: `${window.location.origin}/auth/google-handler`,
@@ -146,8 +147,6 @@ export default function GoogleOneTap({ onLoginSuccess }) {
         } else if (reason !== 'user_skipped' && reason !== 'user_closed' && reason !== 'browser_not_supported') {
           console.warn('[Google One Tap] prompt suppressed:', reason)
         }
-        // Reset so a later drawer open can retry.
-        promptedRef.current = false
       }
     })
   }, [handleGoogleResponse])

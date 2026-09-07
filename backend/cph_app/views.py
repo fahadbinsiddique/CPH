@@ -335,8 +335,10 @@ class GoogleOneTapLoginView(APIView):
                 token,
                 requests.Request(),
                 settings.GOOGLE_CLIENT_ID,
+                clock_skew_in_seconds=60,
             )
-        except (ValueError, GoogleAuthError, TransportError):
+        except (ValueError, GoogleAuthError, TransportError) as exc:
+            print(f'[GOOGLE AUTH] Token verification failed: {type(exc).__name__}: {exc}')
             return Response({'error': 'Invalid or expired Google token'}, status=status.HTTP_400_BAD_REQUEST)
 
         if id_info.get('iss') not in ('accounts.google.com', 'https://accounts.google.com'):

@@ -322,6 +322,71 @@
 }
 
 /* =========================
+   TAWK.TO WIDGET Z-INDEX
+   Force the live-chat widget above every overlay (Next.js devtools,
+   z-index wars, overflow:hidden parents, etc.)
+========================= */
+
+#tawkto-container,
+[class*="tawk-"],
+[id*="tawkto"],
+[id^="y5sq6"],
+#pjoctd2rqvd1788701082850,
+#mvil2eosa3ks1788701083058,
+#f219faf6vg5k1788701083091,
+#vjeb54741oqs1788701082944,
+#bvpt3d4s921o1788701082904 {
+  z-index: 2147483647 !important;
+}
+
+/* =========================
+   TAWK.TO CPH BRAND THEMING
+   Match the live-chat widget to the CPH teal palette.
+========================= */
+
+:root {
+  --tawk-header-background-color: #0f766e !important;
+  --tawk-header-background-color-alpha: #0f766e80 !important;
+  --tawk-header-text-color: #ffffff !important;
+  --tawk-header-override-padding-top: 1rem !important;
+  --tawk-footer-override-padding-bottom: 0 !important;
+}
+
+.tawk-chat-bubble code,
+.tawk-chat-bubble pre {
+  border-color: #00000040 !important;
+  background-color: #00000020 !important;
+}
+
+.tawk-visitor-chat-bubble {
+  background: #f5f5f4 !important;
+  color: #44403c !important;
+}
+
+.tawk-visitor-chat-bubble .tawk-timeago {
+  color: #44403c !important;
+}
+
+.tawk-agent-chat-bubble {
+  background: #0f766e !important;
+  color: #ffffff !important;
+}
+
+.tawk-agent-chat-bubble .tawk-timeago {
+  color: #ffffff !important;
+}
+
+.tawk-agent-chat-bubble-dots {
+  background: #0f766e !important;
+}
+
+.tawk-button-hover:hover,
+.tawk-button-hover:focus {
+  background-color: hsla(0, 0%, 100%, .2) !important;
+  border-radius: 5px !important;
+}
+
+/* =========================
    RICH TEXT EDITOR (TipTap)
 ========================= */
 
