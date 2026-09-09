@@ -62,3 +62,6 @@ class AppointmentStatusUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Appointment
         fields = ['status', 'notes']
+        extra_kwargs = {
+            'status': {'choices': Appointment.STATUS_CHOICES},
+        }

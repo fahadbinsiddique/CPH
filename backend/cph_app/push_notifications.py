@@ -1,7 +1,10 @@
 import json
+import logging
 import os
 from pywebpush import webpush, WebPushException
 from django.conf import settings
+
+logger = logging.getLogger(__name__)
 
 
 VAPID_PRIVATE_KEY = os.getenv("VAPID_PRIVATE_KEY", "private_key.pem")
@@ -39,11 +42,11 @@ def send_push_notification(subscription_info, title, body, url="/dashboard"):
         )
         return True
     except WebPushException as ex:
-        print(f"Push Notification sent failed: {ex}")
+        logger.warning("Push notification failed: %s", ex)
         
         if ex.response and ex.response.status_code in [404, 410]:
-            print("Invalid or old subscription detected.")
+            logger.info("Invalid or expired push subscription detected")
         return False
     except Exception as e:
-        print(f"Unexpected Error: {e}")
+        logger.exception("Unexpected push notification error")
         return False

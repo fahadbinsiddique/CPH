@@ -1,3 +1,5 @@
+import logging
+
 from django.conf import settings
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.contrib.auth.password_validation import validate_password
@@ -11,7 +13,10 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.exceptions import TokenError
 from config.email_utils import welcome_email
 
+from cph_app.authentication import RoleAccessToken
 from cph_app.serializers import *
+
+logger = logging.getLogger(__name__)
 
 
 # Helper for authentication cookies.
@@ -81,7 +86,7 @@ class RegisterView(generics.CreateAPIView):
 
         # Generate Tokens
         refresh = RefreshToken.for_user(user)
-        access = refresh.access_token
+        access = RoleAccessToken.for_user(user)
 
         welcome_email(user) 
         
@@ -116,7 +121,7 @@ class LoginView(generics.GenericAPIView):
 
         # Generate Tokens
         refresh = RefreshToken.for_user(user)
-        access = refresh.access_token
+        access = RoleAccessToken.for_user(user)
 
         # Response
         response = Response(
@@ -155,8 +160,7 @@ class LogoutView(APIView):
 
         except (TokenError, Exception) as e:
             # If token blacklisting fails, continue gracefully and clear the browser cookies.
-            print(f"Logout token blacklisting skipped/failed: {str(e)}")
-            pass
+            logger.warning("Logout token blacklisting skipped/failed: %s", e)
 
         # Always return a response that clears the auth cookies.
         return clear_auth_cookies(response)
@@ -165,6 +169,8 @@ class LogoutView(APIView):
 # Refresh access token view.
 class RefreshTokenView(APIView):
     permission_classes = [AllowAny]
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = 'refresh_token'
 
     def post(self, request):
 
@@ -189,7 +195,7 @@ class RefreshTokenView(APIView):
                 refresh.blacklist()
                 refresh = RefreshToken.for_user(refresh.user)
 
-            access = refresh.access_token
+            access = RoleAccessToken.for_user(refresh.user)
 
             response = Response(
                 {
@@ -273,27 +279,21 @@ class AdminUserListView(generics.ListAPIView):
     
 class ChangePasswordView(APIView):
     permission_classes = [IsAuthenticated]
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = 'auth_action'
 
     def post(self, request):
-        user = request.user
-        old_password = request.data.get('old_password')
-        new_password = request.data.get('new_password')
+        serializer = ChangePasswordSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
 
-        if not user.check_password(old_password):
+        user = request.user
+        if not user.check_password(serializer.validated_data['old_password']):
             return Response(
                 {'error': 'Current password is incorrect.'},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        try:
-            validate_password(new_password)
-        except DjangoValidationError as e:
-            return Response(
-                {'error': e.messages[0]},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-
-        user.set_password(new_password)
+        user.set_password(serializer.validated_data['new_password'])
         user.save()
         return Response({'message': 'Password updated successfully.'})
 
@@ -338,7 +338,7 @@ class GoogleOneTapLoginView(APIView):
                 clock_skew_in_seconds=60,
             )
         except (ValueError, GoogleAuthError, TransportError) as exc:
-            print(f'[GOOGLE AUTH] Token verification failed: {type(exc).__name__}: {exc}')
+            logger.warning("Google token verification failed: %s", type(exc).__name__)
             return Response({'error': 'Invalid or expired Google token'}, status=status.HTTP_400_BAD_REQUEST)
 
         if id_info.get('iss') not in ('accounts.google.com', 'https://accounts.google.com'):
@@ -387,7 +387,7 @@ class GoogleOneTapLoginView(APIView):
                 user.save(update_fields=['google_sub'])
 
         refresh = RefreshToken.for_user(user)
-        access = refresh.access_token
+        access = RoleAccessToken.for_user(user)
 
         response = Response({
             "success": True,
@@ -406,7 +406,10 @@ class SavePushSubscriptionView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        data = request.data
+        serializer = PushSubscriptionSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.validated_data
+
         sub, created = PushSubscription.objects.update_or_create(
             user=request.user,
             endpoint=data["endpoint"],
@@ -419,7 +422,8 @@ class SavePushSubscriptionView(APIView):
 
     def delete(self, request):
         endpoint = request.data.get("endpoint")
-        PushSubscription.objects.filter(
-            user=request.user, endpoint=endpoint
-        ).delete()
+        if endpoint:
+            PushSubscription.objects.filter(
+                user=request.user, endpoint=endpoint
+            ).delete()
         return Response({"status": "deleted"})

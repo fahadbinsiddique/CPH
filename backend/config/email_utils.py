@@ -1,10 +1,13 @@
 import json
+import logging
 import os
 import threading
 import resend
 from django.conf import settings
 from cph_app.models import PushSubscription
 from cph_app.push_notifications import send_push_notification
+
+logger = logging.getLogger(__name__)
 
 # Resend Email Configuration
 resend.api_key = os.getenv("RESEND_API_KEY")
@@ -23,7 +26,7 @@ def send_email(to, subject, html):
         })
         return True
     except Exception as e:
-        print(f"Email send failed: {e}")
+        logger.exception("Email send failed")
         return False
 
 

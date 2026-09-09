@@ -119,12 +119,21 @@ REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
     # Keep DRF's default exception payload for frontend compatibility.
     'EXCEPTION_HANDLER': 'core.exceptions.custom_exception_handler',
+    # Global throttle defaults — every view gets baseline protection.
+    'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.AnonRateThrottle',
+        'rest_framework.throttling.UserRateThrottle',
+    ],
     # Public endpoints that mint sessions must be throttled (defense in depth
     # against token-replay / credential abuse).
     'DEFAULT_THROTTLE_RATES': {
-        'google_login': '10/hour',
-        'auth_action': '30/hour',
-        'assessment_submit': '20/hour',
+        'google_login': os.getenv('THROTTLE_GOOGLE_LOGIN', '10/hour'),
+        'auth_action': os.getenv('THROTTLE_AUTH_ACTION', '30/hour'),
+        'assessment_submit': os.getenv('THROTTLE_ASSESSMENT_SUBMIT', '20/hour'),
+        'refresh_token': os.getenv('THROTTLE_REFRESH_TOKEN', '30/hour'),
+        'write_action': os.getenv('THROTTLE_WRITE_ACTION', '60/hour'),
+        'anon': os.getenv('THROTTLE_ANON', '100/hour'),
+        'user': os.getenv('THROTTLE_USER', '1000/hour'),
     },
 }
 
@@ -220,3 +229,36 @@ STORAGES = {
 }
 
 AUTH_USER_MODEL = 'cph_app.User'
+
+# File upload limits (5 MB default)
+DATA_UPLOAD_MAX_MEMORY_SIZE = int(os.getenv('DATA_UPLOAD_MAX_MEMORY_SIZE', 5 * 1024 * 1024))
+FILE_UPLOAD_MAX_MEMORY_SIZE = int(os.getenv('FILE_UPLOAD_MAX_MEMORY_SIZE', 5 * 1024 * 1024))
+
+# Logging
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
+            'propagate': False,
+        },
+    },
+}

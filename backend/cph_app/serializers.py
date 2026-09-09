@@ -95,3 +95,22 @@ class UpdateProfileSerializer(serializers.ModelSerializer):
             "full_name": {"required": False, "max_length": 255},
             "phone_number": {"required": False, "max_length": 20},
         }
+
+
+class ChangePasswordSerializer(serializers.Serializer):
+    old_password = serializers.CharField(required=True)
+    new_password = serializers.CharField(required=True, min_length=8)
+
+    def validate_new_password(self, value):
+        validate_password(value)
+        return value
+
+
+class PushSubscriptionSerializer(serializers.Serializer):
+    endpoint = serializers.URLField(max_length=500)
+    keys = serializers.DictField(child=serializers.CharField(max_length=256))
+
+    def validate_keys(self, value):
+        if 'p256dh' not in value or 'auth' not in value:
+            raise serializers.ValidationError("keys must contain 'p256dh' and 'auth'.")
+        return value

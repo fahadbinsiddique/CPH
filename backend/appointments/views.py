@@ -2,6 +2,7 @@ from rest_framework import generics, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.throttling import ScopedRateThrottle
 from .models import Appointment
 from core.permissions import IsRoleAdmin
 from cph_app.authentication import CookieJWTAuthentication
@@ -21,6 +22,8 @@ from config.email_utils import (
 class AppointmentCreateView(generics.CreateAPIView):
     serializer_class = AppointmentCreateSerializer
     permission_classes = [IsAuthenticated]
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = 'write_action'
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(
@@ -69,6 +72,8 @@ class AppointmentDetailView(generics.RetrieveAPIView):
 class AppointmentStatusUpdateView(generics.UpdateAPIView):
     serializer_class = AppointmentStatusUpdateSerializer
     permission_classes = [IsAuthenticated]
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = 'write_action'
     http_method_names = ['patch']
 
     def get_queryset(self):

@@ -3,6 +3,16 @@ from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
 from rest_framework_simplejwt.tokens import AccessToken
 
 
+class RoleAccessToken(AccessToken):
+    """Access token that includes the user's role as a custom claim."""
+
+    @classmethod
+    def for_user(cls, user):
+        token = super().for_user(user)
+        token['role'] = getattr(user, 'role', 'client')
+        return token
+
+
 class CookieJWTAuthentication(JWTAuthentication):
     def authenticate(self, request):
         # First, try to read the token from the cookie.

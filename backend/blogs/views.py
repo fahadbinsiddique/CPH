@@ -1,3 +1,5 @@
+import logging
+
 from rest_framework import generics, filters, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -11,6 +13,8 @@ from .serializers import (
     BlogListSerializer, BlogDetailSerializer,
     BlogCreateUpdateSerializer, CategorySerializer, TagSerializer,
 )
+
+logger = logging.getLogger(__name__)
 
 
 class BlogPagination(PageNumberPagination):
@@ -137,19 +141,33 @@ class BlogImageUploadView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
+        # Validate the file is a real image before sending to Cloudinary.
+        try:
+            from PIL import Image
+            img = Image.open(image)
+            img.verify()
+            image.seek(0)
+        except Exception:
+            logger.warning("Uploaded file failed image verification: %s", image.name)
+            return Response(
+                {'detail': 'Uploaded file is not a valid image.'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
         try:
             import cloudinary.uploader
             result = cloudinary.uploader.upload(
                 image,
                 folder='blog-images/',
                 resource_type='image',
-                overwrite=True,
                 use_filename=True,
                 unique_filename=True,
+                allowed_formats=['jpg', 'png', 'gif', 'webp', 'avif'],
             )
-        except Exception as exc:
+        except Exception:
+            logger.exception("Blog image upload to Cloudinary failed")
             return Response(
-                {'detail': f'Upload failed: {exc}'},
+                {'detail': 'Image upload failed. Please try again.'},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 

@@ -1,6 +1,7 @@
 from rest_framework import generics, filters, status
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.throttling import ScopedRateThrottle
+from rest_framework import serializers as drf_serializers
 from core.permissions import IsRoleAdmin
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -292,9 +293,12 @@ class AdminConsultantVerifyView(APIView):
     permission_classes = [IsRoleAdmin]
 
     def patch(self, request, pk):
+        serializer = AdminConsultantVerifySerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
         try:
             consultant = Consultant.objects.get(pk=pk)
-            is_verified = request.data.get('is_verified', False)
+            is_verified = serializer.validated_data['is_verified']
             consultant.is_verified = is_verified
             consultant.user.role = 'consultant' if is_verified else 'client'
             consultant.user.save(update_fields=['role'])
@@ -357,3 +361,7 @@ class AdminSpecializationDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Specialization.objects.all()
     serializer_class = SpecializationSerializer
     permission_classes = [IsRoleAdmin]
+
+
+class AdminConsultantVerifySerializer(drf_serializers.Serializer):
+    is_verified = drf_serializers.BooleanField()

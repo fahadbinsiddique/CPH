@@ -1,4 +1,5 @@
 import re
+import logging
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 from django.contrib.auth import get_user_model
@@ -12,6 +13,8 @@ from config.email_utils import (
     send_consultant_welcome_email_async,  # admin-created consultant
     send_consultant_application_received_email_async,  # self-registration
 )
+
+logger = logging.getLogger(__name__)
 
 BD_PHONE_REGEX = re.compile(r'^(\+88|88)?01[3-9]\d{8}$')
 
@@ -170,6 +173,18 @@ class ConsultantCreateSerializer(serializers.ModelSerializer):
             )
         return value
 
+    def validate_profile_image(self, value):
+        if value is None:
+            return value
+        allowed_types = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/avif']
+        if hasattr(value, 'content_type') and value.content_type not in allowed_types:
+            raise serializers.ValidationError(
+                "Only JPEG, PNG, WebP, GIF, and AVIF images are allowed."
+            )
+        if hasattr(value, 'size') and value.size > 5 * 1024 * 1024:
+            raise serializers.ValidationError("Image must be under 5 MB.")
+        return value
+
     def validate(self, data):
         password = data.get("password")
         if password:
@@ -274,6 +289,18 @@ class ConsultantCreateUpdateSerializer(serializers.ModelSerializer):
         
         if not self.instance and User.objects.filter(email=value).exists():
             raise serializers.ValidationError("A user with this email already exists.")
+        return value
+
+    def validate_profile_image(self, value):
+        if value is None:
+            return value
+        allowed_types = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/avif']
+        if hasattr(value, 'content_type') and value.content_type not in allowed_types:
+            raise serializers.ValidationError(
+                "Only JPEG, PNG, WebP, GIF, and AVIF images are allowed."
+            )
+        if hasattr(value, 'size') and value.size > 5 * 1024 * 1024:
+            raise serializers.ValidationError("Image must be under 5 MB.")
         return value
 
     def validate(self, attrs):
@@ -389,6 +416,18 @@ class ConsultantMeSerializer(serializers.ModelSerializer):
             'consultation_fee', 'profile_image',
             'languages', 'location', 'is_available',
         ]
+
+    def validate_profile_image(self, value):
+        if value is None:
+            return value
+        allowed_types = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/avif']
+        if hasattr(value, 'content_type') and value.content_type not in allowed_types:
+            raise serializers.ValidationError(
+                "Only JPEG, PNG, WebP, GIF, and AVIF images are allowed."
+            )
+        if hasattr(value, 'size') and value.size > 5 * 1024 * 1024:
+            raise serializers.ValidationError("Image must be under 5 MB.")
+        return value
 
     def create(self, validated_data):
         user = self.context.get('user')

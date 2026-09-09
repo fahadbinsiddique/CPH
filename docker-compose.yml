@@ -6,7 +6,7 @@ services:
     environment:
       POSTGRES_DB: cph
       POSTGRES_USER: cph
-      POSTGRES_PASSWORD: cph
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-cph}
     volumes:
       - pgdata:/var/lib/postgresql/data
     ports:
