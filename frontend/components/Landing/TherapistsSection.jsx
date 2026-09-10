@@ -11,7 +11,6 @@ import {
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-  CarouselDots,
 } from '@/components/ui/carousel'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -67,7 +66,7 @@ const TherapistsSection = () => {
     () =>
       prefersReducedMotion
         ? undefined
-        : Autoplay({ delay: 4000, stopOnInteraction: false }),
+        : Autoplay({ delay: 5000, stopOnInteraction: false }),
     [prefersReducedMotion]
   )
 
@@ -89,7 +88,7 @@ const TherapistsSection = () => {
   )
 
   return (
-    <section className="section-pad relative overflow-hidden bg-white">
+    <section className="section-pad section-pad-lg relative overflow-hidden bg-white">
       <div className="pointer-events-none absolute inset-0" aria-hidden="true">
         <div className="absolute -left-20 -top-24 h-80 w-80 rounded-full bg-teal-50 blur-3xl" />
         <div className="absolute -bottom-24 -right-24 h-80 w-80 rounded-full bg-emerald-50 blur-3xl" />
@@ -114,8 +113,8 @@ const TherapistsSection = () => {
               renderSkeletons()
             ) : error ? (
               <div className="flex flex-col items-center justify-center gap-4 py-14 text-center">
-                <div className="flex h-14 w-14 items-center justify-center rounded-full bg-red-50">
-                  <UserX className="h-6 w-6 text-red-500" />
+                <div className="flex h-14 w-14 items-center justify-center rounded-full bg-rose-50">
+                  <UserX className="h-6 w-6 text-rose-500" />
                 </div>
                 <div>
                   <p className="text-base font-semibold text-stone-800">
@@ -158,7 +157,7 @@ const TherapistsSection = () => {
                 opts={{ align: 'start', loop: true }}
               >
                 <CarouselContent className="-ml-4 md:-ml-6">
-                  {therapists.map((doc) => {
+                  {therapists.map((doc, idx) => {
                     const fullName = doc.user?.full_name || 'Mental Health Expert'
                     const title = doc.specializations?.[0]?.name || 'Consultant Psychologist'
                     const profileImg = normalizeProfileImage(doc.profile_image)
@@ -176,7 +175,7 @@ const TherapistsSection = () => {
                           transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
                           className="h-full"
                         >
-                          <div className="group flex h-full flex-col overflow-hidden rounded-2xl border border-stone-200/70 bg-white shadow-soft transition-all duration-300 hover:-translate-y-1 hover:border-teal-200 hover:shadow-card">
+                          <div className="group flex h-full flex-col overflow-hidden rounded-2xl border border-stone-200/70 bg-white shadow-soft transition-all duration-500 hover:-translate-y-2 hover:border-teal-200 hover:shadow-float">
                             {/* ================= Portrait Container (Fixed Height & Scaled Image) ================= */}
                             <div className="relative h-64 sm:h-72 w-full shrink-0 overflow-hidden bg-gradient-to-br from-teal-50/60 to-emerald-50/60 p-2">
                               {profileImg && !showFallback ? (
@@ -242,7 +241,14 @@ const TherapistsSection = () => {
                   <CarouselNext className="-right-12 h-11 w-11 border-stone-200 bg-white text-stone-600 transition-colors hover:border-teal-200 hover:bg-teal-50 hover:text-teal-700 lg:-right-14" />
                 </div>
 
-                <CarouselDots count={therapists.length} className="mt-8" />
+                {/* Fraction indicator instead of dots */}
+                <div className="mt-8 text-center">
+                  <span className="text-sm font-medium text-stone-600">
+                    <span className="text-teal-700 font-bold" id="carousel-current">1</span>
+                    <span className="text-stone-400 mx-2">/</span>
+                    <span className="font-bold" id="carousel-total">{therapists.length}</span>
+                  </span>
+                </div>
               </Carousel>
             )}
           </div>

@@ -7,14 +7,11 @@ import { motion, AnimatePresence } from 'framer-motion'
 import {
   ChevronRight,
   Sparkles,
-  Clock,
-  Award,
   Mail,
   MapPin,
   Phone,
   Send,
   ShieldCheck,
-  Heart,
   ArrowUp,
   CheckCircle2,
 } from 'lucide-react'
@@ -31,7 +28,7 @@ const Input = ({ type = 'text', placeholder, className, ...props }) => (
 
 const Button = ({ children, variant = 'default', className, ...props }) => {
   const variants = {
-    default: 'bg-gradient-to-r from-teal-600 to-emerald-600 text-white hover:from-teal-700 hover:to-emerald-700 shadow-lg shadow-teal-600/20',
+    default: 'bg-teal-600 text-white hover:bg-teal-700 shadow-lg shadow-teal-600/20',
     outline: 'border border-white/20 text-white hover:bg-white/10',
   }
   return (
@@ -44,10 +41,11 @@ const Button = ({ children, variant = 'default', className, ...props }) => {
   )
 }
 
+const NOISE_SVG = "data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E";
+
 const Footer = () => {
   const [email, setEmail] = useState('')
   const [subscribed, setSubscribed] = useState(false)
-  const [isHovered, setIsHovered] = useState(false)
 
   const handleSubscribe = (e) => {
     e.preventDefault()
@@ -66,57 +64,33 @@ const Footer = () => {
       { name: 'Blog', href: '/blog' },
       { name: 'About Us', href: '/about-us' },
     ],
-    resources: [
-      { name: 'Mental Health Guides', href: '/guides' },
-      { name: 'Self Help Tools', href: '/tools' },
-      { name: 'Therapy Articles', href: '/articles' },
+    legal: [
       { name: 'Privacy Policy', href: '/privacy' },
       { name: 'Terms of Service', href: '/terms' },
-    ],
-    support: [
-      { name: 'FAQs', href: '/faq' },
-      { name: 'Contact Us', href: '/contact' },
-      { name: 'Emergency Support', href: '/emergency' },
-      { name: 'Feedback', href: '/feedback' },
+      { name: 'Cookie Policy', href: '/cookies' },
     ],
   }
 
-
-
   const trustBadges = [
     { icon: ShieldCheck, label: '100% Confidential' },
-    { icon: Award, label: 'Licensed Experts' },
-    // { icon: Clock, label: '24/7 Support' },
+    { icon: Sparkles, label: 'Licensed Experts' },
   ]
 
   return (
-    <footer className="relative bg-gradient-to-br from-stone-950 via-stone-900 to-teal-950 text-stone-300 overflow-hidden">
-      {/* Animated Background */}
-      <div className="absolute inset-0 pointer-events-none">
-        <motion.div
-          animate={{ scale: [1, 1.2, 1], x: [0, 30, -20, 0], y: [0, -20, 20, 0] }}
-          transition={{ duration: 20, repeat: Infinity, repeatType: 'mirror' }}
-          className="absolute top-[-150px] left-[-150px] w-[500px] h-[500px] bg-teal-500/5 rounded-full blur-3xl"
-        />
-        <motion.div
-          animate={{ scale: [1, 1.1, 1], x: [0, -30, 20, 0], y: [0, 20, -20, 0] }}
-          transition={{ duration: 25, repeat: Infinity, repeatType: 'mirror' }}
-          className="absolute bottom-[-150px] right-[-150px] w-[500px] h-[500px] bg-emerald-500/5 rounded-full blur-3xl"
-        />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-teal-500/5 rounded-full blur-3xl" />
-      </div>
+    <footer className="relative bg-stone-950 text-stone-300 overflow-hidden">
+      {/* Subtle noise overlay */}
+      <div className="pointer-events-none absolute inset-0 opacity-[0.03]" aria-hidden="true" style={{ backgroundImage: `url("${NOISE_SVG}")` }} />
 
       {/* Top Decorative Line */}
-      <div className="relative h-1 bg-gradient-to-r from-transparent via-teal-500/50 to-transparent" />
+      <div className="relative h-1 bg-gradient-to-r from-transparent via-teal-500/30 to-transparent" />
 
       <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8 py-16">
-        <div className="grid lg:grid-cols-12 sm:gap-10 gap-2">
-          {/* Brand Column - 4 columns */}
+        <div className="grid lg:grid-cols-2 gap-12">
+          {/* Brand Column */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="lg:col-span-4 col-span-3"
           >
             <Link href="/" className="inline-block">
               <Image
@@ -124,7 +98,7 @@ const Footer = () => {
                 width={250}
                 height={150}
                 alt="Centre For Psychological Health"
-                className="object-contain brightness-100 bg-white"
+                className="object-contain brightness-100"
               />
             </Link>
             <p className="text-sm text-stone-400 leading-relaxed max-w-sm mt-3">
@@ -133,7 +107,7 @@ const Footer = () => {
             </p>
 
             {/* Trust Badges */}
-            <div className="flex flex-wrap sm:gap-3 gap-2 mt-5">
+            <div className="flex flex-wrap gap-3 mt-5">
               {trustBadges.map((badge, idx) => {
                 const Icon = badge.icon
                 return (
@@ -183,116 +157,106 @@ const Footer = () => {
             </div>
           </motion.div>
 
-          {/* Quick Links - 2 columns */}
+          {/* Links Column */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.1 }}
-            className="lg:col-span-2 col-span-1"
+            className="grid grid-cols-2 gap-8 md:grid-cols-4"
           >
-            <h3 className="text-white font-semibold mb-4 text-lg">Quick Links</h3>
-            <ul className="space-y-2.5">
-              {footerLinks.quick.map((item) => (
-                <li key={item.name}>
-                  <Link
-                    href={item.href}
-                    className="text-stone-400 hover:text-teal-300 transition-colors duration-200 flex items-center gap-1 group"
-                  >
-                    <ChevronRight className="w-3 h-3 opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
-                    {item.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </motion.div>
-
-          {/* Resources - 2 columns */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.2 }}
-            className="lg:col-span-2"
-          >
-            <h3 className="text-white font-semibold mb-4 text-lg">Resources</h3>
-            <ul className="space-y-2.5">
-              {footerLinks.resources.map((item) => (
-                <li key={item.name}>
-                  <Link
-                    href={item.href}
-                    className="text-stone-400 hover:text-teal-300 transition-colors duration-200 flex items-center gap-1 group"
-                  >
-                    <ChevronRight className="w-3 h-3 opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
-                    {item.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </motion.div>
-
-          {/* Contact & Social - 2 columns */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.3 }}
-            className="lg:col-span-2"
-          >
-            <h3 className="text-white font-semibold mb-4 text-lg">Get in Touch</h3>
-            <div className="space-y-3 text-sm">
-              <div className="flex items-center gap-3 bg-white/5 rounded-xl px-3 py-2.5 border border-white/5 hover:border-teal-500/20 transition-colors group">
-                <Mail className="w-4 h-4 text-teal-400 group-hover:scale-110 transition-transform" />
-                <a href="mailto:info@cph.com" className="text-stone-300 hover:text-white transition">
-                  info@cph.com
-                </a>
-              </div>
-              <div className="flex items-center gap-3 bg-white/5 rounded-xl px-3 py-2.5 border border-white/5 hover:border-teal-500/20 transition-colors group">
-                <Phone className="w-4 h-4 text-teal-400 group-hover:scale-110 transition-transform" />
-                <a href="tel:+8801762389523" className="text-stone-300 hover:text-white transition">
-                  +880 1762-389523
-                </a>
-              </div>
-              <div className="flex items-start gap-3 bg-white/5 rounded-xl px-3 py-2.5 border border-white/5 hover:border-teal-500/20 transition-colors group">
-                <MapPin className="w-4 h-4 text-teal-400 mt-0.5 group-hover:scale-110 transition-transform" />
-                <span className="text-stone-300 text-xs leading-relaxed">
-                  28/1 Green Corner (5th floor),<br />
-                  Green Road, Dhanmondi 1205<br />
-                  Dhaka, Bangladesh
-                </span>
-              </div>
+            {/* Quick Links */}
+            <div>
+              <h3 className="text-white font-semibold mb-4 text-lg">Quick Links</h3>
+              <ul className="space-y-2.5">
+                {footerLinks.quick.map((item) => (
+                  <li key={item.name}>
+                    <Link
+                      href={item.href}
+                      className="text-stone-400 hover:text-teal-300 transition-colors duration-200 flex items-center gap-1 group"
+                    >
+                      <ChevronRight className="w-3 h-3 opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
+                      {item.name}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
             </div>
 
-            {/* Social Icons */}
-            <div className="mt-6">
-              <p className="text-xs text-stone-500 font-medium uppercase tracking-wider mb-3">
-                Follow Us
-              </p>
-              <div className="flex items-center gap-3">
-                {SOCIAL_LINKS.map((social) => {
-                  const Icon = social.icon
-                  return (
-                    <a
-                      key={social.label}
-                      href={social.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-stone-400 hover:text-teal-300 hover:bg-teal-500/10 hover:border-teal-500/30 transition-all hover:-translate-y-0.5"
-                      aria-label={social.label}
+            {/* Legal */}
+            <div>
+              <h3 className="text-white font-semibold mb-4 text-lg">Legal</h3>
+              <ul className="space-y-2.5">
+                {footerLinks.legal.map((item) => (
+                  <li key={item.name}>
+                    <Link
+                      href={item.href}
+                      className="text-stone-400 hover:text-teal-300 transition-colors duration-200 flex items-center gap-1 group"
                     >
-                      <Icon className="w-4 h-4" />
-                    </a>
-                  )
-                })}
+                      <ChevronRight className="w-3 h-3 opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
+                      {item.name}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Contact */}
+            <div className="md:col-span-2">
+              <h3 className="text-white font-semibold mb-4 text-lg">Get in Touch</h3>
+              <div className="space-y-3 text-sm">
+                <div className="flex items-center gap-3 bg-white/5 rounded-xl px-3 py-2.5 border border-white/5 hover:border-teal-500/20 transition-colors group">
+                  <Mail className="w-4 h-4 text-teal-400 group-hover:scale-110 transition-transform" />
+                  <a href="mailto:info@cph.com" className="text-stone-300 hover:text-white transition">
+                    info@cph.com
+                  </a>
+                </div>
+                <div className="flex items-center gap-3 bg-white/5 rounded-xl px-3 py-2.5 border border-white/5 hover:border-teal-500/20 transition-colors group">
+                  <Phone className="w-4 h-4 text-teal-400 group-hover:scale-110 transition-transform" />
+                  <a href="tel:+8801762389523" className="text-stone-300 hover:text-white transition">
+                    +880 1762-389523
+                  </a>
+                </div>
+                <div className="flex items-start gap-3 bg-white/5 rounded-xl px-3 py-2.5 border border-white/5 hover:border-teal-500/20 transition-colors group">
+                  <MapPin className="w-4 h-4 text-teal-400 mt-0.5 group-hover:scale-110 transition-transform" />
+                  <span className="text-stone-300 text-xs leading-relaxed">
+                    28/1 Green Corner (5th floor),<br />
+                    Green Road, Dhanmondi 1205<br />
+                    Dhaka, Bangladesh
+                  </span>
+                </div>
+              </div>
+
+              {/* Social Icons */}
+              <div className="mt-6">
+                <p className="text-xs text-stone-500 font-medium uppercase tracking-wider mb-3">
+                  Follow Us
+                </p>
+                <div className="flex items-center gap-3">
+                  {SOCIAL_LINKS.map((social) => {
+                    const Icon = social.icon
+                    return (
+                      <a
+                        key={social.label}
+                        href={social.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-stone-400 hover:text-teal-300 hover:bg-teal-500/10 hover:border-teal-500/30 transition-all hover:-translate-y-0.5"
+                        aria-label={social.label}
+                      >
+                        <Icon className="w-4 h-4" />
+                      </a>
+                    )
+                  })}
+                </div>
               </div>
             </div>
           </motion.div>
         </div>
 
-        {/* Divider with gradient */}
+        {/* Divider */}
         <div className="relative my-10">
-          <div className="border-t border-stone-700" />
-          
+          <div className="border-t border-stone-800" />
         </div>
 
         {/* Bottom Section */}
@@ -325,7 +289,7 @@ const Footer = () => {
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          className="absolute  sm:bottom-32 bottom-40 left-8 cursor-pointer p-3 rounded-full bg-teal-600/20 backdrop-blur-sm border border-teal-500/20 text-teal-400 hover:bg-teal-600/30 transition-all hover:border-teal-500/40  sm:block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:ring-offset-2 focus-visible:ring-offset-stone-900"
+          className="absolute bottom-8 left-8 cursor-pointer p-3 rounded-full bg-teal-600/20 backdrop-blur-sm border border-teal-500/20 text-teal-400 hover:bg-teal-600/30 transition-all hover:border-teal-500/40 sm:block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:ring-offset-2 focus-visible:ring-offset-stone-900"
           aria-label="Back to top"
         >
           <ArrowUp className="w-4 h-4" />

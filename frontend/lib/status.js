@@ -19,11 +19,11 @@ export const APPOINTMENT_STATUS = {
   },
   completed: {
     label: 'Completed',
-    chip: 'bg-blue-50 text-blue-700 border-blue-200/60',
+    chip: 'bg-teal-50 text-teal-700 border-teal-200/60',
     icon: CheckCircle2,
-    gradient: 'from-blue-50 to-blue-100/40',
-    dot: 'bg-blue-500',
-    ring: 'bg-blue-400',
+    gradient: 'from-teal-50 to-teal-100/40',
+    dot: 'bg-teal-500',
+    ring: 'bg-teal-400',
   },
   cancelled: {
     label: 'Cancelled',

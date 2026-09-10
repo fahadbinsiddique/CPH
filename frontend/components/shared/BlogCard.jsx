@@ -19,16 +19,10 @@ export default function BlogCard({ blog, featured = false }) {
 
   return (
     <Link href={`/blog/${slug}`} className="group block h-full">
-      <Card
-        className={`h-full overflow-hidden rounded-2xl border border-slate-100 shadow-sm transition-all duration-300 group-hover:-translate-y-1 group-hover:border-teal-200 group-hover:shadow-lg group-hover:shadow-teal-600/5 ${
-          featured ? 'sm:flex sm:flex-row' : ''
-        }`}
-      >
+      <Card variant="raised" className={`h-full overflow-hidden rounded-2xl transition-all duration-500 hover:shadow-float ${featured ? 'sm:flex sm:flex-row' : ''}`}>
         {/* Image */}
         <div
-          className={`relative overflow-hidden bg-gradient-to-br from-blue-100 to-indigo-100 ${
-            featured ? 'h-52 sm:h-auto sm:min-h-full sm:w-1/2' : 'h-44'
-          }`}
+          className={`relative overflow-hidden bg-gradient-to-br from-teal-50 to-emerald-50 ${featured ? 'h-52 sm:h-auto sm:min-h-full sm:w-1/2' : 'h-44'}`}
         >
           {showImage ? (
             <Image
@@ -42,7 +36,7 @@ export default function BlogCard({ blog, featured = false }) {
             />
           ) : (
             <div className="flex h-full w-full items-center justify-center">
-              <FileText className="h-10 w-10 text-blue-200 transition-colors group-hover:text-blue-300" />
+              <FileText className="h-10 w-10 text-teal-300 transition-colors group-hover:text-teal-400" />
             </div>
           )}
         </div>
@@ -57,16 +51,14 @@ export default function BlogCard({ blog, featured = false }) {
 
           {/* Title */}
           <h3
-            className={`font-bold leading-snug text-slate-800 transition-colors group-hover:text-teal-700 line-clamp-2 ${
-              featured ? 'text-xl sm:text-2xl' : 'text-base'
-            }`}
+            className={`font-bold leading-snug text-stone-800 transition-colors group-hover:text-teal-700 line-clamp-2 ${featured ? 'text-xl sm:text-2xl' : 'text-base'}`}
           >
             {title}
           </h3>
 
           {/* Excerpt */}
           {excerpt && (
-            <p className={`mt-2 text-sm leading-relaxed text-slate-400 line-clamp-2 ${featured ? 'sm:line-clamp-3' : ''}`}>
+            <p className={`mt-2 text-sm leading-relaxed text-stone-400 line-clamp-2 ${featured ? 'sm:line-clamp-3' : ''}`}>
               {excerpt}
             </p>
           )}
@@ -75,7 +67,7 @@ export default function BlogCard({ blog, featured = false }) {
           {tags?.length > 0 && (
             <div className="mt-3 flex flex-wrap gap-1.5">
               {tags.slice(0, 3).map((tag) => (
-                <span key={tag.id} className="text-xs text-slate-400">
+                <span key={tag.id} className="text-xs text-stone-400">
                   <Tag className="mr-1 inline h-3 w-3" />
                   {tag.name}
                 </span>
@@ -84,7 +76,7 @@ export default function BlogCard({ blog, featured = false }) {
           )}
 
           {/* Meta */}
-          <div className="mt-auto flex items-center justify-between pt-4 text-xs text-slate-400 border-t border-slate-100">
+          <div className="mt-auto flex items-center justify-between pt-4 text-xs text-stone-400 border-t border-stone-100">
             <div className="flex items-center gap-3">
               <span className="flex items-center gap-1">
                 <Clock className="h-3 w-3" /> {read_time || 1} min read

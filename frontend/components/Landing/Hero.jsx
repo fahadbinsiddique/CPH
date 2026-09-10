@@ -48,8 +48,8 @@ const Hero = () => {
       <div className="pointer-events-none absolute inset-0" aria-hidden="true">
         <div className="absolute -top-32 -left-28 h-96 w-96 rounded-full bg-teal-100/50 blur-3xl" />
         <div className="absolute -bottom-48 -right-24 h-[28rem] w-[28rem] rounded-full bg-emerald-100/60 blur-3xl" />
-        <div className="absolute top-[8%] right-[36%] hidden h-72 w-72 rounded-full bg-accent-lavender/70 blur-3xl md:block" />
-        <div className="absolute -left-24 bottom-[10%] h-72 w-72 rounded-full bg-accent-sky/60 blur-3xl" />
+        <div className="absolute top-[8%] right-[36%] hidden h-72 w-72 rounded-full bg-teal-100/40 blur-3xl md:block" />
+        <div className="absolute -left-24 bottom-[10%] h-72 w-72 rounded-full bg-emerald-100/40 blur-3xl" />
         <div className="absolute right-[10%] top-[14%] hidden h-72 w-72 rounded-full border border-teal-100/70 lg:block" />
         <div className="absolute bottom-[12%] left-[42%] hidden h-40 w-40 rounded-full border border-emerald-100/70 lg:block" />
       </div>
@@ -71,7 +71,7 @@ const Hero = () => {
 
             <h1 data-hero-title className="text-hero font-bold text-stone-900">
               <span className="block">
-                Find <span className="text-accent-warm">calm</span>, clarity,
+                Find <span className="text-teal-700">calm</span>, clarity,
               </span>
               <span className="block text-teal-700">and emotional balance</span>
             </h1>
@@ -99,7 +99,7 @@ const Hero = () => {
 
           {/* RIGHT — IMAGE */}
           <div data-hero-image className="relative mx-auto w-full lg:max-w-none">
-            <div className="relative aspect-[16/10] w-full overflow-hidden rounded-[2rem] ring-1 ring-teal-100/50 shadow-card">
+            <div className="relative aspect-[4/3] w-full overflow-hidden rounded-[2rem] ring-1 ring-teal-100/50 shadow-card">
               <Image
                 src="/banner1.png"
                 alt="CPH mental wellness platform — assessment, chat, booking, and therapist profiles"

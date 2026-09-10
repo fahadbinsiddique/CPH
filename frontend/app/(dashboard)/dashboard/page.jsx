@@ -23,38 +23,39 @@ function UserDashboard({ appointments }) {
   const completed = appointments.filter((a) => a.status === 'completed');
   const cancelled = appointments.filter((a) => a.status === 'cancelled');
 
+  const total = appointments.length || 1;
   const stats = [
     {
       icon: Calendar,
       label: 'Total Sessions',
       value: appointments.length,
-      iconClassName: 'bg-gradient-to-br from-indigo-100 to-blue-100 text-indigo-600',
-      gradient: 'from-indigo-50/20 to-blue-50/20',
+      iconClassName: 'bg-teal-50 text-teal-700',
       description: 'All time',
+      progress: 1,
     },
     {
       icon: Clock,
       label: 'Upcoming',
       value: upcoming.length,
-      iconClassName: 'bg-gradient-to-br from-amber-100 to-orange-100 text-amber-600',
-      gradient: 'from-amber-50/20 to-orange-50/20',
+      iconClassName: 'bg-amber-50 text-amber-700',
       description: 'Pending & confirmed',
+      progress: total > 0 ? upcoming.length / total : 0,
     },
     {
       icon: CheckCircle2,
       label: 'Completed',
       value: completed.length,
-      iconClassName: 'bg-gradient-to-br from-emerald-100 to-teal-100 text-emerald-600',
-      gradient: 'from-emerald-50/20 to-teal-50/20',
+      iconClassName: 'bg-emerald-50 text-emerald-700',
       description: 'Done',
+      progress: total > 0 ? completed.length / total : 0,
     },
     {
       icon: XCircle,
       label: 'Cancelled',
       value: cancelled.length,
-      iconClassName: 'bg-gradient-to-br from-rose-100 to-pink-100 text-rose-600',
-      gradient: 'from-rose-50/20 to-pink-50/20',
+      iconClassName: 'bg-stone-50 text-stone-600',
       description: 'No show',
+      progress: total > 0 ? cancelled.length / total : 0,
     },
   ];
 
@@ -193,7 +194,7 @@ export default function DashboardPage() {
         title={`Welcome back, ${firstName}!`}
         subtitle="Here is a summary of your account activity and upcoming sessions."
         actions={
-          <Badge variant="outline" className="border-slate-200 text-slate-500">
+          <Badge variant="outline" className="border-stone-200 text-stone-500">
             <Shield className="mr-1 h-3 w-3" />
             Secure
           </Badge>

@@ -1,15 +1,15 @@
 export const ROLE_STYLE = {
   admin: {
-    badge: 'bg-gradient-to-r from-purple-100 to-violet-100 text-purple-700 border-purple-200/60',
-    gradient: 'from-purple-600 to-violet-600',
-    chip: 'bg-purple-50 text-purple-700 border-purple-200',
-    iconColor: 'text-purple-600',
+    badge: 'bg-gradient-to-r from-teal-100 to-emerald-100 text-teal-700 border-teal-200/60',
+    gradient: 'from-teal-600 to-emerald-600',
+    chip: 'bg-teal-50 text-teal-700 border-teal-200',
+    iconColor: 'text-teal-600',
   },
   consultant: {
-    badge: 'bg-gradient-to-r from-indigo-100 to-blue-100 text-indigo-700 border-indigo-200/60',
-    gradient: 'from-indigo-600 to-blue-600',
-    chip: 'bg-indigo-50 text-indigo-700 border-indigo-200',
-    iconColor: 'text-indigo-600',
+    badge: 'bg-gradient-to-r from-teal-100 to-emerald-100 text-teal-700 border-teal-200/60',
+    gradient: 'from-teal-600 to-emerald-600',
+    chip: 'bg-teal-50 text-teal-700 border-teal-200',
+    iconColor: 'text-teal-600',
   },
   client: {
     badge: 'bg-gradient-to-r from-teal-100 to-emerald-100 text-teal-700 border-teal-200/60',

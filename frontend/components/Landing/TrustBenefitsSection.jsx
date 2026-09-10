@@ -28,11 +28,10 @@ const benefits = [
 
 const TrustBenefitsSection = () => {
   return (
-    <section className="section-pad relative overflow-hidden bg-stone-50">
+    <section className="section-pad section-pad-lg relative overflow-hidden bg-stone-50">
       <div className="pointer-events-none absolute inset-0" aria-hidden="true">
         <div className="absolute -right-24 -top-24 h-80 w-80 rounded-full bg-teal-100/40 blur-3xl" />
         <div className="absolute -bottom-28 -left-24 h-80 w-80 rounded-full bg-emerald-100/50 blur-3xl" />
-        <div className="absolute left-[38%] top-[10%] hidden h-64 w-64 rounded-full bg-accent-lavender/60 blur-3xl md:block" />
       </div>
 
       <div className="section-shell relative z-10">
@@ -53,7 +52,7 @@ const TrustBenefitsSection = () => {
               return (
                 <div
                   key={item.title}
-                  className="group rounded-2xl border border-stone-200/70 bg-white p-6 shadow-soft transition-all duration-300 hover:-translate-y-1 hover:border-teal-200 hover:shadow-card"
+                  className="group rounded-2xl shadow-card transition-all duration-500 hover:shadow-float p-6"
                 >
                   <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-teal-50 transition-colors duration-300 group-hover:bg-teal-100">
                     <Icon className="h-5 w-5 text-teal-600" />

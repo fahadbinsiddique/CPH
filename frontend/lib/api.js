@@ -28,8 +28,8 @@ const api = axios.create({
   // Automatically send and receive cookies.
   withCredentials: true,
 
-  // Request timeout after 10 seconds.
-  timeout: 10000,
+  // Request timeout after 30 seconds.
+  timeout: 30000,
 
   headers: {
     'Content-Type': 'application/json',
@@ -37,6 +37,17 @@ const api = axios.create({
     
   },
 })
+
+// Admin-specific instance with longer timeout for stats/analytics endpoints
+// export const apiAdmin = axios.create({
+//   baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
+//   withCredentials: true,
+//   timeout: 60000,
+//   headers: {
+//     'Content-Type': 'application/json',
+//     Accept: 'application/json',
+//   },
+// })
 
 // Offline adapter — serves cached GETs from IndexedDB and queues mutations
 // when offline, so the app never stalls on a 10s timeout while disconnected.

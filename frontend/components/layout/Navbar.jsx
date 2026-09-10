@@ -125,13 +125,13 @@ const Navbar = () => {
               width={240}
               height={160}
               alt="Centre For Psychological Health"
-              className="object-contain h-auto w-auto max-h-20 max-w-[180px] sm:max-w-[220px] md:max-h-24 md:max-w-[260px]"
+              className="object-contain h-auto w-auto max-h-16 max-w-[160px] sm:max-w-[180px] md:max-h-20 md:max-w-[200px]"
               priority
             />
           </Link>
 
           {/* Desktop Navigation Links */}
-          <div className="hidden lg:flex items-center gap-1 xl:gap-8">
+          <div className="hidden lg:flex items-center gap-1 xl:gap-6">
             {navLinks.map((link) => {
               const isActive = isActiveLink(link.href, link.id)
               return (
@@ -148,7 +148,7 @@ const Navbar = () => {
                   {isActive && (
                     <motion.span
                       layoutId="activeNavIndicator"
-                      className="absolute bottom-0 left-1/2 -translate-x-1/2 w-6 h-0.5 bg-gradient-to-r from-teal-600 to-emerald-600 rounded-full"
+                      className="absolute bottom-0 left-1/2 -translate-x-1/2 w-8 h-1 bg-gradient-to-r from-teal-600 to-emerald-600 rounded-full"
                       transition={{ type: 'spring', stiffness: 500, damping: 30 }}
                     />
                   )}
@@ -179,7 +179,7 @@ const Navbar = () => {
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    className="flex cursor-pointer items-center gap-2 px-2 py-1 rounded-full bg-gradient-to-r from-teal-50 to-emerald-50 border-2 border-teal-200 hover:border-teal-400 transition-all"
+                    className="flex cursor-pointer items-center gap-2 px-2 py-1 rounded-full bg-stone-100 border-2 border-stone-200 hover:border-teal-300 hover:bg-teal-50 transition-all"
                   >
                     <UserAvatar
                       name={user?.full_name}
@@ -251,7 +251,7 @@ const Navbar = () => {
                   whileHover={{ scale: 1.03, y: -1 }}
                   whileTap={{ scale: 0.97 }}
                   onClick={() => handleAuth('signup')}
-                  className="flex cursor-pointer items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-teal-600 to-emerald-600 text-white font-bold text-sm shadow-md shadow-teal-600/20 hover:shadow-lg hover:shadow-teal-600/30 transition-all"
+                  className="flex cursor-pointer items-center gap-2 px-5 py-2.5 rounded-full bg-teal-600 text-white font-bold text-sm shadow-md shadow-teal-600/20 hover:bg-teal-700 hover:shadow-lg hover:shadow-teal-600/30 transition-all"
                 >
                   <UserPlus size={16} />
                   Sign Up
@@ -279,7 +279,7 @@ const Navbar = () => {
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.3, ease: 'easeInOut' }}
-              className="lg:hidden bg-white border-t border-stone-100 shadow-2xl overflow-x-hidden overflow-y-auto max-h-[calc(100dvh-7rem)]"
+              className="lg:hidden bg-white border-t border-stone-100 shadow-2xl overflow-x-hidden overflow-y-auto max-h-[calc(100dvh-4.5rem)]"
             >
               <div className="container mx-auto px-4 py-6 flex flex-col gap-3">
                 {/* User info if authenticated */}
@@ -324,7 +324,7 @@ const Navbar = () => {
                     <>
                       <button
                         onClick={handleDashboard}
-                        className="flex cursor-pointer items-center justify-center gap-2 w-full bg-gradient-to-r from-teal-600 to-emerald-600 text-white py-3.5 rounded-xl hover:shadow-lg transition-all font-bold text-base"
+                        className="flex cursor-pointer items-center justify-center gap-2 w-full bg-teal-600 text-white py-3.5 rounded-xl hover:bg-teal-700 transition-all font-bold text-base"
                       >
                         <LayoutDashboard size={18} />
                         Dashboard
@@ -348,7 +348,7 @@ const Navbar = () => {
                       </button>
                       <button
                         onClick={() => handleAuth('signup')}
-                        className="flex cursor-pointer items-center justify-center gap-2 w-full bg-gradient-to-r from-teal-600 to-emerald-600 text-white py-3.5 rounded-xl hover:shadow-lg transition-all font-bold text-base"
+                        className="flex cursor-pointer items-center justify-center gap-2 w-full bg-teal-600 text-white py-3.5 rounded-xl hover:bg-teal-700 transition-all font-bold text-base"
                       >
                         <UserPlus size={18} />
                         Sign Up

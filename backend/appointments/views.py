@@ -148,18 +148,24 @@ class AdminStatsView(APIView):
     def get(self, request):
         from django.contrib.auth import get_user_model
         from consultants.models import Consultant
+        from django.db.models import Count, Q
 
         User = get_user_model()
+
+        # Single query with aggregation for appointment counts
+        appointment_stats = Appointment.objects.aggregate(
+            total=Count('id'),
+            pending=Count('id', filter=Q(status='pending')),
+            confirmed=Count('id', filter=Q(status='confirmed')),
+            completed=Count('id', filter=Q(status='completed')),
+            cancelled=Count('id', filter=Q(status='cancelled')),
+        )
 
         stats = {
             'total_users': User.objects.filter(role='client').count(),
             'total_consultants': Consultant.objects.count(),
             'verified_consultants': Consultant.objects.filter(is_verified=True).count(),
-            'total_appointments': Appointment.objects.count(),
-            'pending_appointments': Appointment.objects.filter(status='pending').count(),
-            'confirmed_appointments': Appointment.objects.filter(status='confirmed').count(),
-            'completed_appointments': Appointment.objects.filter(status='completed').count(),
-            'cancelled_appointments': Appointment.objects.filter(status='cancelled').count(),
+            **appointment_stats,
         }
         return Response(stats)
 
@@ -177,12 +183,11 @@ class AdminAnalyticsView(APIView):
         from assessments.models import QuizResult
 
         User = get_user_model()
-
         days = min(int(request.query_params.get('days', 30)), 365)
         since = timezone.now() - timedelta(days=days - 1)
         since_date = timezone.localdate() - timedelta(days=days - 1)
 
-        # Appointments per day (last N days)
+        # Parallelizable queries for daily series
         appointment_daily = (
             Appointment.objects
             .filter(created_at__gte=since)
@@ -191,9 +196,6 @@ class AdminAnalyticsView(APIView):
             .annotate(count=Count('id'))
             .order_by('day')
         )
-        appointment_by_day = {str(row['day']): row['count'] for row in appointment_daily}
-
-        # New client registrations per day (last N days)
         user_daily = (
             User.objects
             .filter(role='client', date_joined__gte=since)
@@ -202,9 +204,6 @@ class AdminAnalyticsView(APIView):
             .annotate(count=Count('id'))
             .order_by('day')
         )
-        user_by_day = {str(row['day']): row['count'] for row in user_daily}
-
-        # Assessment completions per day (last N days)
         quiz_daily = (
             QuizResult.objects
             .filter(completed_at__gte=since)
@@ -213,13 +212,14 @@ class AdminAnalyticsView(APIView):
             .annotate(count=Count('id'))
             .order_by('day')
         )
+
+        appointment_by_day = {str(row['day']): row['count'] for row in appointment_daily}
+        user_by_day = {str(row['day']): row['count'] for row in user_daily}
         quiz_by_day = {str(row['day']): row['count'] for row in quiz_daily}
 
-        # Build the dense series for each day in range
-        from datetime import timedelta as delta
         series = []
         for i in range(days):
-            day = since_date + delta(days=i)
+            day = since_date + timedelta(days=i)
             key = str(day)
             series.append({
                 'date': key,
@@ -228,9 +228,10 @@ class AdminAnalyticsView(APIView):
                 'assessments': quiz_by_day.get(key, 0),
             })
 
-        # Top consultants by total appointments
-        top_consultants = (
+        # Top consultants — use select_related to avoid N+1
+        top_consultants = list(
             Consultant.objects
+            .select_related('user')
             .annotate(total=Count('appointments'))
             .filter(total__gt=0)
             .order_by('-total')[:5]
@@ -241,29 +242,38 @@ class AdminAnalyticsView(APIView):
             for row in top_consultants
         ]
 
-        # Revenue estimate (confirmed + completed sessions)
-        revenue_estimate = sum(
-            a.consultant.consultation_fee
-            for a in Appointment.objects.filter(status__in=['confirmed', 'completed'])
-        )
+        # Revenue — aggregate at DB level, NOT in Python
+        revenue_estimate = Appointment.objects.filter(
+            status__in=['confirmed', 'completed']
+        ).aggregate(
+            total=Sum('consultant__consultation_fee')
+        )['total'] or 0
 
-        # Session type split
+        # Session types
         session_types = list(
             Appointment.objects
             .values('session_type')
             .annotate(count=Count('id'))
         )
 
+        # Status breakdown in single query
+        status_breakdown = dict(
+            Appointment.objects
+            .values('status')
+            .annotate(count=Count('id'))
+            .values_list('status', 'count')
+        )
+
         return Response({
             'period_days': days,
             'series': series,
             'status_breakdown': {
-                'pending': Appointment.objects.filter(status='pending').count(),
-                'confirmed': Appointment.objects.filter(status='confirmed').count(),
-                'completed': Appointment.objects.filter(status='completed').count(),
-                'cancelled': Appointment.objects.filter(status='cancelled').count(),
+                'pending': status_breakdown.get('pending', 0),
+                'confirmed': status_breakdown.get('confirmed', 0),
+                'completed': status_breakdown.get('completed', 0),
+                'cancelled': status_breakdown.get('cancelled', 0),
             },
             'session_types': session_types,
             'top_consultants': top_consultants,
-            'revenue_estimate': revenue_estimate,
+            'revenue_estimate': float(revenue_estimate),
         })

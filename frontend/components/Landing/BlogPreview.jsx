@@ -19,7 +19,7 @@ const blogs = [
   },
   {
     title: 'When Should You Talk to a Therapist?',
-    desc: 'Signs that indicate it’s time to seek professional mental health support.',
+    desc: "Signs that indicate it's time to seek professional mental health support.",
     tag: 'Therapy Guide',
     date: 'Nov 2025',
   },
@@ -27,11 +27,10 @@ const blogs = [
 
 const BlogPreview = () => {
   return (
-    <section className="section-pad relative overflow-hidden bg-stone-50/70">
+    <section className="section-pad section-pad-lg relative overflow-hidden bg-stone-50">
       <div className="pointer-events-none absolute inset-0" aria-hidden="true">
         <div className="absolute -left-24 -top-20 h-80 w-80 rounded-full bg-teal-50 blur-3xl" />
         <div className="absolute -bottom-24 -right-24 h-80 w-80 rounded-full bg-emerald-50 blur-3xl" />
-        <div className="absolute right-[30%] top-[18%] hidden h-64 w-64 rounded-full bg-accent-lavender/60 blur-3xl md:block" />
       </div>
 
       <div className="section-shell relative z-10">
@@ -48,7 +47,7 @@ const BlogPreview = () => {
           {blogs.map((post) => (
               <article
                 key={post.title}
-                className="group flex flex-col rounded-2xl border border-stone-200/70 bg-white p-6 shadow-soft transition-all duration-300 hover:-translate-y-1 hover:border-teal-200 hover:shadow-card"
+                className="group flex flex-col rounded-2xl shadow-card transition-all duration-500 hover:shadow-float p-6"
               >
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-teal-50 transition-colors duration-300 group-hover:bg-teal-100">
                   <BookOpen className="h-5 w-5 text-teal-600" />

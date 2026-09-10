@@ -36,11 +36,10 @@ const testimonials = [
 
 const Testimonials = () => {
   return (
-    <section className="section-pad relative overflow-hidden bg-white">
+    <section className="section-pad section-pad-lg relative overflow-hidden bg-white">
       <div className="pointer-events-none absolute inset-0" aria-hidden="true">
         <div className="absolute -top-24 -right-24 h-80 w-80 rounded-full bg-teal-50 blur-3xl" />
         <div className="absolute -bottom-24 -left-24 h-80 w-80 rounded-full bg-emerald-50 blur-3xl" />
-        <div className="absolute left-[20%] top-[16%] hidden h-72 w-72 rounded-full bg-accent-sky/50 blur-3xl md:block" />
       </div>
 
       <div className="section-shell relative z-10">
@@ -56,7 +55,7 @@ const Testimonials = () => {
           {testimonials.map((item) => (
               <figure
                 key={item.name}
-                className="flex flex-col rounded-2xl border border-stone-200/70 bg-stone-50/80 p-6 shadow-soft transition-all duration-300 hover:-translate-y-1 hover:border-teal-200 hover:shadow-card"
+                className="flex flex-col rounded-2xl shadow-card transition-all duration-500 hover:shadow-float p-6"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1">
@@ -64,7 +63,7 @@ const Testimonials = () => {
                       <Star
                         key={i}
                         className={`h-4 w-4 ${
-                          i < item.rating ? 'fill-amber-400 text-amber-400' : 'text-stone-300'
+                          i < item.rating ? 'fill-teal-400 text-teal-400' : 'text-stone-300'
                         }`}
                       />
                     ))}

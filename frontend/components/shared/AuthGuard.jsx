@@ -10,7 +10,8 @@ export default function AuthGuard({ children, allowedRoles = [] }) {
   const { isAuthenticated, user, fetchMe } = useAuthStore();
   const openLoginModal = useUiStore((s) => s.openLoginModal);
   const [isHydrated, setIsHydrated] = useState(false);
-  const hasFetched = useRef(false);
+  const [hasFetched, setHasFetched] = useState(false);
+  const fetchStarted = useRef(false);
 
   // Ensure the Zustand persisted state has finished hydrating.
   useEffect(() => {
@@ -33,8 +34,8 @@ export default function AuthGuard({ children, allowedRoles = [] }) {
     if (!isHydrated) return; // Wait until the persisted store is ready before calling the backend.
 
     const verify = async () => {
-      if (hasFetched.current) return;
-      hasFetched.current = true;
+      if (fetchStarted.current) return;
+      fetchStarted.current = true;
 
       try {
         await fetchMe();
@@ -56,6 +57,8 @@ export default function AuthGuard({ children, allowedRoles = [] }) {
           // Prompt the user to log back in when the session check fails or expired.
           toast.error('Please log in to proceed', { id: 'auth-toast' });
           openLoginModal();
+        } finally {
+          setHasFetched(true);
         }
     };
 
@@ -63,7 +66,7 @@ export default function AuthGuard({ children, allowedRoles = [] }) {
   }, [isHydrated, fetchMe, openLoginModal, allowedRoles]);
 
   // Lock the screen with a loading spinner until the auth state is fully ready.
-  if (!isHydrated || !hasFetched.current) {
+  if (!isHydrated || !hasFetched) {
     return (
       <div className="fixed inset-0 bg-slate-50/80 backdrop-blur-sm flex flex-col items-center justify-center z-50">
         <Loader2 className="w-8 h-8 text-indigo-600 animate-spin" />

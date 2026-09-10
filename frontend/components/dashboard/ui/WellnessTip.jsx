@@ -10,8 +10,8 @@ export default function WellnessTip({ icon: Icon = Heart, title, message, badgeL
         <Icon className="h-5 w-5 text-teal-500" />
       </div>
       <div className="flex-1">
-        <p className="text-sm font-semibold text-slate-700">{title}</p>
-        <p className="text-xs text-slate-500">{message}</p>
+        <p className="text-sm font-semibold text-stone-700">{title}</p>
+        <p className="text-xs text-stone-500">{message}</p>
       </div>
       {typeof badgeLabel === 'string' ? (
         <Badge className="border-teal-200 bg-white/60 text-xs text-teal-600">{badgeLabel}</Badge>

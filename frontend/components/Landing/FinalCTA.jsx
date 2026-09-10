@@ -7,12 +7,10 @@ import Reveal from '@/components/ui/Reveal'
 
 const FinalCTA = () => {
   return (
-    <section className="section-pad relative overflow-hidden bg-gradient-to-b from-white to-teal-50/60">
+    <section className="section-pad section-pad-lg relative overflow-hidden bg-gradient-to-b from-white to-teal-50/60">
       <div className="pointer-events-none absolute inset-0" aria-hidden="true">
         <div className="absolute -bottom-28 -left-24 h-96 w-96 rounded-full bg-teal-100/50 blur-3xl" />
         <div className="absolute -right-24 -top-24 h-96 w-96 rounded-full bg-emerald-100/50 blur-3xl" />
-        <div className="absolute left-1/2 top-[18%] hidden h-80 w-80 -translate-x-1/2 rounded-full bg-accent-emerald/50 blur-3xl lg:block" />
-        <div className="absolute bottom-[8%] left-[16%] hidden h-64 w-64 rounded-full bg-accent-lavender/60 blur-3xl md:block" />
       </div>
 
       <div className="section-shell relative z-10">
@@ -32,7 +30,7 @@ const FinalCTA = () => {
             </div>
 
             <div className="px-6 pb-8 pt-7 text-center md:px-12 md:pb-10">
-              <span className="inline-flex items-center gap-2 rounded-full border border-accent-warm-soft-border bg-accent-warm-soft px-4 py-1.5 text-sm font-medium text-accent-warm-soft-foreground">
+              <span className="inline-flex items-center gap-2 rounded-full border border-teal-200 bg-teal-50 px-4 py-1.5 text-sm font-medium text-teal-700">
                 <ShieldCheck className="h-4 w-4" />
                 Safe, secure, professional
               </span>

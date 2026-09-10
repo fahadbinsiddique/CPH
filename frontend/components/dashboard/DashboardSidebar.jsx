@@ -37,15 +37,15 @@ export const NAV_SECTIONS = {
       label: 'General',
       items: [
         { href: '/dashboard', label: 'Overview', icon: LayoutDashboard, color: 'from-teal-400 to-emerald-500' },
-        { href: '/dashboard/bookings', label: 'Appointments', icon: Calendar, color: 'from-blue-400 to-indigo-500' },
-        { href: '/dashboard/assessments', label: 'Assessments', icon: ClipboardList, color: 'from-indigo-400 to-blue-500' },
+        { href: '/dashboard/bookings', label: 'Appointments', icon: Calendar, color: 'from-teal-500 to-teal-600' },
+        { href: '/dashboard/assessments', label: 'Assessments', icon: ClipboardList, color: 'from-emerald-400 to-emerald-500' },
       ],
     },
     {
       label: 'Account',
       items: [
-        { href: '/dashboard/profile', label: 'Profile', icon: User, color: 'from-purple-400 to-pink-500' },
-        { href: '/dashboard/settings', label: 'Settings', icon: Settings, color: 'from-slate-400 to-slate-500' },
+        { href: '/dashboard/profile', label: 'Profile', icon: User, color: 'from-teal-400 to-emerald-400' },
+        { href: '/dashboard/settings', label: 'Settings', icon: Settings, color: 'from-stone-400 to-stone-500' },
       ],
     },
   ],
@@ -54,16 +54,16 @@ export const NAV_SECTIONS = {
       label: 'General',
       items: [
         { href: '/dashboard', label: 'Overview', icon: LayoutDashboard, color: 'from-teal-400 to-emerald-500' },
-        { href: '/dashboard/appointments', label: 'Appointments', icon: Calendar, color: 'from-blue-400 to-indigo-500' },
-        { href: '/dashboard/availability', label: 'Availability', icon: Clock, color: 'from-amber-400 to-orange-500' },
-        { href: '/dashboard/patients', label: 'My Patients', icon: Users, color: 'from-rose-400 to-pink-500' },
+        { href: '/dashboard/appointments', label: 'Appointments', icon: Calendar, color: 'from-teal-500 to-teal-600' },
+        { href: '/dashboard/availability', label: 'Availability', icon: Clock, color: 'from-emerald-400 to-emerald-500' },
+        { href: '/dashboard/patients', label: 'My Patients', icon: Users, color: 'from-teal-400 to-emerald-400' },
       ],
     },
     {
       label: 'Account',
       items: [
-        { href: '/dashboard/profile', label: 'Profile', icon: User, color: 'from-purple-400 to-pink-500' },
-        { href: '/dashboard/settings', label: 'Settings', icon: Settings, color: 'from-slate-400 to-slate-500' },
+        { href: '/dashboard/profile', label: 'Profile', icon: User, color: 'from-teal-400 to-emerald-400' },
+        { href: '/dashboard/settings', label: 'Settings', icon: Settings, color: 'from-stone-400 to-stone-500' },
       ],
     },
   ],
@@ -72,17 +72,17 @@ export const NAV_SECTIONS = {
       label: 'General',
       items: [
         { href: '/dashboard', label: 'Overview', icon: LayoutDashboard, color: 'from-teal-400 to-emerald-500' },
-        { href: '/dashboard/analytics', label: 'Analytics', icon: BarChart3, color: 'from-indigo-400 to-blue-500' },
+        { href: '/dashboard/analytics', label: 'Analytics', icon: BarChart3, color: 'from-teal-500 to-emerald-500' },
       ],
     },
     {
       label: 'Management',
       items: [
-        { href: '/dashboard/users', label: 'Manage Users', icon: Users, color: 'from-blue-400 to-indigo-500' },
-        { href: '/dashboard/consultants', label: 'Consultants', icon: Shield, color: 'from-violet-400 to-purple-500' },
-        { href: '/dashboard/specializations', label: 'Specializations', icon: Tag, color: 'from-indigo-400 to-blue-500' },
-        { href: '/dashboard/appointments', label: 'Appointments', icon: Calendar, color: 'from-amber-400 to-orange-500' },
-        { href: '/dashboard/blogs', label: 'Blog & Articles', icon: BookOpen, color: 'from-rose-400 to-pink-500' },
+        { href: '/dashboard/users', label: 'Manage Users', icon: Users, color: 'from-teal-500 to-teal-600' },
+        { href: '/dashboard/consultants', label: 'Consultants', icon: Shield, color: 'from-emerald-400 to-emerald-500' },
+        { href: '/dashboard/specializations', label: 'Specializations', icon: Tag, color: 'from-teal-500 to-emerald-500' },
+        { href: '/dashboard/appointments', label: 'Appointments', icon: Calendar, color: 'from-emerald-400 to-emerald-500' },
+        { href: '/dashboard/blogs', label: 'Blog & Articles', icon: BookOpen, color: 'from-teal-400 to-emerald-400' },
       ],
     },
     {
@@ -93,7 +93,7 @@ export const NAV_SECTIONS = {
     },
     {
       label: 'Account',
-      items: [{ href: '/dashboard/settings', label: 'Settings', icon: Settings, color: 'from-slate-400 to-slate-500' }],
+      items: [{ href: '/dashboard/settings', label: 'Settings', icon: Settings, color: 'from-stone-400 to-stone-500' }],
     },
   ],
 };

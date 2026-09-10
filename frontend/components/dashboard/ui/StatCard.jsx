@@ -11,20 +11,14 @@ export default function StatCard({
   icon: Icon,
   label,
   value,
-  iconClassName = 'bg-gradient-to-br from-teal-100 to-emerald-100 text-teal-700',
-  gradient = 'from-teal-50/20 to-emerald-50/20',
+  iconClassName = 'bg-teal-50 text-teal-700',
   description,
   trend,
   href,
+  progress = 0.33,
 }) {
   const content = (
-    <Card className="group dash-card dash-card-hover relative h-full overflow-hidden">
-      <div
-        className={cn(
-          'absolute inset-0 bg-gradient-to-br opacity-0 transition-opacity duration-700 group-hover:opacity-100',
-          gradient
-        )}
-      />
+    <Card variant="raised" className="group relative h-full overflow-hidden">
       <div className="dash-accent" />
       <CardContent className="relative z-10 p-6">
         <div className="flex items-start justify-between">
@@ -50,27 +44,25 @@ export default function StatCard({
               </span>
             )}
             {description && (
-              <span className="inline-flex items-center rounded-full border border-slate-200 bg-white/50 px-2 py-0.5 text-[10px] text-slate-500">
+              <span className="inline-flex items-center rounded-full border border-stone-200 bg-white/50 px-2 py-0.5 text-[10px] text-stone-500">
                 {description}
               </span>
             )}
           </div>
         </div>
         <div className="mt-4">
-          <p className="text-3xl font-bold tracking-tight text-slate-900">{value ?? '—'}</p>
-          <p className="mt-0.5 text-xs font-semibold tracking-wider text-slate-400 uppercase">{label}</p>
+          <p className="text-3xl font-bold tracking-tight text-stone-900">{value ?? '—'}</p>
+          <p className="mt-0.5 text-xs font-semibold tracking-wider text-stone-400 uppercase">{label}</p>
         </div>
-        <div className="mt-3 h-0.5 w-full overflow-hidden rounded-full bg-slate-100">
+        <div className="mt-3 h-0.5 w-full overflow-hidden rounded-full bg-stone-100">
           <div
-            className={cn(
-              'h-full w-1/3 rounded-full bg-gradient-to-r transition-all duration-1000 group-hover:w-full',
-              'bg-gradient-to-r from-teal-400 to-emerald-400'
-            )}
+            className="h-full rounded-full bg-gradient-to-r from-teal-400 to-emerald-400 transition-all duration-1000"
+            style={{ width: `${progress * 100}%` }}
           />
         </div>
         {href && (
           <div className="mt-3 flex justify-end">
-            <span className="inline-flex h-7 items-center gap-0.5 rounded-xl px-2 text-[10px] font-medium text-slate-400 transition-colors hover:bg-teal-50/80 hover:text-teal-600">
+            <span className="inline-flex h-7 items-center gap-0.5 rounded-xl px-2 text-[10px] font-medium text-stone-400 transition-colors hover:bg-teal-50/80 hover:text-teal-600">
               View Details
               <ChevronRight className="h-3 w-3" />
             </span>
