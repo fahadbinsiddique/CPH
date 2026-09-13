@@ -1,6 +1,3 @@
-'use client';
-
-import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import {
@@ -26,7 +23,6 @@ import { Badge } from '@/components/ui/badge';
 import StatCard from '@/components/dashboard/ui/StatCard';
 import LoadingState from '@/components/dashboard/ui/LoadingState';
 import WellnessTip from '@/components/dashboard/ui/WellnessTip';
-import api from '@/lib/api';
 import { containerVariants, itemVariants, statVariants } from '@/lib/motion';
 import { cn } from '@/lib/utils';
 
@@ -105,25 +101,8 @@ function StatusBreakdown({ stats }) {
   );
 }
 
-export default function AdminDashboard() {
-  const [stats, setStats] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    api
-      .get('/api/admin/appointments/stats/')
-      .then((res) => setStats(res.data))
-      .catch((err) => {
-        console.error(err);
-        setError('Failed to fetch dashboard data. Please try again.');
-      })
-      .finally(() => setLoading(false));
-  }, []);
-
-  if (loading) return <LoadingState label="Loading system insights..." />;
-
-  if (error)
+export default function AdminDashboard({ stats }) {
+  if (!stats) {
     return (
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
@@ -137,16 +116,13 @@ export default function AdminDashboard() {
             </div>
             <div>
               <h3 className="font-bold text-slate-800">Connection Error</h3>
-              <p className="mt-1 text-sm text-slate-500">{error}</p>
+              <p className="mt-1 text-sm text-slate-500">Failed to load dashboard data</p>
             </div>
-            <Button onClick={() => window.location.reload()} className="dash-cta mx-auto">
-              <Sparkles className="h-4 w-4" />
-              Retry Connection
-            </Button>
           </CardContent>
         </Card>
       </motion.div>
     );
+  }
 
   const statCards = [
     {

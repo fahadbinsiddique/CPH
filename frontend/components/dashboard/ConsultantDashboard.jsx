@@ -20,8 +20,8 @@ import StatCard from '@/components/dashboard/ui/StatCard';
 import AppointmentCard from '@/components/dashboard/ui/AppointmentCard';
 import EmptyState from '@/components/dashboard/ui/EmptyState';
 import WellnessTip from '@/components/dashboard/ui/WellnessTip';
-import { appointmentService } from '@/services/appointmentService';
 import { containerVariants, itemVariants } from '@/lib/motion';
+import { updateAppointmentStatus } from '@/app/(dashboard)/dashboard/actions/appointmentActions';
 
 export default function ConsultantDashboard({ appointments = [] }) {
   const [localAppointments, setLocalAppointments] = useState(appointments);
@@ -74,9 +74,13 @@ export default function ConsultantDashboard({ appointments = [] }) {
   const updateStatus = async (id, status) => {
     setProcessingId(id);
     try {
-      await appointmentService.updateStatus(id, { status });
-      setLocalAppointments((prev) => prev.map((a) => (a.id === id ? { ...a, status } : a)));
-      toast.success(status === 'confirmed' ? 'Appointment confirmed' : 'Appointment declined');
+      const result = await updateAppointmentStatus(id, status);
+      if (result.success) {
+        setLocalAppointments((prev) => prev.map((a) => (a.id === id ? { ...a, status } : a)));
+        toast.success(status === 'confirmed' ? 'Appointment confirmed' : 'Appointment declined');
+      } else {
+        toast.error(result.error || 'Something went wrong. Please try again.');
+      }
     } catch (error) {
       console.error(error);
       toast.error('Something went wrong. Please try again.');
