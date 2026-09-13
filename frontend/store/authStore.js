@@ -104,8 +104,6 @@ const useAuthStore = create(
       onRehydrateStorage: () => (state) => {
         if (state) {
           state.isHydrated = true;
-          // Validate the restored session against the backend.
-          state.fetchMe().catch(() => {});
         }
       },
     }

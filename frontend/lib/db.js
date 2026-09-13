@@ -8,6 +8,9 @@ const DB_VERSION = 1;
 let dbPromise;
 
 function getDB() {
+  if (typeof window === 'undefined') {
+    return Promise.reject(new Error('IndexedDB is not available on the server.'))
+  }
   if (!dbPromise) {
     dbPromise = openDB(DB_NAME, DB_VERSION, {
       upgrade(db) {

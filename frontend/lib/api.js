@@ -57,6 +57,9 @@ const defaultAdapter = axios.getAdapter
   : axios.defaults.adapter
 
 const offlineAdapter = async (config) => {
+  // Skip offline logic on the server (no IndexedDB).
+  if (typeof window === 'undefined') return defaultAdapter(config)
+
   const method = (config.method || 'get').toLowerCase()
   const url = buildRequestKey(config)
 
@@ -98,7 +101,11 @@ const offlineAdapter = async (config) => {
   throw new Error('You are offline.')
 }
 
-api.defaults.adapter = offlineAdapter
+// Only apply the offline adapter on the client — the server has no IndexedDB
+// and its default httpAdapter handles baseURL resolution correctly.
+if (typeof window !== 'undefined') {
+  api.defaults.adapter = offlineAdapter
+}
 
 // Response interceptor.
 

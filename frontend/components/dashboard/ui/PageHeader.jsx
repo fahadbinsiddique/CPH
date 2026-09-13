@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
+import { isValidElement, createElement } from 'react';
 
 export default function PageHeader({ badge, badgeIcon: BadgeIcon, title, subtitle, actions, eyebrow }) {
   return (
@@ -21,7 +22,7 @@ export default function PageHeader({ badge, badgeIcon: BadgeIcon, title, subtitl
                   'bg-teal-50 text-teal-700 border-teal-200/60'
                 )}
               >
-                {BadgeIcon && <BadgeIcon className="h-3.5 w-3.5" />}
+                {isValidElement(BadgeIcon) ? BadgeIcon : BadgeIcon ? createElement(BadgeIcon, { className: 'h-3.5 w-3.5' }) : null}
                 {badge}
               </span>
             )}

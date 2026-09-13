@@ -1,17 +1,15 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import useAuthStore from '@/store/authStore';
 import useUiStore from '@/store/uiStore';
 
 export default function AuthGuard({ children, allowedRoles = [] }) {
-  const { isAuthenticated, user, fetchMe } = useAuthStore();
   const openLoginModal = useUiStore((s) => s.openLoginModal);
   const [isHydrated, setIsHydrated] = useState(false);
   const [hasFetched, setHasFetched] = useState(false);
-  const fetchStarted = useRef(false);
 
   // Ensure the Zustand persisted state has finished hydrating.
   useEffect(() => {
@@ -31,39 +29,51 @@ export default function AuthGuard({ children, allowedRoles = [] }) {
 
   // Secure session verification logic.
   useEffect(() => {
-    if (!isHydrated) return; // Wait until the persisted store is ready before calling the backend.
+    if (!isHydrated) return;
 
     const verify = async () => {
-      if (fetchStarted.current) return;
-      fetchStarted.current = true;
+      const latest = useAuthStore.getState();
 
+      // Fast path: user is already in the persisted store.
+      // Trust it — the 401 interceptor handles expired sessions on the next API call.
+      if (latest.isAuthenticated && latest.user) {
+        // If roles are required, check against the stored user.
+        if (allowedRoles.length > 0 && !allowedRoles.includes(latest.user.role)) {
+          toast.error("You don't have permission to view this page!", {
+            id: 'auth-toast',
+          });
+        }
+        setHasFetched(true);
+        return;
+      }
+
+      // Slow path: no user in store — verify with the backend.
       try {
+        const { fetchMe } = useAuthStore.getState();
         await fetchMe();
-        const latest = useAuthStore.getState();
+        const refreshed = useAuthStore.getState();
 
-        if (!latest.isAuthenticated) {
-          // Stay on the current page and prompt the user to log in in-place.
+        if (!refreshed.isAuthenticated) {
           toast.error('Please log in to proceed', { id: 'auth-toast' });
           openLoginModal();
           return;
         }
 
-        if (allowedRoles.length > 0 && !allowedRoles.includes(latest.user?.role)) {
+        if (allowedRoles.length > 0 && !allowedRoles.includes(refreshed.user?.role)) {
           toast.error("You don't have permission to view this page!", {
             id: 'auth-toast',
           });
         }
-        } catch {
-          // Prompt the user to log back in when the session check fails or expired.
-          toast.error('Please log in to proceed', { id: 'auth-toast' });
-          openLoginModal();
-        } finally {
-          setHasFetched(true);
-        }
+      } catch {
+        toast.error('Please log in to proceed', { id: 'auth-toast' });
+        openLoginModal();
+      } finally {
+        setHasFetched(true);
+      }
     };
 
     verify();
-  }, [isHydrated, fetchMe, openLoginModal, allowedRoles]);
+  }, [isHydrated, openLoginModal, allowedRoles]);
 
   // Lock the screen with a loading spinner until the auth state is fully ready.
   if (!isHydrated || !hasFetched) {
@@ -76,6 +86,8 @@ export default function AuthGuard({ children, allowedRoles = [] }) {
       </div>
     );
   }
+
+  const { isAuthenticated, user } = useAuthStore.getState();
 
   if (!isAuthenticated || !user) return null;
 

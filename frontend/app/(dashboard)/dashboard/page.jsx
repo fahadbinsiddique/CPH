@@ -42,7 +42,7 @@ export default async function DashboardPage() {
       {/* Welcome Hero */}
       <PageHeader
         badge={`${role} Workspace`}
-        badgeIcon={UserCheck}
+        badgeIcon={<UserCheck className="h-3.5 w-3.5" />}
         title={`Welcome back, ${firstName}!`}
         subtitle="Here is a summary of your account activity and upcoming sessions."
         actions={
