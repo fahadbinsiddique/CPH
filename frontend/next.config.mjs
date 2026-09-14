@@ -5,7 +5,6 @@ const nextConfig = {
 
   output: 'standalone',
 
-  // caching issue remove
   skipTrailingSlashRedirect: true,
 
   images: {

@@ -1,7 +1,15 @@
+// public/sw.js — Service Worker for Centre for Psychological Health PWA.
+//
+// To bump the cache version, update CACHE_VERSION below. The activate handler
+// automatically deletes old-versioned caches so the browser picks up new assets.
 const CACHE_VERSION = "v2";
 const STATIC_CACHE = `cph-static-${CACHE_VERSION}`;
 const DYNAMIC_CACHE = `cph-dynamic-${CACHE_VERSION}`;
 const API_CACHE = `cph-api-${CACHE_VERSION}`;
+
+// Maximum entries per cache to prevent unbounded growth.
+const MAX_API_CACHE_ENTRIES = 100;
+const MAX_DYNAMIC_CACHE_ENTRIES = 200;
 
 // Offline-pages
 const STATIC_ASSETS = [
@@ -12,7 +20,7 @@ const STATIC_ASSETS = [
   "/icons/apple-touch-icon.png",
 ];
 
-//  API responses cache 
+//  API responses cache
 const CACHEABLE_API_PATTERNS = [
   /\/api\/consultants\/$/,
   /\/api\/blogs\/$/,
@@ -21,7 +29,7 @@ const CACHEABLE_API_PATTERNS = [
   /\/api\/consultants\/specializations\//,
 ];
 
-// routes cache never 
+// routes cache never
 const NEVER_CACHE_PATTERNS = [
   /\/api\/auth\//,           // auth endpoints
   /\/api\/appointments\//,   // real-time booking data
@@ -84,7 +92,7 @@ self.addEventListener("fetch", (event) => {
   const { request } = event;
   const url = new URL(request.url);
 
-  // Non-GET requests — never cache 
+  // Non-GET requests — never cache
   if (request.method !== "GET") return;
 
   // Chrome extensions skip
@@ -107,7 +115,7 @@ self.addEventListener("fetch", (event) => {
     );
 
     if (shouldCache) {
-      event.respondWith(networkFirst(request, API_CACHE));
+      event.respondWith(networkFirst(request, API_CACHE, MAX_API_CACHE_ENTRIES));
     } else {
       event.respondWith(fetch(request));
     }
@@ -122,7 +130,7 @@ self.addEventListener("fetch", (event) => {
 
   // Next.js image optimization — Cache First
   if (url.pathname.startsWith("/_next/image")) {
-    event.respondWith(cacheFirst(request, DYNAMIC_CACHE));
+    event.respondWith(cacheFirst(request, DYNAMIC_CACHE, MAX_DYNAMIC_CACHE_ENTRIES));
     return;
   }
 
@@ -133,14 +141,29 @@ self.addEventListener("fetch", (event) => {
   }
 
   // Everything else — Stale While Revalidate
-  event.respondWith(staleWhileRevalidate(request, DYNAMIC_CACHE));
+  event.respondWith(staleWhileRevalidate(request, DYNAMIC_CACHE, MAX_DYNAMIC_CACHE_ENTRIES));
 });
 
 
 // Caching Strategy Functions
 
+/**
+ * Trim a cache to the given maximum number of entries by removing the oldest
+ * (first-inserted) entries. This prevents unbounded cache growth.
+ */
+async function trimCache(cacheName, maxEntries) {
+  const cache = await caches.open(cacheName);
+  const keys = await cache.keys();
+  if (keys.length > maxEntries) {
+    // Delete oldest entries (first in the list) until we're at the limit.
+    const toDelete = keys.length - maxEntries;
+    for (let i = 0; i < toDelete; i++) {
+      await cache.delete(keys[i]);
+    }
+  }
+}
 
-// Cache First — for static assets 
+// Cache First — for static assets
 async function cacheFirst(request, cacheName) {
   const cached = await caches.match(request);
   if (cached) return cached;
@@ -157,13 +180,14 @@ async function cacheFirst(request, cacheName) {
   }
 }
 
-// Network First — for API calls 
-async function networkFirst(request, cacheName) {
+// Network First — for API calls
+async function networkFirst(request, cacheName, maxEntries) {
   try {
     const response = await fetch(request);
     if (response.ok) {
       const cache = await caches.open(cacheName);
       cache.put(request, response.clone());
+      if (maxEntries) trimCache(cacheName, maxEntries);
     }
     return response;
   } catch {
@@ -175,34 +199,38 @@ async function networkFirst(request, cacheName) {
   }
 }
 
-// Stale While Revalidate — for dynamic content 
-async function staleWhileRevalidate(request, cacheName) {
+// Stale While Revalidate — for dynamic content
+async function staleWhileRevalidate(request, cacheName, maxEntries) {
   const cache = await caches.open(cacheName);
   const cached = await cache.match(request);
 
   const fetchPromise = fetch(request).then((response) => {
-    if (response.ok) cache.put(request, response.clone());
+    if (response.ok) {
+      cache.put(request, response.clone());
+      if (maxEntries) trimCache(cacheName, maxEntries);
+    }
     return response;
   });
 
   return cached || fetchPromise;
 }
 
-// Navigation — for page load 
+// Navigation — for page load
 async function navigationHandler(request) {
   try {
     const response = await fetch(request);
     if (response.ok) {
       const cache = await caches.open(DYNAMIC_CACHE);
       cache.put(request, response.clone());
+      trimCache(DYNAMIC_CACHE, MAX_DYNAMIC_CACHE_ENTRIES);
     }
     return response;
   } catch {
-    // Cache 
+    // Cache
     const cached = await caches.match(request);
     if (cached) return cached;
 
-    // Offline page 
+    // Offline page
     return caches.match("/offline.html");
   }
 }

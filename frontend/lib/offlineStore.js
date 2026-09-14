@@ -4,12 +4,13 @@
 import {
   catalogPut,
   catalogGet,
+  catalogDeleteByPatterns,
   enqueueWrite,
   peekQueue,
   dequeueWrite,
   countQueue,
-  metaSet,
-  metaGet,
+  clearAll,
+  resetDatabase,
 } from "@/lib/db";
 
 export function isOnline() {
@@ -71,21 +72,28 @@ export async function readFromCatalog(url) {
   return catalogGet(url);
 }
 
+// Invalidate catalog entries matching the given URL patterns.
+export async function invalidateCatalog(patterns) {
+  return catalogDeleteByPatterns(patterns);
+}
+
 // Queue an offline mutation (booking / appointment / assessment submit).
 export async function queueOfflineWrite(method, url, body) {
   const id = await enqueueWrite(method, url, body);
-  await metaSet("pendingCount", await countQueue());
   return id;
 }
 
+// Pending count is always derived from the actual queue — no stale meta store.
 export async function getPendingCount() {
-  return metaGet("pendingCount") ?? (await countQueue());
+  return countQueue();
 }
 
 // Replay queued writes. Failed entries stay in the queue for the next attempt.
 export async function flushQueue() {
   if (!isOnline()) return { flushed: 0, failed: 0 };
 
+  // Dynamic import to avoid circular dependency at module init time.
+  // This is safe: api.js is only needed here for replaying mutations.
   const { default: api } = await import("@/lib/api");
   const pending = await peekQueue();
 
@@ -113,10 +121,15 @@ export async function flushQueue() {
     }
   }
 
-  await metaSet("pendingCount", await countQueue());
   return { flushed, failed };
 }
 
 export function shouldQueueEndpoint(url) {
   return shouldQueue(url);
+}
+
+// Full recovery: clear all IndexedDB data and reset the connection.
+export async function resetOfflineStorage() {
+  await clearAll();
+  resetDatabase();
 }

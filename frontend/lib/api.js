@@ -8,8 +8,9 @@ import {
   queueOfflineWrite,
   readFromCatalog,
   buildRequestKey,
-  catalogPut,
+  invalidateCatalog,
 } from '@/lib/offlineStore'
+import { catalogPut } from '@/lib/db'
 
 // Development console watermark.
 if (typeof window !== 'undefined') {
@@ -37,17 +38,6 @@ const api = axios.create({
     
   },
 })
-
-// Admin-specific instance with longer timeout for stats/analytics endpoints
-// export const apiAdmin = axios.create({
-//   baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
-//   withCredentials: true,
-//   timeout: 60000,
-//   headers: {
-//     'Content-Type': 'application/json',
-//     Accept: 'application/json',
-//   },
-// })
 
 // Offline adapter — serves cached GETs from IndexedDB and queues mutations
 // when offline, so the app never stalls on a 10s timeout while disconnected.
@@ -112,16 +102,29 @@ if (typeof window !== 'undefined') {
 api.interceptors.response.use(
   // Successful response.
 
-  (response) => {
+  async (response) => {
+    const method = (response.config.method || 'get').toLowerCase()
+
     // Persist successful GETs to the IndexedDB catalog for offline reads.
     if (
       !response.fromOffline &&
       response.config &&
-      (response.config.method || 'get').toLowerCase() === 'get' &&
+      method === 'get' &&
       response.data !== undefined
     ) {
-      catalogPut(buildRequestKey(response.config), response.data)
+      await catalogPut(buildRequestKey(response.config), response.data)
     }
+
+    // After a successful mutation, invalidate stale catalog entries so
+    // the next read fetches fresh data from the server.
+    if (
+      !response.fromOffline &&
+      method !== 'get' &&
+      response.config?.url
+    ) {
+      await invalidateStaleCatalog(response.config.url)
+    }
+
     return response
   },
 
@@ -181,5 +184,38 @@ api.interceptors.response.use(
     return Promise.reject(error)
   },
 )
+
+/**
+ * After a mutation, invalidate catalog entries for the affected collection.
+ * This ensures the next read fetches fresh data instead of stale cached responses.
+ *
+ * Strategy: derive the collection URL from the mutation URL by stripping the
+ * trailing ID segment, then invalidate that collection's catalog entry.
+ *
+ * Example:
+ *   DELETE /api/admin/blogs/42/  →  invalidate /api/admin/blogs/
+ *   POST   /api/admin/blogs/     →  invalidate /api/admin/blogs/
+ *   PATCH  /api/consultants/availability/7/  →  invalidate /api/consultants/availability/
+ */
+async function invalidateStaleCatalog(mutationUrl) {
+  try {
+    // Normalize: strip trailing slash and ID numbers, then add trailing slash.
+    const cleaned = mutationUrl.replace(/\/+$/, '');
+    const parts = cleaned.split('/');
+    const lastSegment = parts[parts.length - 1];
+
+    // If the last segment is a numeric ID, strip it to get the collection URL.
+    const collectionPath = /^\d+$/.test(lastSegment)
+      ? parts.slice(0, -1).join('/') + '/'
+      : cleaned + '/';
+
+    // Build patterns to invalidate: the collection URL and its base.
+    const patterns = [new RegExp(collectionPath.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))];
+
+    await invalidateCatalog(patterns);
+  } catch {
+    // Catalog invalidation is best-effort — don't block the response.
+  }
+}
 
 export default api

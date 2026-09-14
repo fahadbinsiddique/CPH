@@ -3,7 +3,7 @@
 
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { WifiOff, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
@@ -14,16 +14,23 @@ export default function ConnectionStatusBanner() {
   const online = useOnlineStatus();
   const [pending, setPending] = useState(0);
   const [syncing, setSyncing] = useState(false);
+  // Track whether the user has actually been offline, so we only flush
+  // on reconnect — not on initial mount when online is already true.
+  const wasOffline = useRef(false);
 
-  // Refresh the pending count when the banner appears.
+  // When going offline, mark it and refresh the pending count.
   useEffect(() => {
     if (!online) {
+      wasOffline.current = true;
       getPendingCount().then(setPending);
     }
   }, [online]);
 
+  // When coming back online after being offline, flush the queue.
   useEffect(() => {
-    if (online) {
+    if (online && wasOffline.current) {
+      wasOffline.current = false;
+
       const runFlush = async () => {
         const count = await getPendingCount();
         if (!count) return;
