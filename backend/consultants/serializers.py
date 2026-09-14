@@ -109,8 +109,11 @@ class ConsultantListSerializer(serializers.ModelSerializer):
         ]
 
     def get_profile_image(self, obj):
-        if obj.profile_image:
-            return obj.profile_image.url
+        try:
+            if obj.profile_image:
+                return obj.profile_image.url
+        except Exception:
+            logger.warning("Broken profile_image for consultant %s", obj.pk, exc_info=True)
         return None
 
 

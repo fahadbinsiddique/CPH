@@ -27,6 +27,7 @@ class ConsultantListView(generics.ListAPIView):
    # Public directory: only verified consultants are shown here.
    
     serializer_class = ConsultantListSerializer
+    permission_classes = [AllowAny]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ['is_available', 'is_featured' ,'specializations__slug', 'location']
     search_fields = ['user__full_name', 'bio', 'location', 'languages']

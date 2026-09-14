@@ -66,8 +66,11 @@ class BlogListSerializer(serializers.ModelSerializer):
         ]
 
     def get_featured_image(self, obj):
-        if obj.featured_image:
-            return obj.featured_image.url
+        try:
+            if obj.featured_image:
+                return obj.featured_image.url
+        except Exception:
+            pass
         return None
 
 
