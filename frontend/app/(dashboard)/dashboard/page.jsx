@@ -1,5 +1,4 @@
-import { cookies } from 'next/headers';
-import api from '@/lib/api';
+import serverApi from '@/lib/serverApi';
 import { fetchAppointments } from './actions/appointmentActions';
 import { fetchAdminStats } from './actions/adminActions';
 import UserDashboard from '@/components/dashboard/UserDashboard';
@@ -10,16 +9,9 @@ import { UserCheck, Shield } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
 async function getUser() {
-  const cookieStore = await cookies();
-  const token = cookieStore.get('access_token')?.value;
-
-  if (!token) return null;
-
   try {
-    const response = await api.get('/api/auth/me/', {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    return response.data;
+    const data = await serverApi.get('/api/auth/me/');
+    return data;
   } catch {
     return null;
   }

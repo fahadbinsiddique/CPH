@@ -1,6 +1,6 @@
 import { cookies } from 'next/headers';
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+const BASE_URL = process.env.API_BACKEND_URL || 'http://localhost:8000';
 
 async function request(method, path, { body, params, next } = {}) {
   const cookieStore = await cookies();

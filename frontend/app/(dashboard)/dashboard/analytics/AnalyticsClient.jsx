@@ -72,7 +72,7 @@ export default function AnalyticsClient({ initialData, initialDays }) {
   const [data, setData] = useState(initialData);
   const [days, setDays] = useState(initialDays);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(false);
+  const [error, setError] = useState(!initialData);
 
   const changeDays = async (d) => {
     setDays(d);
