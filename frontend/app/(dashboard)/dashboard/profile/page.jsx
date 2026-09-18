@@ -24,8 +24,9 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import PageHeader from '@/components/dashboard/ui/PageHeader';
+import AuthGuard from '@/components/shared/AuthGuard';
 import useAuthStore from '@/store/authStore';
-import api from '@/lib/api';
+import { updateProfile } from '../actions/authActions';
 import { containerVariants, itemVariants } from '@/lib/motion';
 import { getRoleStyle, getInitials, ROLE_LABEL } from '@/lib/roles';
 
@@ -66,19 +67,18 @@ export default function ProfilePage() {
     setError('');
     setSuccess(false);
 
-    try {
-      await api.patch('/api/auth/me/update/', formData);
+    const result = await updateProfile(formData);
+    if (result.success) {
       await fetchMe();
       setSuccess(true);
-    } catch (err) {
-      console.error(err);
-      setError(err.response?.data?.detail || 'Something went wrong while updating profile.');
-    } finally {
-      setSaving(false);
+    } else {
+      setError(result.error);
     }
+    setSaving(false);
   };
 
   return (
+    <AuthGuard>
     <motion.div variants={containerVariants} initial="hidden" animate="show" className="max-w-3xl space-y-6">
       <PageHeader
         badge="My Profile"
@@ -281,5 +281,6 @@ export default function ProfilePage() {
         </div>
       </motion.div>
     </motion.div>
+    </AuthGuard>
   );
 }

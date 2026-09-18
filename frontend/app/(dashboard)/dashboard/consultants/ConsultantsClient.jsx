@@ -25,6 +25,7 @@ import PageHeader from '@/components/dashboard/ui/PageHeader';
 import LoadingState from '@/components/dashboard/ui/LoadingState';
 import EmptyState from '@/components/dashboard/ui/EmptyState';
 import ConfirmDialog from '@/components/dashboard/ui/ConfirmDialog';
+import AuthGuard from '@/components/shared/AuthGuard';
 import { containerVariants, itemVariants } from '@/lib/motion';
 import { PASSWORD_RULES, isPasswordValid } from '@/lib/passwordValidation';
 import UserAvatar from '@/components/ui/user-avatar';
@@ -288,6 +289,7 @@ export default function ConsultantsClient({ initialConsultants = [], initialSpec
   const usedAvailabilityDays = availabilitySlots.map(s => s.day);
 
   return (
+    <AuthGuard allowedRoles={['admin']}>
     <motion.div
       variants={containerVariants}
       initial="hidden"
@@ -871,5 +873,6 @@ export default function ConsultantsClient({ initialConsultants = [], initialSpec
         loading={deletingId === confirmDelete?.id}
       />
     </motion.div>
+    </AuthGuard>
   );
 }

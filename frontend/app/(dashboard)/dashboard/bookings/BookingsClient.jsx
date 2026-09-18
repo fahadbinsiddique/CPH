@@ -18,7 +18,7 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { appointmentService } from '@/services/appointmentService';
+import { fetchAppointments, cancelAppointment } from '../actions/appointmentActions';
 import AuthGuard from '@/components/shared/AuthGuard';
 import PageHeader from '@/components/dashboard/ui/PageHeader';
 import LoadingState from '@/components/dashboard/ui/LoadingState';
@@ -188,8 +188,8 @@ export default function BookingsClient({ initialAppointments }) {
   const refetchAppointments = async () => {
     setLoading(true);
     try {
-      const res = await appointmentService.getAll();
-      setAppointments(res.data.results || res.data);
+      const data = await fetchAppointments();
+      setAppointments(data);
     } catch (err) {
       console.error(err);
     } finally {
@@ -198,13 +198,12 @@ export default function BookingsClient({ initialAppointments }) {
   };
 
   const handleCancel = async (id) => {
-    try {
-      await appointmentService.updateStatus(id, { status: 'cancelled' });
+    const result = await cancelAppointment(id);
+    if (result.success) {
       toast.success('Appointment cancelled');
       refetchAppointments();
-    } catch (err) {
-      console.error(err);
-      toast.error('Failed to cancel appointment');
+    } else {
+      toast.error(result.error || 'Failed to cancel appointment');
     }
   };
 
@@ -233,6 +232,7 @@ export default function BookingsClient({ initialAppointments }) {
   const totalAppointments = appointments.length;
 
   return (
+    <AuthGuard>
     <motion.div
       variants={containerVariants}
       initial="hidden"
@@ -342,5 +342,6 @@ export default function BookingsClient({ initialAppointments }) {
         </Tabs>
       )}
     </motion.div>
+    </AuthGuard>
   );
 }

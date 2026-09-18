@@ -1,13 +1,13 @@
 'use server';
 
-import api from '@/lib/api';
+import serverApi from '@/lib/serverApi';
 
 export async function fetchAnalytics(days = 30) {
   try {
-    const response = await api.get('/api/admin/appointments/analytics/', {
+    const data = await serverApi.get('/api/admin/appointments/analytics/', {
       params: { days },
     });
-    return response.data;
+    return data;
   } catch (error) {
     console.error('Failed to fetch analytics:', error);
     return null;

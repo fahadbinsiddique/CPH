@@ -2,7 +2,7 @@ from rest_framework import generics, filters, status
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.throttling import ScopedRateThrottle
 from rest_framework import serializers as drf_serializers
-from core.permissions import IsRoleAdmin
+from core.permissions import IsRoleAdmin, IsConsultant
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.exceptions import ValidationError
@@ -204,10 +204,14 @@ class ConsultantMyAvailabilityView(APIView):
     """
     Free time slot management for the doctor's own dashboard (Upsert logic)
     """
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsConsultant]
 
     def get_object(self):
-        return get_object_or_404(Consultant, user=self.request.user)
+        from rest_framework.exceptions import PermissionDenied
+        try:
+            return Consultant.objects.get(user=self.request.user)
+        except Consultant.DoesNotExist:
+            raise PermissionDenied("You do not have a consultant profile.")
 
     def get(self, request):
         consultant = self.get_object()
@@ -267,7 +271,7 @@ class ConsultantCreateView(generics.CreateAPIView):
     
 
 class AvailabilityDeleteView(generics.DestroyAPIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsConsultant]
 
     def get_queryset(self):
         return ConsultantAvailability.objects.filter(

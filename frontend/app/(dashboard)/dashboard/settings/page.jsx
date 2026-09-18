@@ -8,7 +8,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import PageHeader from '@/components/dashboard/ui/PageHeader';
-import api from '@/lib/api';
+import AuthGuard from '@/components/shared/AuthGuard';
+import { changePassword } from '../actions/authActions';
 import { containerVariants, itemVariants } from '@/lib/motion';
 import { usePushNotifications } from '@/hooks/usePushNotifications';
 import { PASSWORD_RULES, isPasswordValid } from '@/lib/passwordValidation';
@@ -120,18 +121,14 @@ export default function SettingsPage() {
       return;
     }
     setSaving(true);
-    try {
-      await api.post('/api/auth/change-password/', {
-        old_password: passwords.old_password,
-        new_password: passwords.new_password,
-      });
+    const result = await changePassword(passwords.old_password, passwords.new_password);
+    if (result.success) {
       setSuccess('Password changed successfully.');
       setPasswords({ old_password: '', new_password: '', confirm_password: '' });
-    } catch (err) {
-      setError(err.response?.data?.error || 'Failed to change password.');
-    } finally {
-      setSaving(false);
+    } else {
+      setError(result.error);
     }
+    setSaving(false);
   };
 
   const passwordFields = [
@@ -147,6 +144,7 @@ export default function SettingsPage() {
   ];
 
   return (
+    <AuthGuard>
     <motion.div
       variants={containerVariants}
       initial="hidden"
@@ -286,5 +284,6 @@ export default function SettingsPage() {
         </Card>
       </motion.div>
     </motion.div>
+    </AuthGuard>
   );
 }
