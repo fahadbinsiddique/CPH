@@ -34,7 +34,7 @@ def set_auth_cookies(response, access_token, refresh_token):
         httponly=jwt["AUTH_COOKIE_HTTP_ONLY"],
         secure=jwt["AUTH_COOKIE_SECURE"],
         samesite=jwt["AUTH_COOKIE_SAMESITE"],
-        max_age=60 * 60,  # 1 hour
+        max_age=int(jwt["ACCESS_TOKEN_LIFETIME"].total_seconds()),
     )
 
     response.set_cookie(
@@ -43,7 +43,7 @@ def set_auth_cookies(response, access_token, refresh_token):
         httponly=jwt["AUTH_COOKIE_HTTP_ONLY"],
         secure=jwt["AUTH_COOKIE_SECURE"],
         samesite=jwt["AUTH_COOKIE_SAMESITE"],
-        max_age=7 * 24 * 60 * 60,  # 7 days
+        max_age=int(jwt["REFRESH_TOKEN_LIFETIME"].total_seconds()),
     )
 
     return response
@@ -211,7 +211,7 @@ class RefreshTokenView(APIView):
                 httponly=jwt["AUTH_COOKIE_HTTP_ONLY"],
                 secure=jwt["AUTH_COOKIE_SECURE"],
                 samesite=jwt["AUTH_COOKIE_SAMESITE"],
-                max_age=60 * 60,
+                max_age=int(jwt["ACCESS_TOKEN_LIFETIME"].total_seconds()),
             )
 
             # Persist the rotated refresh token cookie so the next refresh works.
@@ -221,7 +221,7 @@ class RefreshTokenView(APIView):
                 httponly=jwt["AUTH_COOKIE_HTTP_ONLY"],
                 secure=jwt["AUTH_COOKIE_SECURE"],
                 samesite=jwt["AUTH_COOKIE_SAMESITE"],
-                max_age=7 * 24 * 60 * 60,
+                max_age=int(jwt["REFRESH_TOKEN_LIFETIME"].total_seconds()),
             )
 
             return response

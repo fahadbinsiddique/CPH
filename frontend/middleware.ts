@@ -77,10 +77,17 @@ export function middleware(request: NextRequest) {
       return NextResponse.redirect(loginUrl);
     }
 
+    // ── Expired token → redirect to home (Axios interceptor refreshes on next call)
+    const payload = decodeJwtPayload(accessToken.value);
+    if (payload?.exp && payload.exp * 1000 < Date.now()) {
+      const loginUrl = new URL('/', request.url);
+      loginUrl.searchParams.set('message', 'session_expired');
+      return NextResponse.redirect(loginUrl);
+    }
+
     // ── Role-based access control ─────────────────────────────────────────
     const requiredRole = getRequiredRole(pathname);
     if (requiredRole) {
-      const payload = decodeJwtPayload(accessToken.value);
       const userRole = payload?.role as string | undefined;
 
       let allowed = false;

@@ -27,6 +27,10 @@ function ToastHandler() {
         toast.error('Please login first to access the dashboard!', {
           id: 'auth-toast',
         });
+      } else if (messageCode === 'session_expired') {
+        toast.error('Your session has expired. Please login again.', {
+          id: 'auth-toast',
+        });
       } else if (messageCode === 'unauthorized') {
         toast.error("You don't have permission to view this page!", {
           id: 'auth-toast',
