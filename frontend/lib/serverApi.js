@@ -21,11 +21,13 @@ async function request(method, path, { body, params, next } = {}) {
     headers['Content-Type'] = 'application/json';
   }
 
+  const defaultNext = method === 'GET' ? { revalidate: 60 } : undefined;
+
   const res = await fetch(url.toString(), {
     method,
     headers,
     body: body ? (isFormData ? body : JSON.stringify(body)) : undefined,
-    next,
+    next: next ?? defaultNext,
   });
 
   if (!res.ok) {

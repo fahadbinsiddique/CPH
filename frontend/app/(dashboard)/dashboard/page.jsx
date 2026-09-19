@@ -1,36 +1,38 @@
 import serverApi from '@/lib/serverApi';
+import dynamic from 'next/dynamic';
 import { fetchAppointments } from './actions/appointmentActions';
 import { fetchAdminStats } from './actions/adminActions';
-import UserDashboard from '@/components/dashboard/UserDashboard';
-import ConsultantDashboard from '@/components/dashboard/ConsultantDashboard';
-import AdminDashboard from '@/components/dashboard/AdminDashboard';
+import StoreInitializer from '@/components/shared/StoreInitializer';
 import PageHeader from '@/components/dashboard/ui/PageHeader';
 import { UserCheck, Shield } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
+const UserDashboard = dynamic(() => import('@/components/dashboard/UserDashboard'));
+const ConsultantDashboard = dynamic(() => import('@/components/dashboard/ConsultantDashboard'));
+const AdminDashboard = dynamic(() => import('@/components/dashboard/AdminDashboard'));
+
 async function getUser() {
   try {
     const data = await serverApi.get('/api/auth/me/');
-    return data;
+    return data.user || data;
   } catch {
     return null;
   }
 }
 
-async function getAppointments(user) {
-  if (user?.role === 'admin') return [];
-  return fetchAppointments();
-}
-
 export default async function DashboardPage() {
   const user = await getUser();
-  const appointments = await getAppointments(user);
-  const stats = user?.role === 'admin' ? await fetchAdminStats() : null;
   const role = user?.role || 'client';
   const firstName = user?.full_name?.split(' ')[0] || 'User';
 
+  const [appointments, stats] = await Promise.all([
+    role === 'admin' ? [] : fetchAppointments(),
+    role === 'admin' ? fetchAdminStats() : null,
+  ]);
+
   return (
     <div className="space-y-6">
+      <StoreInitializer user={user} />
       {/* Welcome Hero */}
       <PageHeader
         badge={`${role} Workspace`}
