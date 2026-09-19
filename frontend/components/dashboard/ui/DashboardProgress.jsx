@@ -1,44 +1,55 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Shield, BarChart3, CalendarDays, Sparkles, CheckCircle2 } from 'lucide-react';
+import useAuthStore from '@/store/authStore';
 
 const STEPS = [
-  { label: 'Authenticating session', subtext: 'Verifying credentials', icon: Shield, threshold: 25 },
-  { label: 'Fetching dashboard metrics', subtext: 'Loading stats & analytics', icon: BarChart3, threshold: 50 },
-  { label: 'Loading appointments', subtext: 'Retrieving your schedule', icon: CalendarDays, threshold: 75 },
-  { label: 'Preparing workspace', subtext: 'Almost ready', icon: Sparkles, threshold: 95 },
+  { label: 'Authenticating session', subtext: 'Verifying credentials', icon: Shield, milestone: 25 },
+  { label: 'Fetching dashboard metrics', subtext: 'Loading stats & analytics', icon: BarChart3, milestone: 50 },
+  { label: 'Loading appointments', subtext: 'Retrieving your schedule', icon: CalendarDays, milestone: 75 },
+  { label: 'Preparing workspace', subtext: 'Almost ready', icon: Sparkles, milestone: 90 },
 ];
 
-const TICK_INTERVAL = 80;
-const MAX_PROGRESS = 95;
-const DECAY_SPEED = 400;
-
-function getDeceleratingProgress(tick) {
-  return MAX_PROGRESS * (1 - Math.exp(-tick / DECAY_SPEED));
+function getStepIndex(progress) {
+  const idx = STEPS.findIndex((s) => progress < s.milestone);
+  return idx === -1 ? STEPS.length - 1 : idx;
 }
 
 export default function DashboardProgress() {
   const [progress, setProgress] = useState(0);
-  const [stepIndex, setStepIndex] = useState(0);
-  const tickRef = useRef(0);
-  const intervalRef = useRef(null);
-
-  const tick = useCallback(() => {
-    tickRef.current += 1;
-    const next = getDeceleratingProgress(tickRef.current);
-    setProgress(next);
-
-    const nextStep = STEPS.findIndex((s) => next < s.threshold);
-    setStepIndex(nextStep === -1 ? STEPS.length - 1 : nextStep);
-  }, []);
+  const resolvedRef = useRef(new Set());
 
   useEffect(() => {
-    intervalRef.current = setInterval(tick, TICK_INTERVAL);
-    return () => clearInterval(intervalRef.current);
-  }, [tick]);
+    const checkMilestones = (state) => {
+      const updates = [];
 
+      // Milestone 1: Zustand hydrated
+      if (state.isHydrated && !resolvedRef.current.has('hydrated')) {
+        resolvedRef.current.add('hydrated');
+        updates.push(25);
+      }
+
+      // Milestone 2: User in store (server-verified or localStorage-restored)
+      if (state.isAuthenticated && state.user && !resolvedRef.current.has('user')) {
+        resolvedRef.current.add('user');
+        updates.push(90);
+      }
+
+      if (updates.length > 0) {
+        setProgress((prev) => Math.max(prev, ...updates));
+      }
+    };
+
+    // Check immediately on mount
+    checkMilestones(useAuthStore.getState());
+
+    const unsubscribe = useAuthStore.subscribe(checkMilestones);
+    return unsubscribe;
+  }, []);
+
+  const stepIndex = getStepIndex(progress);
   const step = STEPS[stepIndex];
   const StepIcon = step.icon;
 
@@ -58,7 +69,7 @@ export default function DashboardProgress() {
             className="h-full rounded-full bg-gradient-to-r from-teal-500 via-emerald-500 to-teal-500"
             initial={{ width: '0%' }}
             animate={{ width: `${progress}%` }}
-            transition={{ duration: 0.3, ease: 'easeOut' }}
+            transition={{ duration: 0.4, ease: 'easeOut' }}
           />
         </div>
 
@@ -104,7 +115,7 @@ export default function DashboardProgress() {
       {/* Step Indicators */}
       <div className="flex items-center gap-2">
         {STEPS.map((s, i) => {
-          const isCompleted = progress >= s.threshold;
+          const isCompleted = progress >= s.milestone;
           const isActive = i === stepIndex && !isCompleted;
           const Icon = s.icon;
           return (

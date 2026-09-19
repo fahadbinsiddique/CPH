@@ -1,15 +1,18 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import useAuthStore from '@/store/authStore';
 import useUiStore from '@/store/uiStore';
 
+const STORE_SEED_TIMEOUT = 100;
+
 export default function AuthGuard({ children, allowedRoles = [] }) {
   const openLoginModal = useUiStore((s) => s.openLoginModal);
   const [isHydrated, setIsHydrated] = useState(false);
   const [hasFetched, setHasFetched] = useState(false);
+  const resolvedRef = useRef(false);
 
   // Ensure the Zustand persisted state has finished hydrating.
   useEffect(() => {
@@ -30,49 +33,86 @@ export default function AuthGuard({ children, allowedRoles = [] }) {
   // Secure session verification logic.
   useEffect(() => {
     if (!isHydrated) return;
+    resolvedRef.current = false;
 
-    const verify = async () => {
+    const verify = () => {
       const latest = useAuthStore.getState();
 
       // Fast path: user is already in the persisted store.
-      // Trust it — the 401 interceptor handles expired sessions on the next API call.
       if (latest.isAuthenticated && latest.user) {
-        // If roles are required, check against the stored user.
-        if (allowedRoles.length > 0 && !allowedRoles.includes(latest.user.role)) {
-          toast.error("You don't have permission to view this page!", {
-            id: 'auth-toast',
-          });
-        }
-        setHasFetched(true);
+        resolveAuth(latest.user);
         return;
       }
 
-      // Slow path: no user in store — verify with the backend.
-      try {
-        const { fetchMe } = useAuthStore.getState();
-        await fetchMe();
-        const refreshed = useAuthStore.getState();
+      // Subscribe to store changes — StoreInitializer may seed the store
+      // after AuthGuard mounts (race between page render and hydration).
+      let settled = false;
+      const unsubscribe = useAuthStore.subscribe((state) => {
+        if (settled) return;
+        if (state.isAuthenticated && state.user) {
+          settled = true;
+          unsubscribe();
+          clearTimeout(fallbackTimer);
+          resolveAuth(state.user);
+        }
+      });
 
-        if (!refreshed.isAuthenticated) {
+      // Re-check immediately in case the store was seeded between our
+      // getState() call and the subscription setup.
+      const current = useAuthStore.getState();
+      if (current.isAuthenticated && current.user) {
+        settled = true;
+        unsubscribe();
+        clearTimeout(fallbackTimer);
+        resolveAuth(current.user);
+        return;
+      }
+
+      // Fallback: if the store is still empty after the timeout, fetch from API.
+      // This covers the case where there is no StoreInitializer (other routes).
+      const fallbackTimer = setTimeout(async () => {
+        if (settled || resolvedRef.current) return;
+        settled = true;
+        unsubscribe();
+
+        try {
+          const { fetchMe } = useAuthStore.getState();
+          await fetchMe();
+          const refreshed = useAuthStore.getState();
+
+          if (!refreshed.isAuthenticated) {
+            toast.error('Please log in to proceed', { id: 'auth-toast' });
+            openLoginModal();
+            return;
+          }
+
+          resolveAuth(refreshed.user);
+        } catch {
           toast.error('Please log in to proceed', { id: 'auth-toast' });
           openLoginModal();
-          return;
+        } finally {
+          setHasFetched(true);
         }
+      }, STORE_SEED_TIMEOUT);
+    };
 
-        if (allowedRoles.length > 0 && !allowedRoles.includes(refreshed.user?.role)) {
-          toast.error("You don't have permission to view this page!", {
-            id: 'auth-toast',
-          });
-        }
-      } catch {
-        toast.error('Please log in to proceed', { id: 'auth-toast' });
-        openLoginModal();
-      } finally {
-        setHasFetched(true);
+    const resolveAuth = (user) => {
+      if (resolvedRef.current) return;
+      resolvedRef.current = true;
+
+      if (allowedRoles.length > 0 && !allowedRoles.includes(user?.role)) {
+        toast.error("You don't have permission to view this page!", {
+          id: 'auth-toast',
+        });
       }
+      setHasFetched(true);
     };
 
     verify();
+
+    return () => {
+      // Cleanup handled inside verify via settled/resolvedRef guards
+    };
   }, [isHydrated, openLoginModal, allowedRoles]);
 
   // Lock the screen with a loading spinner until the auth state is fully ready.
