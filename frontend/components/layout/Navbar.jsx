@@ -18,7 +18,7 @@ import RegisterModal from '../auth/RegisterModal'
 import useAuthStore from '@/store/authStore'
 import useUiStore from '@/store/uiStore'
 
-const Navbar = () => {
+const Navbar = ({ hasAccessToken }) => {
   const router = useRouter()
   const pathname = usePathname()
   const { user, logout, isAuthenticated, isHydrated } = useAuthStore()
@@ -28,6 +28,22 @@ const Navbar = () => {
   const [isRegisterOpen, setIsRegisterOpen] = useState(false)
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const dropdownRef = useRef(null)
+
+  // If server says no cookie exists, clear any stale Zustand state from localStorage.
+  useEffect(() => {
+    if (!hasAccessToken) {
+      useAuthStore.setState({ user: null, isAuthenticated: false });
+      useAuthStore.persist.clearStorage();
+    }
+  }, []);
+
+  // Auth gate: server cookie is the source of truth.
+  // - hasAccessToken=true  → always show Dashboard (cookie is valid)
+  // - hasAccessToken=false → only trust Zustand after hydration, and only if
+  //   it wasn't stale (cleared above). Before hydration, show Login (no flash).
+  const isLoggedIn = hasAccessToken
+    ? true
+    : (isHydrated ? isAuthenticated : false);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -159,9 +175,9 @@ const Navbar = () => {
 
           {/* Desktop Auth / User Menu */}
           <div className="hidden lg:flex items-center gap-3">
-            {!isHydrated ? (
+            {!isHydrated && !hasAccessToken ? (
               <div className="h-10 w-24 bg-stone-100 rounded-full animate-pulse" />
-            ) : isAuthenticated ? (
+            ) : isLoggedIn ? (
               <>
                 {/* Dashboard Button */}
                 <motion.button
@@ -283,7 +299,7 @@ const Navbar = () => {
             >
               <div className="container mx-auto px-4 py-6 flex flex-col gap-3">
                 {/* User info if authenticated */}
-                {isAuthenticated && (
+                {isLoggedIn && (
                   <div className="flex items-center gap-3 pb-4 mb-2 border-b border-stone-100">
                     <UserAvatar
                       name={user?.full_name}
@@ -318,9 +334,9 @@ const Navbar = () => {
 
                 {/* Mobile Auth / User Actions */}
                 <div className="flex flex-col gap-3 mt-4 pt-4 border-t border-stone-100">
-                  {!isHydrated ? (
+                  {!isHydrated && !hasAccessToken ? (
                     <div className="h-12 w-full bg-stone-100 rounded-xl animate-pulse" />
-                  ) : isAuthenticated ? (
+                  ) : isLoggedIn ? (
                     <>
                       <button
                         onClick={handleDashboard}
