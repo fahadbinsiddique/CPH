@@ -24,7 +24,7 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import PageHeader from '@/components/dashboard/ui/PageHeader';
-import AuthGuard from '@/components/shared/AuthGuard';
+
 import useAuthStore from '@/store/authStore';
 import { updateProfile } from '../actions/authActions';
 import { containerVariants, itemVariants } from '@/lib/motion';
@@ -78,7 +78,6 @@ export default function ProfilePage() {
   };
 
   return (
-    <AuthGuard>
     <motion.div variants={containerVariants} initial="hidden" animate="show" className="max-w-3xl space-y-6">
       <PageHeader
         badge="My Profile"
@@ -281,6 +280,5 @@ export default function ProfilePage() {
         </div>
       </motion.div>
     </motion.div>
-    </AuthGuard>
   );
 }

@@ -16,7 +16,6 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import PageHeader from '@/components/dashboard/ui/PageHeader'
 import EmptyState from '@/components/dashboard/ui/EmptyState'
-import AuthGuard from '@/components/shared/AuthGuard'
 import {
   getSeverityMeta,
   getCategoryMeta,
@@ -48,7 +47,6 @@ export default function AssessmentHistoryPage() {
   }
 
   return (
-    <AuthGuard>
       <div className="max-w-3xl space-y-6">
         <PageHeader
           badge="Assessment History"
@@ -175,6 +173,5 @@ export default function AssessmentHistoryPage() {
           />
         )}
       </div>
-    </AuthGuard>
   )
 }

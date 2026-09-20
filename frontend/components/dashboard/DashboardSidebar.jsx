@@ -113,7 +113,8 @@ export function getPageLabel(pathname, role) {
 export default function DashboardSidebar({ instanceId = 'desktop', onNavigate }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { user, logout } = useAuthStore();
+  const user = useAuthStore((s) => s.user);
+  const logout = useAuthStore((s) => s.logout);
   const role = user?.role || 'client';
   const sections = NAV_SECTIONS[role] || NAV_SECTIONS.client;
   const roleStyle = getRoleStyle(role);

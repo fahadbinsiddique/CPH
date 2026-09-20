@@ -19,7 +19,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { fetchAppointments, cancelAppointment } from '../actions/appointmentActions';
-import AuthGuard from '@/components/shared/AuthGuard';
 import PageHeader from '@/components/dashboard/ui/PageHeader';
 import LoadingState from '@/components/dashboard/ui/LoadingState';
 import ConfirmDialog from '@/components/dashboard/ui/ConfirmDialog';
@@ -232,7 +231,6 @@ export default function BookingsClient({ initialAppointments }) {
   const totalAppointments = appointments.length;
 
   return (
-    <AuthGuard>
     <motion.div
       variants={containerVariants}
       initial="hidden"
@@ -342,6 +340,5 @@ export default function BookingsClient({ initialAppointments }) {
         </Tabs>
       )}
     </motion.div>
-    </AuthGuard>
   );
 }

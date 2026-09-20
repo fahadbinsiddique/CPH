@@ -8,7 +8,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import PageHeader from '@/components/dashboard/ui/PageHeader';
-import AuthGuard from '@/components/shared/AuthGuard';
 import { changePassword } from '../actions/authActions';
 import { containerVariants, itemVariants } from '@/lib/motion';
 import { usePushNotifications } from '@/hooks/usePushNotifications';
@@ -144,7 +143,6 @@ export default function SettingsPage() {
   ];
 
   return (
-    <AuthGuard>
     <motion.div
       variants={containerVariants}
       initial="hidden"
@@ -283,7 +281,6 @@ export default function SettingsPage() {
           </CardContent>
         </Card>
       </motion.div>
-    </motion.div>
-    </AuthGuard>
+      </motion.div>
   );
 }
