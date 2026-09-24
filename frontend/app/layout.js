@@ -4,11 +4,9 @@ import MotionProvider from '@/components/layout/MotionProvider'
 import { Toaster } from 'sonner'
 import GoogleOneTap from '@/components/auth/GoogleOneTap'
 import ServiceWorkerRegister from '@/components/shared/ServiceWorkerRegister'
-import PWAInstallPrompt from '@/components/shared/PWAInstallPrompt'
 import ConnectionStatusBanner from '@/components/shared/ConnectionStatusBanner'
 import ProductTourReturn from '@/components/product-tour/ProductTourReturn'
 import GTM from '@/components/analytics/GTM'
-import MetaPixel from '@/components/analytics/MetaPixel'
 import TawkTo from '@/components/analytics/TawkTo'
 import JsonLd from '@/components/seo/JsonLd'
 import {
@@ -146,7 +144,6 @@ export default function RootLayout({ children, modal }) {
       <body className="min-h-full flex flex-col">
         {/* Analytics (only load when env IDs are configured) */}
         <GTM />
-        {/* <MetaPixel /> */}
         <TawkTo />
         {/* Service Worker Auto Registration */}
         <ServiceWorkerRegister />
@@ -158,8 +155,6 @@ export default function RootLayout({ children, modal }) {
           {children}
           {modal}
         </MotionProvider>
-        {/* PWA Install Banner Popup */}
-        {/* <PWAInstallPrompt /> */}
         <Toaster position="top-center" richColors closeButton />
         <ProductTourReturn />
       </body>

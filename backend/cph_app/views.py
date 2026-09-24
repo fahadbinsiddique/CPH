@@ -1,6 +1,10 @@
+import base64
+import json
 import logging
 
 from django.conf import settings
+from django.contrib.auth import get_user_model
+from django.core.cache import cache
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.contrib.auth.password_validation import validate_password
 from rest_framework.views import APIView
@@ -9,6 +13,7 @@ from rest_framework import generics, status
 from rest_framework.viewsets import ModelViewSet 
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.throttling import ScopedRateThrottle
+from rest_framework_simplejwt.settings import api_settings as jwt_api_settings
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.exceptions import TokenError
 from config.email_utils import welcome_email
@@ -18,8 +23,6 @@ from cph_app.serializers import *
 
 logger = logging.getLogger(__name__)
 
-
-# Helper for authentication cookies.
 
 def set_auth_cookies(response, access_token, refresh_token):
     """
@@ -52,7 +55,6 @@ def set_auth_cookies(response, access_token, refresh_token):
 def clear_auth_cookies(response):    
     jwt = settings.SIMPLE_JWT
 
-    # Delete cookies according to the Django cookie configuration.
     response.delete_cookie(
         "access_token", 
         path="/",
@@ -68,7 +70,83 @@ def clear_auth_cookies(response):
     return response
 
 
-# Register view.
+# ── Refresh-token rotation grace ────────────────────────────────────────────
+# ROTATE_REFRESH_TOKENS + BLACKLIST_AFTER_ROTATION blacklists a refresh token
+# the instant it is exchanged. When two requests race (Next middleware and the
+# axios interceptor can both refresh at the same moment), the loser presents
+# the just-blacklisted token and would get a 401 — killing an otherwise
+# healthy session. For SIMPLE_JWT['REFRESH_ROTATION_GRACE'] seconds after a
+# rotation we remember which token it rotated into and serve that successor
+# idempotently instead.
+
+ROTATION_GRACE_CHAIN_DEPTH = 3
+
+
+def _rotation_cache_key(jti):
+    return f"refresh_rotation:{jti}"
+
+
+def decode_jwt_unverified(token_str):
+    """Decode a JWT payload without verifying the signature.
+
+    Used only to recover the `jti` of a token we already received so it can be
+    looked up in the rotation-grace cache. Never use the returned claims for
+    authorization decisions — any client can forge them.
+    """
+    try:
+        parts = str(token_str).split(".")
+        if len(parts) != 3:
+            return None
+        payload = parts[1]
+        payload += "=" * (-len(payload) % 4)  # tolerate unpadded base64url
+        return json.loads(base64.urlsafe_b64decode(payload).decode("utf-8"))
+    except (ValueError, TypeError):
+        return None
+
+
+def recover_rotated_refresh(token_str, grace):
+    """Return the successor of an already-rotated refresh token, if usable.
+
+    Follows at most ROTATION_GRACE_CHAIN_DEPTH hops so a token whose successor
+    has itself been rotated (or blacklisted by logout) still resolves to a
+    live token — or to None when the chain is exhausted.
+    """
+    payload = decode_jwt_unverified(token_str)
+    jti = (payload or {}).get("jti")
+
+    for _ in range(ROTATION_GRACE_CHAIN_DEPTH):
+        if not jti:
+            return None
+        successor = cache.get(_rotation_cache_key(jti))
+        if not successor:
+            return None
+        try:
+            return RefreshToken(successor)
+        except TokenError:
+            # Successor itself was rotated/expired/blacklisted — next hop.
+            payload = decode_jwt_unverified(successor)
+            jti = (payload or {}).get("jti")
+
+    return None
+
+
+def _user_for_token(token):
+    """Resolve the owner of a verified JWT.
+
+    simplejwt tokens expose no `.user` attribute (the old code called
+    `refresh.user`, which raised AttributeError → 500 on every refresh); the
+    user id lives in USER_ID_CLAIM of the payload instead. Raises TokenError
+    so callers answer 401 rather than crashing.
+    """
+    user_id = token.payload.get(jwt_api_settings.USER_ID_CLAIM)
+    if user_id is None:
+        raise TokenError("Token has no user claim")
+    user_model = get_user_model()
+    try:
+        return user_model.objects.get(**{jwt_api_settings.USER_ID_FIELD: user_id})
+    except user_model.DoesNotExist as exc:
+        raise TokenError("Token user no longer exists") from exc
+
 
 class RegisterView(generics.CreateAPIView):
     serializer_class = RegisterSerializer
@@ -81,16 +159,13 @@ class RegisterView(generics.CreateAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        # Create the user.
         user = serializer.save()
 
-        # Generate Tokens
         refresh = RefreshToken.for_user(user)
         access = RoleAccessToken.for_user(user)
 
         welcome_email(user) 
         
-        # Response
         response = Response(
             {
                 "success": True,
@@ -100,11 +175,8 @@ class RegisterView(generics.CreateAPIView):
             status=status.HTTP_201_CREATED,
         )
 
-        # Set Cookies
         return set_auth_cookies(response, access, refresh)
 
-
-# Login view.
 
 class LoginView(generics.GenericAPIView):
     serializer_class = LoginSerializer
@@ -119,11 +191,9 @@ class LoginView(generics.GenericAPIView):
 
         user = serializer.validated_data["user"]
 
-        # Generate Tokens
         refresh = RefreshToken.for_user(user)
         access = RoleAccessToken.for_user(user)
 
-        # Response
         response = Response(
             {
                 "success": True,
@@ -133,13 +203,16 @@ class LoginView(generics.GenericAPIView):
             status=status.HTTP_200_OK,
         )
 
-        # Set Cookies
         return set_auth_cookies(response, access, refresh)
 
 
-# Logout view.
 class LogoutView(APIView):
-    permission_classes = [IsAuthenticated]
+    # AllowAny: the access token only lives a minute, so logout most often
+    # arrives after it has already expired. Requiring authentication here made
+    # the backend answer 401, the httpOnly cookies could then never be deleted
+    # (JS cannot touch them), and the leftover refresh cookie kept the
+    # "logged out" session alive in middleware.
+    permission_classes = [AllowAny]
 
     def post(self, request):
         response = Response(
@@ -153,8 +226,22 @@ class LogoutView(APIView):
         try:
             refresh_token = request.COOKIES.get("refresh_token")
 
-            # Blacklist the refresh token.
             if refresh_token:
+                payload = decode_jwt_unverified(refresh_token)
+                jti = (payload or {}).get("jti")
+                if jti:
+                    # If a concurrent refresh already rotated this token,
+                    # blacklist its successor too and drop the grace mapping
+                    # so neither can be replayed after logout.
+                    key = _rotation_cache_key(jti)
+                    successor = cache.get(key)
+                    if successor:
+                        try:
+                            RefreshToken(successor).blacklist()
+                        except TokenError:
+                            pass
+                        cache.delete(key)
+
                 token = RefreshToken(refresh_token)
                 token.blacklist()
 
@@ -166,7 +253,6 @@ class LogoutView(APIView):
         return clear_auth_cookies(response)
 
 
-# Refresh access token view.
 class RefreshTokenView(APIView):
     permission_classes = [AllowAny]
     throttle_classes = [ScopedRateThrottle]
@@ -186,21 +272,49 @@ class RefreshTokenView(APIView):
                 status=status.HTTP_401_UNAUTHORIZED,
             )
 
+        grace = int(jwt.get("REFRESH_ROTATION_GRACE", 60))
+
         try:
             refresh = RefreshToken(refresh_token)
+            original_jti = refresh.payload.get("jti")
+        except TokenError:
+            # The cookie token is already blacklisted — almost always because
+            # a concurrent request rotated it moments ago (Next middleware +
+            # axios interceptor racing). Recover the successor instead of
+            # failing the session.
+            payload = decode_jwt_unverified(refresh_token)
+            original_jti = (payload or {}).get("jti")
+            refresh = recover_rotated_refresh(refresh_token, grace)
+            if refresh is None:
+                return Response(
+                    {
+                        "success": False,
+                        "message": "Invalid or expired refresh token",
+                    },
+                    status=status.HTTP_401_UNAUTHORIZED,
+                )
+
+        try:
+            user = _user_for_token(refresh)
 
             # Rotate the refresh token: blacklist the old one and mint a fresh
             # refresh token, honoring ROTATE_REFRESH_TOKENS / BLACKLIST_AFTER_ROTATION.
-            if settings.SIMPLE_JWT.get('ROTATE_REFRESH_TOKENS', False):
+            if jwt.get('ROTATE_REFRESH_TOKENS', False):
                 refresh.blacklist()
-                refresh = RefreshToken.for_user(refresh.user)
+                refresh = RefreshToken.for_user(user)
+                if original_jti:
+                    # Record the rotation so replays of the previous token
+                    # within the grace window resolve here instead of 401ing.
+                    cache.set(_rotation_cache_key(original_jti), str(refresh), timeout=grace)
 
-            access = RoleAccessToken.for_user(refresh.user)
+            access = RoleAccessToken.for_user(user)
 
             response = Response(
                 {
                     "success": True,
                     "message": "Access token refreshed",
+                    "access": str(access),
+                    "refresh": str(refresh),
                 },
                 status=status.HTTP_200_OK,
             )
@@ -235,8 +349,6 @@ class RefreshTokenView(APIView):
                 status=status.HTTP_401_UNAUTHORIZED,
             )
 
-
-# Current logged-in user view.
 
 class MeView(APIView):
     permission_classes = [IsAuthenticated]

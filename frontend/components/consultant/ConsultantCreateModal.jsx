@@ -27,7 +27,6 @@ import { Button } from '@/components/ui/button';
 import { consultantService } from '@/services/consultantService';
 import useAuthStore from '@/store/authStore';
 
-// Zod validation schema
 const formSchema = z.object({
   bio: z.string().min(10, { message: 'Bio must be at least 10 characters long.' }),
   experience_years: z.coerce.number().min(0, { message: 'Experience must be a positive number.' }),
@@ -43,7 +42,6 @@ export function ConsultantCreateModal({ onSuccess }) {
   const [loading, setLoading] = useState(false);
   const [specializationsList, setSpecializationsList] = useState([]);
 
-  // Load the specialization list when the dialog opens.
   useEffect(() => {
     if (open) {
       consultantService.getSpecializations()
@@ -52,7 +50,6 @@ export function ConsultantCreateModal({ onSuccess }) {
     }
   }, [open]);
 
-  // Initialize the form state.
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -106,7 +103,6 @@ export function ConsultantCreateModal({ onSuccess }) {
     }
   };
 
-  // Toggle specialization selection.
   const handleSpecializationToggle = (id, currentValues) => {
     if (currentValues.includes(id)) {
       form.setValue('specializations', currentValues.filter((item) => item !== id));

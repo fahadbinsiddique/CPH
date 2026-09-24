@@ -1,4 +1,3 @@
-// lib/blog-utils.js
 // Shared helpers for the blog module: safe image handling, payload
 // normalization, date formatting, reading time and heading extraction.
 

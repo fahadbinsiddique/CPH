@@ -6,7 +6,6 @@ import Link from 'next/link'
 
 export default function GlobalError({ error, reset }) {
   useEffect(() => {
-    // Log the error to an error reporting service in production.
     console.error('Unhandled error:', error)
   }, [error])
 

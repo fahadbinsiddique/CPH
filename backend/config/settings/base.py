@@ -26,8 +26,6 @@ SECRET_KEY = os.getenv(
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env_bool('DEBUG', default=True)
 
-# APPEND_SLASH = False
-
 ALLOWED_HOSTS = [
     host.strip()
     for host in os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
@@ -148,11 +146,15 @@ SPECTACULAR_SETTINGS = {
 
 # JWT Settings
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
     'AUTH_HEADER_TYPES': ('Bearer',),
     'ROTATE_REFRESH_TOKENS': True,
     'BLACKLIST_AFTER_ROTATION': True,
+    # Seconds during which a just-rotated refresh token still resolves to its
+    # successor (see cph_app.views.recover_rotated_refresh). Absorbs the race
+    # when Next middleware and the axios interceptor refresh concurrently.
+    'REFRESH_ROTATION_GRACE': int(os.getenv('REFRESH_ROTATION_GRACE', '60')),
     'AUTH_COOKIE': 'access_token',
     'AUTH_COOKIE_REFRESH': 'refresh_token',
     # Local: False, Production: True (overridden under the `not DEBUG` rule).

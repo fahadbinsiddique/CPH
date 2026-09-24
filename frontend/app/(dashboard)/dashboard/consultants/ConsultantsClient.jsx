@@ -250,8 +250,6 @@ export default function ConsultantsClient({ initialConsultants = [], initialSpec
       if (result.success) {
         setModalOpen(false);
         toast.success(editing ? 'Consultant updated' : 'Consultant created');
-        // The server action will revalidate the path, but we can also manually refresh
-        // by triggering a re-fetch - but Next.js cache will handle this
         setConsultants(prev => editing 
           ? prev.map(c => c.id === editing.id ? { ...c, ...result.data } : c)
           : [...prev, result.data]

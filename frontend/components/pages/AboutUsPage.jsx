@@ -46,7 +46,6 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { consultantService } from '@/services/consultantService'
 import { normalizeProfileImage } from '@/lib/utils'
 
-// Animation variants
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
@@ -74,8 +73,6 @@ const fadeInUp = {
   },
 }
 
-// Team members are fetched from the backend (consultantService.getAll) at runtime.
-// Core values
 const coreValues = [
   {
     icon: HeartHandshake,
@@ -103,7 +100,6 @@ const coreValues = [
   },
 ]
 
-// Stats
 const stats = [
   { icon: Users, value: '500+', label: 'Happy Clients' },
   { icon: Award, value: '15+', label: 'Years of Excellence' },
@@ -111,7 +107,6 @@ const stats = [
   { icon: Star, value: '4.9/5', label: 'Average Rating' },
 ]
 
-// Milestones
 const milestones = [
   {
     year: '2010',
@@ -675,7 +670,6 @@ export default function AboutUsPage() {
         </div>
       </section>
 
-      {/* X button for modal - need to import */}
     </div>
   )
 }

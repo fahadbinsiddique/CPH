@@ -1,3 +1,4 @@
+import { redirect } from 'next/navigation';
 import serverApi from '@/lib/serverApi';
 import dynamic from 'next/dynamic';
 import { fetchAppointments } from './actions/appointmentActions';
@@ -13,7 +14,9 @@ const AdminDashboard = dynamic(() => import('@/components/dashboard/AdminDashboa
 
 async function getUser() {
   try {
-    const data = await serverApi.get('/api/auth/me/');
+    // Auth data must never come from the fetch cache — a60-second-stale /me
+    // (or one reused across a logout) is exactly what masked dead sessions.
+    const data = await serverApi.get('/api/auth/me/', { next: { cache: 'no-store' } });
     return data.user || data;
   } catch {
     return null;
@@ -22,8 +25,16 @@ async function getUser() {
 
 export default async function DashboardPage() {
   const user = await getUser();
-  const role = user?.role || 'client';
-  const firstName = user?.full_name?.split(' ')[0] || 'User';
+
+  // If server-side auth failed (no valid token even after refresh attempt),
+  // redirect to login. AuthGuard will also catch this on the client, but
+  // failing here prevents rendering sensitive layout with no user context.
+  if (!user) {
+    redirect('/');
+  }
+
+  const role = user.role || 'client';
+  const firstName = user.full_name?.split(' ')[0] || 'User';
 
   const [appointments, stats] = await Promise.all([
     role === 'admin' ? [] : fetchAppointments(),

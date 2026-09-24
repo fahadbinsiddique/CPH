@@ -27,7 +27,6 @@ export function usePushNotifications() {
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // ২. useCallback 
   const checkSubscription = useCallback(async () => {
     if (
       typeof window === "undefined" ||

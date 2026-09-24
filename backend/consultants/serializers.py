@@ -199,14 +199,12 @@ class ConsultantCreateSerializer(serializers.ModelSerializer):
 
     @transaction.atomic
     def create(self, validated_data):
-        # Extract User attributes
         email = validated_data.pop('email')
         password = validated_data.pop('password')
         full_name = validated_data.pop('full_name')
         phone_number = validated_data.pop('phone_number', '')
         specializations = validated_data.pop('specializations', [])
 
-        # 1. Create User with role 'consultant'
         try:
             user = User.objects.create_user(
                 username=email,
@@ -221,15 +219,13 @@ class ConsultantCreateSerializer(serializers.ModelSerializer):
                 {'email': 'A user with this email address already exists.'}
             )
 
-        # 2. Create Consultant Profile
         consultant = Consultant.objects.create(user=user, **validated_data)
 
-        # 3. Set Many-To-Many Specializations
         if specializations:
             consultant.specializations.set(specializations)
 
-        # 4. Trigger application-received notification after DB commit.
-        #    Non-blocking: the 201 response is returned without waiting on Resend.
+        # Trigger application-received notification after DB commit.
+        # Non-blocking: the 201 response is returned without waiting on Resend.
         transaction.on_commit(
             lambda: send_consultant_application_received_email_async(
                 to_email=email,

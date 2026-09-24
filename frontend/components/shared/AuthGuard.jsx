@@ -6,12 +6,12 @@ import useAuthStore from '@/store/authStore';
 import useUiStore from '@/store/uiStore';
 
 const DEFAULT_ROLES = [];
-const STORE_SEED_TIMEOUT = 100;
 
 export default function AuthGuard({ children, allowedRoles = DEFAULT_ROLES }) {
   const openLoginModal = useUiStore((s) => s.openLoginModal);
   const [isHydrated, setIsHydrated] = useState(false);
   const [hasFetched, setHasFetched] = useState(false);
+  const [denied, setDenied] = useState(false);
   const resolvedRef = useRef(false);
 
   // Ensure the Zustand persisted state has finished hydrating.
@@ -30,86 +30,54 @@ export default function AuthGuard({ children, allowedRoles = DEFAULT_ROLES }) {
     };
   }, []);
 
-  // Secure session verification logic.
+  // Always validate the session with a live API call on mount.
+  // Never trust localStorage alone — the access_token cookie may have
+  // expired or been deleted while the persisted store still says
+  // isAuthenticated: true.  The fetchMe() call goes through the Axios
+  // interceptor which handles 401 → refresh → retry transparently.
   useEffect(() => {
-    if (!isHydrated) return;
+    if (!isHydrated || resolvedRef.current) return;
 
-    const latest = useAuthStore.getState();
+    let cancelled = false;
 
-    // Fast path: user is already in the persisted store.
-    if (latest.isAuthenticated && latest.user) {
-      if (!resolvedRef.current) {
-        resolvedRef.current = true;
-        setHasFetched(true);
-      }
-      return;
-    }
-
-    // Subscribe to store changes — StoreInitializer may seed the store
-    // after AuthGuard mounts (race between page render and hydration).
-    let settled = false;
-    const unsubscribe = useAuthStore.subscribe((state) => {
-      if (settled) return;
-      if (state.isAuthenticated && state.user) {
-        settled = true;
-        clearTimeout(fallbackTimer);
-        resolveAuth(state.user);
-      }
-    });
-
-    // Re-check immediately in case the store was seeded between our
-    // getState() call and the subscription setup.
-    const current = useAuthStore.getState();
-    if (current.isAuthenticated && current.user) {
-      settled = true;
-      clearTimeout(fallbackTimer);
-      resolveAuth(current.user);
-      return;
-    }
-
-    // Fallback: if the store is still empty after the timeout, fetch from API.
-    // This covers the case where there is no StoreInitializer (other routes).
-    const fallbackTimer = setTimeout(async () => {
-      if (settled || resolvedRef.current) return;
-      settled = true;
-      unsubscribe();
-
+    (async () => {
       try {
         const { fetchMe } = useAuthStore.getState();
         await fetchMe();
-        const refreshed = useAuthStore.getState();
-
-        if (!refreshed.isAuthenticated) {
-          toast.error('Please log in to proceed', { id: 'auth-toast' });
-          openLoginModal();
-          return;
-        }
-
-        resolveAuth(refreshed.user);
       } catch {
+        // fetchMe already sets isAuthenticated: false on failure
+      }
+
+      if (cancelled) return;
+
+      const { isAuthenticated, user } = useAuthStore.getState();
+
+      if (!isAuthenticated || !user) {
         toast.error('Please log in to proceed', { id: 'auth-toast' });
         openLoginModal();
-      } finally {
+        // Resolve the guard so we don't spin on an infinite skeleton; the
+        // render below returns null (children are never shown without a
+        // verified session).
         setHasFetched(true);
+        return;
       }
-    }, STORE_SEED_TIMEOUT);
 
-    function resolveAuth(user) {
-      if (resolvedRef.current) return;
-      resolvedRef.current = true;
-
-      if (allowedRoles.length > 0 && !allowedRoles.includes(user?.role)) {
+      // Role check — a failed check must BLOCK rendering, not just toast.
+      if (allowedRoles.length > 0 && !allowedRoles.includes(user.role)) {
         toast.error("You don't have permission to view this page!", {
           id: 'auth-toast',
         });
+        setDenied(true);
+        setHasFetched(true);
+        return;
       }
+
+      resolvedRef.current = true;
       setHasFetched(true);
-    }
+    })();
 
     return () => {
-      settled = true;
-      unsubscribe();
-      clearTimeout(fallbackTimer);
+      cancelled = true;
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isHydrated]);
@@ -117,6 +85,17 @@ export default function AuthGuard({ children, allowedRoles = DEFAULT_ROLES }) {
   // Lightweight inline skeleton instead of a full-viewport overlay.
   if (!isHydrated || !hasFetched) {
     return <div className="animate-pulse min-h-[60vh] rounded-2xl bg-slate-100" />;
+  }
+
+  if (denied) {
+    return (
+      <div className="flex min-h-[60vh] flex-col items-center justify-center gap-2 rounded-2xl bg-slate-50 p-8 text-center">
+        <p className="text-lg font-semibold text-slate-700">Access denied</p>
+        <p className="text-sm text-slate-500">
+          You don&apos;t have permission to view this page.
+        </p>
+      </div>
+    );
   }
 
   const { isAuthenticated, user } = useAuthStore.getState();

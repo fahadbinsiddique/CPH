@@ -27,7 +27,8 @@ def _mock_google(monkeypatch):
     """Mock Google token verification for every test in this module."""
     import google.oauth2.id_token as id_token
 
-    def verify_oauth2_token(token, request, audience):
+    def verify_oauth2_token(token, request, audience, **kwargs):
+        # **kwargs swallows extras the view passes (e.g. clock_skew_in_seconds).
         return _fake_id_info()
 
     monkeypatch.setattr(id_token, 'verify_oauth2_token', verify_oauth2_token)
@@ -88,7 +89,7 @@ def test_google_login_rejects_non_matching_nonce(api_client, google_url, monkeyp
     monkeypatch.setattr(
         id_token,
         'verify_oauth2_token',
-        lambda token, request, audience: _fake_id_info(nonce='other-nonce'),
+        lambda token, request, audience, **kwargs: _fake_id_info(nonce='other-nonce'),
     )
 
     response = api_client.post(google_url, {'token': 'x', 'nonce': 'test-nonce-123'})
@@ -102,7 +103,7 @@ def test_google_login_rejects_unverified_email(api_client, google_url, monkeypat
     monkeypatch.setattr(
         id_token,
         'verify_oauth2_token',
-        lambda token, request, audience: _fake_id_info(email_verified=False),
+        lambda token, request, audience, **kwargs: _fake_id_info(email_verified=False),
     )
 
     response = api_client.post(google_url, {'token': 'x', 'nonce': 'test-nonce-123'})
@@ -116,7 +117,7 @@ def test_google_login_rejects_wrong_audience(api_client, google_url, monkeypatch
     monkeypatch.setattr(
         id_token,
         'verify_oauth2_token',
-        lambda token, request, audience: _fake_id_info(aud='some-other-client'),
+        lambda token, request, audience, **kwargs: _fake_id_info(aud='some-other-client'),
     )
 
     response = api_client.post(google_url, {'token': 'x', 'nonce': 'test-nonce-123'})
@@ -127,7 +128,7 @@ def test_google_login_rejects_wrong_audience(api_client, google_url, monkeypatch
 def test_google_login_rejects_invalid_token(api_client, google_url, monkeypatch):
     import google.oauth2.id_token as id_token
 
-    def raise_invalid(token, request, audience):
+    def raise_invalid(token, request, audience, **kwargs):
         raise ValueError('Bad token')
 
     monkeypatch.setattr(id_token, 'verify_oauth2_token', raise_invalid)
@@ -142,7 +143,7 @@ def test_google_login_handles_network_error(api_client, google_url, monkeypatch)
     import google.oauth2.id_token as id_token
     from google.auth.exceptions import TransportError
 
-    def raise_transport(token, request, audience):
+    def raise_transport(token, request, audience, **kwargs):
         raise TransportError('Google unreachable')
 
     monkeypatch.setattr(id_token, 'verify_oauth2_token', raise_transport)
@@ -163,7 +164,7 @@ def test_google_login_links_by_google_sub_when_email_changed(api_client, google_
 
     monkeypatch.setattr(
         'google.oauth2.id_token.verify_oauth2_token',
-        lambda token, request, audience: _fake_id_info(email='newemail@example.com'),
+        lambda token, request, audience, **kwargs: _fake_id_info(email='newemail@example.com'),
     )
 
     response = api_client.post(google_url, {'token': 'x', 'nonce': 'test-nonce-123'})
@@ -197,7 +198,7 @@ def test_google_login_long_email_username_is_truncated(api_client, google_url, m
 
     monkeypatch.setattr(
         'google.oauth2.id_token.verify_oauth2_token',
-        lambda token, request, audience: _fake_id_info(email=long_email),
+        lambda token, request, audience, **kwargs: _fake_id_info(email=long_email),
     )
 
     response = api_client.post(google_url, {'token': 'x', 'nonce': 'test-nonce-123'})

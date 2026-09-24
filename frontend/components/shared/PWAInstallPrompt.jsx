@@ -10,7 +10,6 @@ export default function PWAInstallPrompt() {
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [showPrompt, setShowPrompt] = useState(false);
 
-  // 🎯 ১. Standalone mode check initializer
   const [isInstalled, setIsInstalled] = useState(() => {
     if (typeof window !== "undefined") {
       return window.matchMedia("(display-mode: standalone)").matches;

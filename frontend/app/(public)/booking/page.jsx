@@ -86,7 +86,6 @@ function AppointmentCard({ appointment, onCancel }) {
     setIsCancelling(false);
   };
 
-  // Format date nicely
   const formatDate = (dateStr) => {
     const date = new Date(dateStr);
     return date.toLocaleDateString('en-US', { 

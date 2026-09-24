@@ -34,7 +34,6 @@ import useAuthStore from '@/store/authStore';
 import { requireLogin } from '@/lib/authGate';
 import BookingModal from '@/components/booking/BookingModal';
 
-// Premium Animation Variants
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {

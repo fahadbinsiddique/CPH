@@ -45,7 +45,6 @@ const Navbar = ({ hasAccessToken }) => {
     ? true
     : (isHydrated ? isAuthenticated : false);
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -56,7 +55,6 @@ const Navbar = ({ hasAccessToken }) => {
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
-  // Scroll effect
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 10)
@@ -65,7 +63,6 @@ const Navbar = ({ hasAccessToken }) => {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
-  // Lock body scroll while the mobile menu is open
   useEffect(() => {
     document.body.style.overflow = mobileMenuOpen ? 'hidden' : ''
     return () => {
@@ -81,7 +78,6 @@ const Navbar = ({ hasAccessToken }) => {
     { name: 'About', href: '/about-us', id: 'about-us' },
   ]
 
-  // Check if link is active
   const isActiveLink = (href, id) => {
     if (href === '/') {
       return pathname === '/'

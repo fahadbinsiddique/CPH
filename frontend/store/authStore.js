@@ -88,7 +88,9 @@ const useAuthStore = create(
           set({ user: actualUser, isAuthenticated: true });
         } catch {
           set({ user: null, isAuthenticated: false });
-          localStorage.removeItem('auth-storage');
+          // Do NOT remove 'auth-storage' here — a transient 401 during refresh
+          // should not destroy the persisted session. Only explicit logout
+          // (which already clears storage) should do that.
         }
       },
 

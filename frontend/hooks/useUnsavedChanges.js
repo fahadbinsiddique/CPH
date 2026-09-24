@@ -1,4 +1,3 @@
-// hooks/useUnsavedChanges.js
 // Guards against losing unsaved work. Blocks browser refresh/close via
 // `beforeunload`, intercepts in-app `<a>` navigation and the browser
 // back/forward buttons, and surfaces a custom confirmation dialog.

@@ -207,12 +207,10 @@
   --shadow-card: 0 1px 2px rgb(15 118 110 / 0.04), 0 16px 40px -16px rgb(15 118 110 / 0.12);
   --shadow-float: 0 8px 24px -8px rgb(15 118 110 / 0.1), 0 24px 48px -16px rgb(15 118 110 / 0.15);
   --shadow-glow: 0 0 0 1px rgb(15 118 110 / 0.1), 0 8px 32px -8px rgb(15 118 110 / 0.2);
-  /* 🎛️ ফন্ট কনফিগারেশন - এখানে layout.js এর ফন্টগুলো ম্যাপ করা হলো */
   --font-sans: var(--font-geist-sans), sans-serif;
   --font-mono: var(--font-geist-mono), monospace;
-  --font-heading: var(--font-plus-jakarta), sans-serif; /* Plus Jakarta Sans কে heading করা হলো */
+  --font-heading: var(--font-plus-jakarta), sans-serif;
 
-  /* Shadcn UI এর বাকি থিম টোকেনগুলো (অক্ষত রাখা হয়েছে) */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-sidebar-ring: var(--sidebar-ring);
@@ -341,7 +339,6 @@
     font-feature-settings: 'ss01' 1, 'cv01' 1, 'cv11' 1;
   }
 
-  /* সব হেডিং ট্যাগ অটোমেটিক Plus Jakarta Sans পাবে */
   h1,
   h2,
   h3,

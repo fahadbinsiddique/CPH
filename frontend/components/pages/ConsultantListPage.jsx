@@ -26,7 +26,6 @@ export default function ConsultantListPage() {
 
   const debouncedSearch = useDebounce(search, 400);
 
-  // Fetch consultants
   const fetchConsultants = useCallback(async () => {
     setLoading(true);
     try {

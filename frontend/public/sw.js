@@ -1,5 +1,4 @@
 // public/sw.js — Service Worker for Centre for Psychological Health PWA.
-//
 // To bump the cache version, update CACHE_VERSION below. The activate handler
 // automatically deletes old-versioned caches so the browser picks up new assets.
 const CACHE_VERSION = "v2";
@@ -226,11 +225,9 @@ async function navigationHandler(request) {
     }
     return response;
   } catch {
-    // Cache
     const cached = await caches.match(request);
     if (cached) return cached;
 
-    // Offline page
     return caches.match("/offline.html");
   }
 }
