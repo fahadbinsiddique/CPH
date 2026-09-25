@@ -3,12 +3,19 @@
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { isValidElement, createElement } from 'react';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
+import { fadeInUp } from '@/lib/motion';
 
 export default function PageHeader({ badge, badgeIcon: BadgeIcon, title, subtitle, actions, eyebrow }) {
+  const reduceMotion = useReducedMotion();
+  const motionProps = reduceMotion ? {} : { 
+    initial: fadeInUp.hidden, 
+    animate: fadeInUp.show 
+  };
+
   return (
     <motion.div
-      initial={{ opacity: 0, y: -10 }}
-      animate={{ opacity: 1, y: 0 }}
+      {...motionProps}
       className="relative overflow-hidden rounded-2xl border border-stone-200/60 bg-white/80 p-6 shadow-sm backdrop-blur-sm"
     >
       <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">

@@ -9,6 +9,7 @@ import ProductTourReturn from '@/components/product-tour/ProductTourReturn'
 import GTM from '@/components/analytics/GTM'
 import TawkTo from '@/components/analytics/TawkTo'
 import JsonLd from '@/components/seo/JsonLd'
+import { initWebVitals } from '@/lib/web-vitals'
 import {
   SITE_NAME,
   SITE_URL,
@@ -135,6 +136,11 @@ const WEBSITE_SCHEMA = {
 }
 
 export default function RootLayout({ children, modal }) {
+  // Initialize Web Vitals tracking (client-side only)
+  if (typeof window !== 'undefined') {
+    initWebVitals();
+  }
+
   return (
     <html
       lang="en"

@@ -3,14 +3,18 @@
 import { motion } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
 import { itemVariants } from '@/lib/motion';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
 
 export default function EmptyState({ icon: Icon, title, description, action, className = '' }) {
+  const reduceMotion = useReducedMotion();
+  const motionProps = reduceMotion ? {} : { variants: itemVariants };
+
   return (
-    <motion.div variants={itemVariants}>
+    <motion.div {...motionProps}>
       <Card variant="bordered" className={`border-dashed border-stone-200/80 bg-white/50 shadow-inner backdrop-blur-sm ${className}`}>
         <CardContent className="mx-auto flex max-w-sm flex-col items-center p-6 text-center sm:p-8 lg:p-12">
           {Icon && (
-            <div className="mb-5 flex h-20 w-20 items-center justify-center rounded-full border border-stone-200/60 bg-gradient-to-br from-stone-100 to-stone-50 text-stone-300">
+            <div className="mb-5 flex h-20 w-20 items-center justify-center rounded-full border border-stone-200/60 bg-gradient-to-br from-stone-100 to-stone-50 text-stone-300" aria-hidden="true">
               <Icon className="h-10 w-10" />
             </div>
           )}
