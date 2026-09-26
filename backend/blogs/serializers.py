@@ -41,6 +41,13 @@ class CategorySerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'slug', 'blog_count']
 
     def get_blog_count(self, obj):
+        # Views annotate `published_blog_count` so the count rides along with
+        # the categories query. Falling back to a per-object COUNT(*) here is
+        # an N+1: BlogListSerializer embeds a Category per row, so a 5-row list
+        # used to run the identical COUNT 5x (~330ms each on a remote DB).
+        annotated = getattr(obj, 'published_blog_count', None)
+        if annotated is not None:
+            return annotated
         return obj.blogs.filter(status='published').count()
 
 

@@ -146,7 +146,11 @@ SPECTACULAR_SETTINGS = {
 
 # JWT Settings
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
+    # 5 minutes made Next middleware's requestSessionRefresh() fire a blocking
+    # refresh round trip (~315ms) ahead of nearly every dashboard navigation.
+    # 30 minutes keeps sessions alive long enough that refresh is the
+    # exception rather than the default path.
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
     'AUTH_HEADER_TYPES': ('Bearer',),
     'ROTATE_REFRESH_TOKENS': True,

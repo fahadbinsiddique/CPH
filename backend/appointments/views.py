@@ -49,13 +49,21 @@ class AppointmentListView(generics.ListAPIView):
 
     def get_queryset(self):
         user = self.request.user
+        # NB: AppointmentSerializer nests ConsultantListSerializer, which reads
+        # `consultant.specializations`. Without the prefetch that relation is
+        # re-queried once per row (5 identical SELECTs on a 5-row list), which
+        # costs ~375ms per row against a remote database.
         if user.role == 'consultant':
             return Appointment.objects.filter(
                 consultant__user=user
-            ).select_related('client', 'consultant__user')
+            ).select_related(
+                'client', 'consultant__user'
+            ).prefetch_related('consultant__specializations')
         return Appointment.objects.filter(
             client=user
-        ).select_related('client', 'consultant__user')
+        ).select_related(
+            'client', 'consultant__user'
+        ).prefetch_related('consultant__specializations')
 
 
 class AppointmentDetailView(generics.RetrieveAPIView):
@@ -64,9 +72,12 @@ class AppointmentDetailView(generics.RetrieveAPIView):
 
     def get_queryset(self):
         user = self.request.user
+        qs = Appointment.objects.select_related(
+            'client', 'consultant__user'
+        ).prefetch_related('consultant__specializations')
         if user.role == 'consultant':
-            return Appointment.objects.filter(consultant__user=user)
-        return Appointment.objects.filter(client=user)
+            return qs.filter(consultant__user=user)
+        return qs.filter(client=user)
 
 
 class AppointmentStatusUpdateView(generics.UpdateAPIView):
@@ -161,10 +172,17 @@ class AdminStatsView(APIView):
             cancelled=Count('id', filter=Q(status='cancelled')),
         )
 
+        # Both Consultant counts share a table, so a conditional aggregate
+        # replaces two separate COUNT(*) round trips. Each round trip to the
+        # (remote) database costs ~315ms, so merging them is worth ~630ms.
+        consultant_stats = Consultant.objects.aggregate(
+            total_consultants=Count('id'),
+            verified_consultants=Count('id', filter=Q(is_verified=True)),
+        )
+
         stats = {
             'total_users': User.objects.filter(role='client').count(),
-            'total_consultants': Consultant.objects.count(),
-            'verified_consultants': Consultant.objects.filter(is_verified=True).count(),
+            **consultant_stats,
             **appointment_stats,
         }
         return Response(stats)
@@ -177,7 +195,7 @@ class AdminAnalyticsView(APIView):
         from datetime import timedelta
         from django.utils import timezone
         from django.contrib.auth import get_user_model
-        from django.db.models import Count, Sum
+        from django.db.models import Count, Q, Sum
         from django.db.models.functions import TruncDate
         from consultants.models import Consultant
         from assessments.models import QuizResult
@@ -242,27 +260,40 @@ class AdminAnalyticsView(APIView):
             for row in top_consultants
         ]
 
-        # Revenue — aggregate at DB level, NOT in Python
-        revenue_estimate = Appointment.objects.filter(
-            status__in=['confirmed', 'completed']
-        ).aggregate(
-            total=Sum('consultant__consultation_fee')
-        )['total'] or 0
-
-        # Session types
-        session_types = list(
-            Appointment.objects
-            .values('session_type')
-            .annotate(count=Count('id'))
+        # Revenue, session mix and status breakdown all aggregate the same
+        # Appointment table. Three separate round trips cost ~315ms each
+        # against the remote database, so collapse them into one conditional
+        # aggregate driven by the model's fixed choice lists. `consultant` is a
+        # single-row FK join, so the SUM cannot fan the COUNTs out.
+        appointment_totals = Appointment.objects.aggregate(
+            revenue=Sum(
+                'consultant__consultation_fee',
+                filter=Q(status__in=['confirmed', 'completed']),
+            ),
+            **{
+                f'status_{value}': Count('id', filter=Q(status=value))
+                for value, _ in Appointment.STATUS_CHOICES
+            },
+            **{
+                f'session_{value}': Count('id', filter=Q(session_type=value))
+                for value, _ in Appointment.SESSION_CHOICES
+            },
         )
 
-        # Status breakdown in single query
-        status_breakdown = dict(
-            Appointment.objects
-            .values('status')
-            .annotate(count=Count('id'))
-            .values_list('status', 'count')
-        )
+        revenue_estimate = appointment_totals['revenue'] or 0
+
+        # Emit only non-empty session types, matching the previous
+        # values().annotate() behaviour (absent type = absent row).
+        session_types = [
+            {'session_type': value, 'count': appointment_totals[f'session_{value}']}
+            for value, _ in Appointment.SESSION_CHOICES
+            if appointment_totals[f'session_{value}']
+        ]
+
+        status_breakdown = {
+            value: appointment_totals[f'status_{value}']
+            for value, _ in Appointment.STATUS_CHOICES
+        }
 
         return Response({
             'period_days': days,

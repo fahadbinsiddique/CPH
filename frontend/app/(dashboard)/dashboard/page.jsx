@@ -1,4 +1,5 @@
 import { redirect } from 'next/navigation';
+import { cookies } from 'next/headers';
 import { unstable_noStore as noStore } from 'next/cache';
 import { Suspense } from 'react';
 import serverApi from '@/lib/serverApi';
@@ -28,18 +29,45 @@ async function getUser() {
   }
 }
 
-// Server-side filtering - compute derived data on server, pass minimal props
-async function getDashboardData(user) {
-  const role = user.role || 'client';
-  
-  // Only fetch what each role actually needs
+/**
+ * Read the role straight off the session cookie.
+ *
+ * RoleAccessToken.for_user() (backend/cph_app/authentication.py) puts a
+ * `role` claim in the access token, and middleware.ts has already verified
+ * that token's signature before this render — so the role that decides which
+ * payload to load is available for free, instead of costing a blocking
+ * /api/auth/me/ round trip (~315ms against the remote database).
+ *
+ * This is only a fetch *selector*. Authorization stays with the backend
+ * (IsRoleAdmin etc.), so a cookie claiming a role it does not have can at
+ * most trigger a 403, never a data leak.
+ *
+ * Returns null when the cookie is missing or unparseable, in which case the
+ * caller falls back to the role on the freshly fetched user.
+ */
+async function getSessionRole() {
+  try {
+    const cookieStore = await cookies();
+    const raw = cookieStore.get('access_token')?.value;
+    if (!raw) return null;
+    const parts = raw.split('.');
+    if (parts.length !== 3) return null;
+    const payload = JSON.parse(Buffer.from(parts[1], 'base64url').toString('utf8'));
+    return typeof payload.role === 'string' && payload.role ? payload.role : null;
+  } catch {
+    return null;
+  }
+}
+
+// Only fetch what each role actually needs.
+async function getDashboardData(role) {
   if (role === 'admin') {
     const stats = await fetchAdminStats();
-    return { role, stats, appointments: [] };
+    return { stats, appointments: [] };
   }
-  
+
   const appointments = await fetchAppointments();
-  return { role, appointments, stats: null };
+  return { appointments, stats: null };
 }
 
 // Pre-filter appointments on server to avoid sending unnecessary data
@@ -58,22 +86,53 @@ function filterAppointments(appointments, role) {
   return { upcoming, completed, cancelled, pending, todayAppts };
 }
 
+/**
+ * Awaits a payload promise that was started back in the page render — NOT one
+ * created here. That is what makes the fetch overlap getUser() instead of
+ * queueing behind it, and it is why this component can sit inside Suspense:
+ * the shell and PageHeader stream as soon as the user resolves (~315ms) while
+ * the (slower) role payload streams in behind the skeleton.
+ */
+async function DashboardData({ payloadPromise, role }) {
+  const { appointments, stats } = await payloadPromise;
+  const filtered = filterAppointments(appointments, role);
+
+  return (
+    <DashboardVariants
+      role={role}
+      stats={stats}
+      todayAppointments={filtered.todayAppts}
+      pendingAppointments={filtered.pending}
+      completedAppointments={filtered.completed}
+      allAppointments={appointments}
+      upcomingAppointments={filtered.upcoming}
+      cancelledAppointments={filtered.cancelled}
+    />
+  );
+}
+
 // Force dynamic rendering for auth-protected page
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 export default async function DashboardPage() {
-  const user = await getUser();
+  // Start the /api/auth/me/ round trip first so it overlaps everything below.
+  const userPromise = getUser();
+
+  // The role only needs the already-verified cookie, so the slower payload
+  // fetch can launch without waiting for getUser() to come back.
+  const sessionRole = await getSessionRole();
+  const earlyPayload = sessionRole ? getDashboardData(sessionRole) : null;
+
+  const user = await userPromise;
 
   if (!user) {
     redirect('/');
   }
 
   const firstName = user.full_name?.split(' ')[0] || 'User';
-  const { role, appointments, stats } = await getDashboardData(user);
-  
-  // Server-side filtering - send only what each dashboard needs
-  const filtered = filterAppointments(appointments, role);
+  const role = sessionRole || user.role || 'client';
+  const payloadPromise = earlyPayload || getDashboardData(role);
 
   return (
     <DashboardErrorBoundary>
@@ -94,18 +153,10 @@ export default async function DashboardPage() {
           }
         />
 
-        {/* Role-based dashboard - Each wrapped in Suspense for streaming */}
+        {/* Streams: the skeleton only covers the payload region, and the
+            promise it awaits was already kicked off above. */}
         <Suspense fallback={<DashboardSkeleton role={role} />}>
-          <DashboardVariants 
-            role={role}
-            stats={stats}
-            todayAppointments={filtered.todayAppts}
-            pendingAppointments={filtered.pending}
-            completedAppointments={filtered.completed}
-            allAppointments={appointments}
-            upcomingAppointments={filtered.upcoming}
-            cancelledAppointments={filtered.cancelled}
-          />
+          <DashboardData payloadPromise={payloadPromise} role={role} />
         </Suspense>
       </div>
     </DashboardErrorBoundary>

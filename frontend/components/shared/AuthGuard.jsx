@@ -7,12 +7,58 @@ import useUiStore from '@/store/uiStore';
 
 const DEFAULT_ROLES = [];
 
+/**
+ * AuthGuard instances nest — dashboard/layout.jsx wraps every page, and most
+ * pages render a second guard of their own. Awaiting fetchMe() independently
+ * in each one stacked two ~315ms round trips in front of every dashboard
+ * render. Sharing a single promise at module scope makes the whole tree pay
+ * for exactly one call; every guard still evaluates its own allowedRoles.
+ *
+ * The TTL keeps a guard mounted later by a client-side navigation from going
+ * stale while still collapsing guards that mount together into one request.
+ */
+const VALIDATION_TTL_MS = 15_000;
+let validationPromise = null;
+let validationStartedAt = 0;
+
+function ensureSessionValidated() {
+  const startedAt = Date.now();
+  if (!validationPromise || startedAt - validationStartedAt > VALIDATION_TTL_MS) {
+    validationStartedAt = startedAt;
+    validationPromise = (async () => {
+      try {
+        const { fetchMe } = useAuthStore.getState();
+        await fetchMe();
+      } catch {
+        // fetchMe already clears the session on failure.
+      }
+      return useAuthStore.getState();
+    })();
+  }
+  return validationPromise;
+}
+
+/**
+ * Renders children as soon as the request is allowed to render, and validates
+ * the session in the background instead of gating on it.
+ *
+ * That is safe because middleware.ts verifies the access token's signature and
+ * the route's required role on every request, and redirects unauthenticated or
+ * wrongly-roled visitors, all BEFORE this HTML is produced. What is rendered
+ * below is therefore a defence-in-depth re-check, not the primary gate — the
+ * role check in particular still runs both synchronously (against the
+ * persisted store) and after validation, so allowedRoles keeps blocking.
+ */
 export default function AuthGuard({ children, allowedRoles = DEFAULT_ROLES }) {
   const openLoginModal = useUiStore((s) => s.openLoginModal);
   const [isHydrated, setIsHydrated] = useState(false);
-  const [hasFetched, setHasFetched] = useState(false);
+  const [validated, setValidated] = useState(false);
   const [denied, setDenied] = useState(false);
-  const resolvedRef = useRef(false);
+  const ranRef = useRef(false);
+
+  // Reactive so a post-hydration role mismatch blocks without a network call.
+  const storedUser = useAuthStore((s) => s.user);
+  const storedAuthenticated = useAuthStore((s) => s.isAuthenticated);
 
   // Ensure the Zustand persisted state has finished hydrating.
   useEffect(() => {
@@ -30,24 +76,19 @@ export default function AuthGuard({ children, allowedRoles = DEFAULT_ROLES }) {
     };
   }, []);
 
-  // Always validate the session with a live API call on mount.
-  // Never trust localStorage alone — the access_token cookie may have
-  // expired or been deleted while the persisted store still says
-  // isAuthenticated: true.  The fetchMe() call goes through the Axios
-  // interceptor which handles 401 → refresh → retry transparently.
+  // Validate against a live API call — never trust localStorage alone, since
+  // the access_token cookie may have expired while the persisted store still
+  // says isAuthenticated: true. Deliberately NOT awaited by the render path:
+  // fetchMe() goes through the Axios interceptor, which handles 401 → refresh
+  // → retry, so a slow or failed refresh can no longer hold up first paint.
   useEffect(() => {
-    if (!isHydrated || resolvedRef.current) return;
+    if (!isHydrated || ranRef.current) return;
+    ranRef.current = true;
 
     let cancelled = false;
 
     (async () => {
-      try {
-        const { fetchMe } = useAuthStore.getState();
-        await fetchMe();
-      } catch {
-        // fetchMe already sets isAuthenticated: false on failure
-      }
-
+      await ensureSessionValidated();
       if (cancelled) return;
 
       const { isAuthenticated, user } = useAuthStore.getState();
@@ -55,10 +96,7 @@ export default function AuthGuard({ children, allowedRoles = DEFAULT_ROLES }) {
       if (!isAuthenticated || !user) {
         toast.error('Please log in to proceed', { id: 'auth-toast' });
         openLoginModal();
-        // Resolve the guard so we don't spin on an infinite skeleton; the
-        // render below returns null (children are never shown without a
-        // verified session).
-        setHasFetched(true);
+        setValidated(true);
         return;
       }
 
@@ -68,12 +106,11 @@ export default function AuthGuard({ children, allowedRoles = DEFAULT_ROLES }) {
           id: 'auth-toast',
         });
         setDenied(true);
-        setHasFetched(true);
+        setValidated(true);
         return;
       }
 
-      resolvedRef.current = true;
-      setHasFetched(true);
+      setValidated(true);
     })();
 
     return () => {
@@ -82,12 +119,16 @@ export default function AuthGuard({ children, allowedRoles = DEFAULT_ROLES }) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isHydrated]);
 
-  // Lightweight inline skeleton instead of a full-viewport overlay.
-  if (!isHydrated || !hasFetched) {
-    return <div className="animate-pulse min-h-[60vh] rounded-2xl bg-slate-100" />;
-  }
+  // Synchronous role gate from the already-persisted store. Runs as soon as
+  // hydration lands, so a wrong-role visitor is blocked on the next frame
+  // rather than after a network round trip.
+  const roleBlocked =
+    isHydrated &&
+    allowedRoles.length > 0 &&
+    !!storedUser?.role &&
+    !allowedRoles.includes(storedUser.role);
 
-  if (denied) {
+  if (denied || roleBlocked) {
     return (
       <div className="flex min-h-[60vh] flex-col items-center justify-center gap-2 rounded-2xl bg-slate-50 p-8 text-center">
         <p className="text-lg font-semibold text-slate-700">Access denied</p>
@@ -98,9 +139,10 @@ export default function AuthGuard({ children, allowedRoles = DEFAULT_ROLES }) {
     );
   }
 
-  const { isAuthenticated, user } = useAuthStore.getState();
-
-  if (!isAuthenticated || !user) return null;
+  // Only blank out once validation has actually come back negative; a store
+  // that has not hydrated yet (or a login completing mid-flight) keeps showing
+  // children rather than flashing an empty screen.
+  if (validated && (!storedAuthenticated || !storedUser)) return null;
 
   return <>{children}</>;
 }

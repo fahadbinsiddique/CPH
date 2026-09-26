@@ -7,7 +7,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.pagination import PageNumberPagination
 from core.permissions import IsRoleAdmin
 from django_filters.rest_framework import DjangoFilterBackend
-from django.db.models import F
+from django.db.models import Count, F, Prefetch, Q
 from .models import Blog, Category, Tag
 from .serializers import (
     BlogListSerializer, BlogDetailSerializer,
@@ -15,6 +15,22 @@ from .serializers import (
 )
 
 logger = logging.getLogger(__name__)
+
+
+def annotated_categories():
+    """Categories carrying their published-blog count, for prefetching.
+
+    Replaces the per-row COUNT(*) that CategorySerializer.get_blog_count used
+    to issue (one per serialized Blog row -> identical SQL repeated 5x).
+    """
+    return Category.objects.annotate(
+        published_blog_count=Count('blogs', filter=Q(blogs__status='published'))
+    )
+
+
+def with_category():
+    """Prefetch the FK with the count annotation instead of select_related."""
+    return Prefetch('category', queryset=annotated_categories())
 
 
 class BlogPagination(PageNumberPagination):
@@ -36,7 +52,7 @@ class BlogListView(generics.ListAPIView):
     def get_queryset(self):
         return Blog.objects.filter(
             status='published'
-        ).select_related('author', 'category').prefetch_related('tags')
+        ).select_related('author').prefetch_related('tags', with_category())
 
 
 class BlogDetailView(generics.RetrieveAPIView):
@@ -47,7 +63,7 @@ class BlogDetailView(generics.RetrieveAPIView):
     def get_queryset(self):
         return Blog.objects.filter(
             status='published'
-        ).select_related('author', 'category').prefetch_related('tags')
+        ).select_related('author').prefetch_related('tags', with_category())
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -59,7 +75,8 @@ class BlogDetailView(generics.RetrieveAPIView):
 
 
 class CategoryListView(generics.ListAPIView):
-    queryset = Category.objects.all()
+    # Annotate so get_blog_count never falls back to per-object COUNT(*).
+    queryset = annotated_categories()
     serializer_class = CategorySerializer
     permission_classes = [AllowAny]
 
@@ -77,7 +94,7 @@ class FeaturedBlogListView(generics.ListAPIView):
     def get_queryset(self):
         return Blog.objects.filter(
             status='published', is_featured=True
-        ).select_related('author', 'category').prefetch_related('tags')[:6]
+        ).select_related('author').prefetch_related('tags', with_category())[:6]
 
 
 # Admin blog management
@@ -93,8 +110,8 @@ class AdminBlogListView(generics.ListCreateAPIView):
 
     def get_queryset(self):
         return Blog.objects.all().select_related(
-            'author', 'category'
-        ).prefetch_related('tags')
+            'author'
+        ).prefetch_related('tags', with_category())
 
     def perform_create(self, serializer):
         serializer.save()
@@ -110,7 +127,7 @@ class AdminBlogDetailView(generics.RetrieveUpdateDestroyAPIView):
         return BlogCreateUpdateSerializer
 
     def get_queryset(self):
-        return Blog.objects.all()
+        return Blog.objects.all().prefetch_related(with_category())
 
 
 class AdminTagListCreateView(generics.ListCreateAPIView):

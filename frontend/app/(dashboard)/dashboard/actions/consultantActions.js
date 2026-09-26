@@ -2,6 +2,7 @@
 
 import { revalidatePath, revalidateTag } from 'next/cache';
 import serverApi from '@/lib/serverApi';
+import { CACHE_TAGS } from './cacheTags';
 
 export async function verifyConsultant(id, value) {
   try {
@@ -85,7 +86,13 @@ export async function updateConsultant(id, formData) {
 
 export async function fetchConsultants() {
   try {
-    const data = await serverApi.get('/api/admin/consultants/');
+    // Tagged so the revalidateTag('consultants') calls above actually reach
+    // this entry — without a matching tag they were a silent no-op. `revalidate`
+    // is repeated because passing `next` replaces serverApi's default rather
+    // than merging into it.
+    const data = await serverApi.get('/api/admin/consultants/', {
+      next: { revalidate: 60, tags: [CACHE_TAGS.CONSULTANTS] },
+    });
     return data.results || data;
   } catch (error) {
     console.error('Failed to fetch consultants:', error);
@@ -95,7 +102,9 @@ export async function fetchConsultants() {
 
 export async function fetchSpecializations() {
   try {
-    const data = await serverApi.get('/api/admin/consultants/specializations/');
+    const data = await serverApi.get('/api/admin/consultants/specializations/', {
+      next: { revalidate: 60, tags: [CACHE_TAGS.CONSULTANTS] },
+    });
     return data;
   } catch (error) {
     console.error('Failed to fetch specializations:', error);
