@@ -1,4 +1,4 @@
-import { Geist, Geist_Mono, Plus_Jakarta_Sans } from 'next/font/google'
+import { Geist, Geist_Mono, Plus_Jakarta_Sans, Lora, Raleway } from 'next/font/google'
 import './globals.css'
 import MotionProvider from '@/components/layout/MotionProvider'
 import { Toaster } from 'sonner'
@@ -34,6 +34,22 @@ const plusJakartaSans = Plus_Jakarta_Sans({
   variable: '--font-plus-jakarta',
   subsets: ['latin'],
   weight: ['500', '600', '700', '800'],
+})
+
+// Design system type pairing (design-system/mentalhealthapp/MASTER.md):
+// Lora for headings, Raleway for body — applied inside the dashboard shell.
+const lora = Lora({
+  variable: '--font-lora',
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  display: 'swap',
+})
+
+const raleway = Raleway({
+  variable: '--font-raleway',
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '600', '700'],
+  display: 'swap',
 })
 
 export const metadata = {

@@ -127,6 +127,9 @@ export default function RegisterModal({ isOpen, setIsOpen, onSuccessRedirect }) 
             <DialogTitle className="text-2xl font-bold tracking-tight text-slate-900 font-sans">
               Create Account
             </DialogTitle>
+            <DialogDescription>
+              Enter your details to create a new account at Centre for Psychological Health.
+            </DialogDescription>
 
           </div>
 

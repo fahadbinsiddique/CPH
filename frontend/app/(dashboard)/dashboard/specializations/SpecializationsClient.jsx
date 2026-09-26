@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import {
   Dialog, DialogContent, DialogHeader,
-  DialogTitle, DialogFooter
+  DialogTitle, DialogDescription, DialogFooter
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
@@ -203,6 +203,11 @@ export default function SpecializationsClient({ initialSpecializations }) {
           <DialogContent>
             <DialogHeader>
               <DialogTitle>{editing ? 'Edit Specialization' : 'New Specialization'}</DialogTitle>
+              <DialogDescription>
+                {editing
+                  ? 'Update the specialization name. Changes apply to all consultants using it.'
+                  : 'Create a new specialization category for consultants to select from.'}
+              </DialogDescription>
             </DialogHeader>
             <div className="py-2">
               <Label className="mb-2 block text-sm font-medium text-slate-700">Name</Label>

@@ -18,7 +18,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -234,6 +234,9 @@ function AppointmentRow({ appointment, onStatusUpdate, onNoteSave, isConsultant 
               <MessageSquare className="h-5 w-5 text-teal-500" />
               Session Note
             </DialogTitle>
+            <DialogDescription>
+              Add or edit a private note for this session. Notes are visible only to you.
+            </DialogDescription>
           </DialogHeader>
           <div className="py-4">
             <Label className="mb-2 block text-sm font-medium text-slate-700">

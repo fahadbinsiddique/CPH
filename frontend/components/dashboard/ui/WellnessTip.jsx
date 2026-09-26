@@ -11,24 +11,24 @@ export default function WellnessTip({
   className = '' 
 }) {
   return (
-    <div 
-      className={`flex items-center gap-3 rounded-2xl border border-teal-200/60 bg-gradient-to-r from-teal-50/80 to-emerald-50/80 p-4 backdrop-blur-sm ${className}`}
+    <div
+      className={`flex items-center gap-3 rounded-xl border border-accent/20 bg-accent-soft p-4 shadow-neu-inset ${className}`}
       role="complementary"
       aria-label={`Wellness tip: ${title}`}
     >
-      <div className="rounded-xl bg-white p-2 shadow-sm" aria-hidden="true">
-        <Icon className="h-5 w-5 text-teal-500" />
+      <div className="rounded-lg bg-card p-2 shadow-neu" aria-hidden="true">
+        <Icon className="h-5 w-5 text-accent" />
       </div>
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-semibold text-stone-700">{title}</p>
-        <p className="text-xs text-stone-500 truncate">{message}</p>
+        <p className="text-sm font-semibold text-foreground">{title}</p>
+        <p className="line-clamp-2 text-xs text-muted-foreground sm:truncate">{message}</p>
       </div>
       {typeof badgeLabel === 'string' ? (
-        <Badge className="border-teal-200 bg-white/60 text-xs text-teal-600 shrink-0" aria-label={badgeLabel}>
+        <Badge className="border-accent/30 bg-card/70 text-xs text-accent-soft-foreground shrink-0" aria-label={badgeLabel}>
           {badgeLabel}
         </Badge>
       ) : (
-        <Badge className="border-teal-200 bg-white/60 text-xs shrink-0">{badgeLabel}</Badge>
+        <Badge className="border-accent/30 bg-card/70 text-xs shrink-0">{badgeLabel}</Badge>
       )}
     </div>
   );

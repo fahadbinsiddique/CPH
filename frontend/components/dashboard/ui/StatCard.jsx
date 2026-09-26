@@ -11,7 +11,7 @@ export default function StatCard({
   icon: Icon,
   label,
   value,
-  iconClassName = 'bg-teal-50 text-teal-700',
+  iconClassName = 'bg-primary/10 text-primary',
   description,
   trend,
   href,
@@ -20,15 +20,15 @@ export default function StatCard({
   const content = (
     <Card variant="raised" className="group relative h-full overflow-hidden">
       <div className="dash-accent" />
-      <CardContent className="relative z-10 p-6">
-        <div className="flex items-start justify-between">
+      <CardContent className="relative z-10 p-4 sm:p-6">
+        <div className="flex items-start justify-between gap-2">
           <div
             className={cn(
-              'flex h-14 w-14 items-center justify-center rounded-2xl shadow-sm transition-transform duration-300 group-hover:scale-110',
+              'flex h-11 w-11 shrink-0 items-center justify-center rounded-xl shadow-neu-inset transition-transform duration-200 group-hover:scale-105 sm:h-14 sm:w-14',
               iconClassName
             )}
           >
-            <Icon className="h-6 w-6" />
+            <Icon className="h-5 w-5 sm:h-6 sm:w-6" />
           </div>
           <div className="flex flex-col items-end gap-1">
             {typeof trend === 'number' && (
@@ -36,33 +36,35 @@ export default function StatCard({
                 className={cn(
                   'inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-semibold',
                   trend >= 0
-                    ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                    : 'bg-rose-50 text-rose-700 border-rose-200'
+                    ? 'border-accent/30 bg-accent/10 text-accent-soft-foreground'
+                    : 'border-destructive/30 bg-destructive/10 text-destructive'
                 )}
               >
                 {trend >= 0 ? '↑' : '↓'} {Math.abs(trend)}%
               </span>
             )}
             {description && (
-              <span className="inline-flex items-center rounded-full border border-stone-200 bg-white/50 px-2 py-0.5 text-[10px] text-stone-500">
+              <span className="hidden max-w-full truncate rounded-full border border-border bg-card px-2 py-0.5 text-[10px] text-muted-foreground sm:inline-flex">
                 {description}
               </span>
             )}
           </div>
         </div>
         <div className="mt-4">
-          <p className="text-3xl font-bold tracking-tight text-stone-900">{value ?? '—'}</p>
-          <p className="mt-0.5 text-xs font-semibold tracking-wider text-stone-400 uppercase">{label}</p>
+          <p className="font-heading text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">{value ?? '—'}</p>
+          <p className="mt-0.5 text-[10px] font-semibold tracking-wider text-muted-foreground uppercase sm:text-[11px]">
+            {label}
+          </p>
         </div>
-        <div className="mt-3 h-0.5 w-full overflow-hidden rounded-full bg-stone-100">
+        <div className="mt-3 h-1 w-full overflow-hidden rounded-full bg-muted">
           <div
-            className="h-full rounded-full bg-gradient-to-r from-teal-400 to-emerald-400 transition-all duration-1000"
+            className="h-full rounded-full bg-gradient-to-r from-primary to-accent transition-all duration-1000"
             style={{ width: `${progress * 100}%` }}
           />
         </div>
         {href && (
           <div className="mt-3 flex justify-end">
-            <span className="inline-flex h-7 items-center gap-0.5 rounded-xl px-2 text-[10px] font-medium text-stone-400 transition-colors hover:bg-teal-50/80 hover:text-teal-600">
+            <span className="inline-flex h-9 cursor-pointer items-center gap-0.5 rounded-lg px-2 text-[10px] font-medium text-muted-foreground transition-colors hover:bg-primary/10 hover:text-foreground sm:h-7">
               View Details
               <ChevronRight className="h-3 w-3" />
             </span>

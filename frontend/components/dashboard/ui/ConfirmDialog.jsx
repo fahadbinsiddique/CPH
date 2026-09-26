@@ -26,7 +26,7 @@ export default function ConfirmDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-sm">
         <DialogHeader>
-          <div className="mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-rose-50 text-rose-500 ring-1 ring-rose-100">
+          <div className="mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-destructive/10 text-destructive ring-1 ring-destructive/20">
             {destructive ? <Trash2 className="h-5 w-5" /> : <AlertTriangle className="h-5 w-5" />}
           </div>
           <DialogTitle>{title}</DialogTitle>

@@ -81,7 +81,7 @@ export default function UsersClient({ initialUsers }) {
                           <div className="dash-accent" />
                           <CardContent className="flex items-center gap-4 p-4">
                             <div
-                              className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gradient-to-br text-base font-bold text-white shadow-sm ${style.gradient}`}
+                              className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gradient-to-br text-base font-bold text-on-primary shadow-sm ${style.gradient}`}
                             >
                               {u.full_name?.charAt(0)}
                             </div>

@@ -26,7 +26,7 @@ export default function UserDashboard({
       icon: Calendar,
       label: 'Total Sessions',
       value: allAppointments.length,
-      iconClassName: 'bg-teal-50 text-teal-700',
+      iconClassName: 'bg-primary/10 text-primary',
       description: 'All time',
       progress: 1,
     },
@@ -34,7 +34,7 @@ export default function UserDashboard({
       icon: Clock,
       label: 'Upcoming',
       value: upcomingAppointments.length,
-      iconClassName: 'bg-amber-50 text-amber-700',
+      iconClassName: 'bg-secondary/50 text-foreground',
       description: 'Pending & confirmed',
       progress: total > 0 ? upcomingAppointments.length / total : 0,
     },
@@ -42,7 +42,7 @@ export default function UserDashboard({
       icon: CheckCircle2,
       label: 'Completed',
       value: completedAppointments.length,
-      iconClassName: 'bg-emerald-50 text-emerald-700',
+      iconClassName: 'bg-accent/10 text-accent',
       description: 'Done',
       progress: total > 0 ? completedAppointments.length / total : 0,
     },
@@ -50,7 +50,7 @@ export default function UserDashboard({
       icon: XCircle,
       label: 'Cancelled',
       value: cancelledAppointments.length,
-      iconClassName: 'bg-stone-50 text-stone-600',
+      iconClassName: 'bg-muted text-muted-foreground',
       description: 'No show',
       progress: total > 0 ? cancelledAppointments.length / total : 0,
     },
@@ -60,11 +60,11 @@ export default function UserDashboard({
   const itemMotionProps = reduceMotion ? {} : { variants: itemVariants };
 
   return (
-    <motion.div {...motionProps} className="space-y-8" role="region" aria-label="User dashboard">
+    <motion.div {...motionProps} className="space-y-6 sm:space-y-8" role="region" aria-label="User dashboard">
       {/* Stats Grid */}
       <section aria-labelledby="stats-heading" className="space-y-4">
         <h2 id="stats-heading" className="sr-only">Session Statistics</h2>
-        <div className="grid grid-cols-2 gap-4 md:gap-5 lg:grid-cols-4" role="list">
+        <div className="grid grid-cols-2 gap-3 sm:gap-4 md:gap-5 lg:grid-cols-4" role="list">
           {stats.map((stat, idx) => (
             <StatCard key={stat.label} {...stat} />
           ))}
@@ -73,16 +73,16 @@ export default function UserDashboard({
 
       {/* Upcoming Consultations */}
       <section aria-labelledby="upcoming-heading" className="space-y-4" {...itemMotionProps}>
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <h2 id="upcoming-heading" className="text-lg font-bold tracking-tight text-slate-900">Upcoming Consultations</h2>
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div className="flex min-w-0 flex-wrap items-center gap-2">
+            <h2 id="upcoming-heading" className="font-heading text-lg font-semibold tracking-tight text-foreground">Upcoming Consultations</h2>
             {upcomingAppointments.length > 0 && (
               <span className="flex items-center gap-1" aria-live="polite" aria-atomic="true">
                 <span className="relative flex h-2.5 w-2.5" aria-hidden="true">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-                  <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-500" />
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-75" />
+                  <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-accent" />
                 </span>
-                <span className="text-xs font-medium text-emerald-600">{upcomingAppointments.length} upcoming</span>
+                <span className="text-xs font-medium text-accent-soft-foreground">{upcomingAppointments.length} upcoming</span>
               </span>
             )}
           </div>
@@ -90,7 +90,7 @@ export default function UserDashboard({
             <Button
               variant="ghost"
               size="sm"
-              className="group rounded-xl text-xs font-semibold text-teal-600 hover:bg-teal-50/80 hover:text-teal-700"
+              className="group min-h-10 cursor-pointer rounded-lg px-3 text-xs font-semibold text-foreground hover:bg-primary/10 hover:text-foreground sm:min-h-8"
               aria-label="View all appointments"
             >
               View All
@@ -112,7 +112,7 @@ export default function UserDashboard({
                       <Button
                         variant="outline"
                         size="sm"
-                        className="rounded-xl border-teal-200 text-xs font-medium text-teal-700 hover:border-teal-300 hover:bg-teal-50"
+                        className="min-h-11 cursor-pointer rounded-lg border-primary/30 text-xs font-medium text-foreground hover:border-primary/50 hover:bg-primary/10 sm:min-h-9"
                         aria-label={`Join session with ${appointment.consultant?.user?.full_name || 'consultant'}`}
                       >
                         <Sparkles className="mr-1.5 h-3 w-3" aria-hidden="true" />
@@ -128,7 +128,7 @@ export default function UserDashboard({
                 <Link href="/dashboard/bookings">
                   <Button
                     variant="outline"
-                    className="rounded-xl border-slate-200 text-slate-600 hover:border-teal-300 hover:text-teal-700"
+                    className="cursor-pointer rounded-lg border-border text-muted-foreground hover:border-primary/40 hover:text-foreground"
                   >
                     View {upcomingAppointments.length - 4} more appointments
                     <ArrowRight className="ml-2 h-4 w-4" aria-hidden="true" />

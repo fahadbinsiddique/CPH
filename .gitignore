@@ -69,6 +69,7 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 prompt.md
+design-system
 # ---------------------------------------------------------------------------
 # Environment variables (secrets) - never commit
 # ---------------------------------------------------------------------------
@@ -85,6 +86,8 @@ PROJECT_SUMMARY.md
 # ---------------------------------------------------------------------------
 # Tooling / cache
 # ---------------------------------------------------------------------------
+# OpenCode project config IS tracked (.opencode/opencode.json, plugins/).
+# Skills live in the global centre ~/.config/opencode/skills/ (outside this repo).
 .opencode/cache/
 .opencode/sessions/
 .opencode

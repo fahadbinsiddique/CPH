@@ -33,30 +33,74 @@
 /* =========================
    DASHBOARD SYSTEM
    Shared primitives for the dashboard shell & cards
+   Tokens come from design-system/mentalhealthapp/MASTER.md
+   (scoped to .dash-shell, see token block below).
 ========================= */
 
 @utility dash-shell {
-  @apply h-screen overflow-hidden bg-gradient-to-br from-stone-50 via-white to-teal-50/15 font-sans;
+  @apply overflow-hidden bg-gradient-to-br from-background via-background to-primary/5 font-sans text-foreground;
+  /* 100dvh keeps the panel above mobile browser chrome (collapsing URL bar);
+     100vh is the fallback for engines without dynamic viewport units. */
+  height: 100vh;
+  height: 100dvh;
+}
+
+/* The scrolling column inside the shell: never chain-scroll the page behind
+   it, and keep the last card clear of the iOS home indicator. */
+@utility dash-main {
+  @apply overscroll-contain;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: max(env(safe-area-inset-bottom), 1.5rem);
 }
 
 @utility dash-card {
-  @apply card-raised;
+  @apply rounded-xl bg-card shadow-neu transition-all duration-200;
 }
 
 @utility dash-card-hover {
-  @apply hover:shadow-float;
+  @apply hover:shadow-neu-lg;
 }
 
 @utility dash-accent {
-  @apply absolute inset-x-0 top-0 h-0.5 origin-left scale-x-0 bg-gradient-to-r from-teal-400 to-emerald-400 transition-transform duration-700 group-hover:scale-x-100;
+  @apply absolute inset-x-0 top-0 h-0.5 origin-left scale-x-0 bg-gradient-to-r from-primary to-accent transition-transform duration-500 group-hover:scale-x-100;
 }
 
 @utility dash-cta {
-  @apply inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-teal-600/20 transition-all duration-300 hover:from-teal-700 hover:to-emerald-700;
+  @apply inline-flex cursor-pointer items-center gap-2 rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-on-accent shadow-neu transition-all duration-200 hover:brightness-95 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background active:translate-y-px;
 }
 
 @utility dash-chip {
-  @apply inline-flex items-center gap-1 rounded-lg bg-stone-50/80 px-2 py-0.5 text-xs font-medium text-stone-500;
+  @apply inline-flex items-center gap-1 rounded-lg bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground;
+}
+
+/* Calm scrollbar, in dashboard colours (cph-scroll defaults to the
+   marketing site's teal). */
+.dash-shell .cph-scroll {
+  scrollbar-color: oklch(0.82 0.12 293) transparent;
+}
+.dash-shell .cph-scroll::-webkit-scrollbar-thumb {
+  background-color: oklch(0.82 0.12 293);
+}
+.dash-shell .cph-scroll::-webkit-scrollbar-thumb:hover {
+  background-color: oklch(0.72 0.17 293);
+}
+
+/* Neumorphic elevation for every card inside the dashboard (the shared
+   card-raised/card-float shadows carry the marketing site's teal tint). */
+.dash-shell [data-slot="card"] {
+  border-radius: 1rem;
+  box-shadow: var(--shadow-neu);
+}
+
+.dash-shell [data-slot="card"]:hover,
+.dash-shell [data-slot="card"][data-variant="float"] {
+  box-shadow: var(--shadow-neu-lg);
+}
+
+/* card-bordered / card-glass carry marketing-site teal hover borders */
+.dash-shell [data-slot="card"][data-variant="bordered"]:hover,
+.dash-shell [data-slot="card"][data-variant="glass"]:hover {
+  border-color: color-mix(in oklch, var(--primary) 35%, transparent);
 }
 
 /* =========================
@@ -207,6 +251,20 @@
   --shadow-card: 0 1px 2px rgb(15 118 110 / 0.04), 0 16px 40px -16px rgb(15 118 110 / 0.12);
   --shadow-float: 0 8px 24px -8px rgb(15 118 110 / 0.1), 0 24px 48px -16px rgb(15 118 110 / 0.15);
   --shadow-glow: 0 0 0 1px rgb(15 118 110 / 0.1), 0 8px 32px -8px rgb(15 118 110 / 0.2);
+
+  /* Neumorphism / Soft UI — dual light-source shadows (MASTER.md style spec:
+     light top-left, dark bottom-right, 15px blur) */
+  --shadow-neu: -5px -5px 15px rgb(255 255 255 / 0.9), 5px 5px 15px rgb(76 29 149 / 0.1);
+  --shadow-neu-lg: -6px -6px 18px rgb(255 255 255 / 0.95), 12px 12px 30px rgb(76 29 149 / 0.14);
+  --shadow-neu-inset: inset 4px 4px 10px rgb(76 29 149 / 0.1), inset -4px -4px 10px rgb(255 255 255 / 0.9);
+
+  /* "On" colors from the MASTER.md palette table (black on primary/accent so
+     filled buttons clear the 4.5:1 contrast checklist item) */
+  --color-on-primary: #000000;
+  --color-on-secondary: #0f172a;
+  --color-on-accent: #000000;
+  --color-on-destructive: #ffffff;
+
   --font-sans: var(--font-geist-sans), sans-serif;
   --font-mono: var(--font-geist-mono), monospace;
   --font-heading: var(--font-plus-jakarta), sans-serif;
@@ -251,6 +309,79 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+/* ============================================================
+   DESIGN SYSTEM TOKENS — design-system/mentalhealthapp/MASTER.md
+   Source of truth for the dashboard. Scoped to `.dash-shell` so the
+   marketing pages keep their existing brand, plus any Radix portal
+   (Sheet / Dialog / Select) mounted under <body> while the dashboard
+   is on screen.
+   ============================================================ */
+:is(.dash-shell, body:has(.dash-shell) [data-radix-portal]) {
+  /* --- Color palette (MASTER.md → Color Palette) --- */
+  --color-primary: #8b5cf6;
+  --color-on-primary: #000000;
+  --color-secondary: #c4b5fd;
+  --color-on-secondary: #0f172a;
+  --color-accent: #059669;
+  --color-on-accent: #000000;
+  --color-background: #faf5ff;
+  --color-foreground: #4c1d95;
+  --color-card: #ffffff;
+  --color-card-foreground: #4c1d95;
+  --color-muted: #edeff9;
+  --color-muted-foreground: #475569;
+  --color-border: #ede9fe;
+  --color-destructive: #dc2626;
+  --color-on-destructive: #ffffff;
+  --color-ring: #8b5cf6;
+
+  /* --- Semantic aliases consumed by shadcn/Tailwind utilities --- */
+  --background: #faf5ff;
+  --foreground: #4c1d95;
+  --card: #ffffff;
+  --card-foreground: #4c1d95;
+  --popover: #ffffff;
+  --popover-foreground: #4c1d95;
+  --primary: #8b5cf6;
+  --primary-foreground: #000000;
+  --secondary: #c4b5fd;
+  --secondary-foreground: #0f172a;
+  --muted: #edeff9;
+  --muted-foreground: #475569;
+  --accent: #059669;
+  --accent-foreground: #000000;
+  --accent-soft: #ecfdf5;
+  --accent-soft-foreground: #065f46;
+  --destructive: #dc2626;
+  --destructive-foreground: #ffffff;
+  --border: #ede9fe;
+  --input: #ede9fe;
+  --ring: #8b5cf6;
+  --chart-1: #8b5cf6;
+  --chart-2: #059669;
+  --chart-3: #c4b5fd;
+  --chart-4: #4c1d95;
+  --chart-5: #f59e0b;
+
+  /* Sidebar tokens */
+  --sidebar: #ffffff;
+  --sidebar-foreground: #4c1d95;
+  --sidebar-primary: #8b5cf6;
+  --sidebar-primary-foreground: #000000;
+  --sidebar-accent: #edeff9;
+  --sidebar-accent-foreground: #4c1d95;
+  --sidebar-border: #ede9fe;
+  --sidebar-ring: #8b5cf6;
+
+  /* Rounded 12px base — components land in the 12–16px band (MASTER.md) */
+  --radius: 0.75rem;
+
+  /* --- Typography: Lora (headings) + Raleway (body), loaded in app/layout.js.
+     These are the variables `font-sans` / `font-heading` resolve against. --- */
+  --font-geist-sans: var(--font-raleway);
+  --font-plus-jakarta: var(--font-lora);
 }
 
 :root {

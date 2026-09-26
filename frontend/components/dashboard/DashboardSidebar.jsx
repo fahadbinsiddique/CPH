@@ -132,16 +132,16 @@ export default function DashboardSidebar({ instanceId = 'desktop', onNavigate })
     href === '/dashboard' ? pathname === href : pathname.startsWith(href);
 
   return (
-    <div className="flex h-full min-h-0 flex-col bg-white">
+    <div className="flex h-full min-h-0 flex-col bg-card">
       {/* Brand Logo */}
-      <div className="shrink-0 border-b border-slate-200/60 px-4 py-4">
+      <div className="shrink-0 border-b border-border px-4 py-4">
         <Link href="/" className="flex items-center gap-2.5 transition-opacity hover:opacity-80">
           <Image
             src="/logo1.png"
             alt="CPH"
             width={210}
             height={100}
-            className=" rounded-lg object-contain"
+            className="h-11 w-auto max-w-full rounded-lg object-contain lg:h-14"
             priority
           />
           
@@ -149,8 +149,8 @@ export default function DashboardSidebar({ instanceId = 'desktop', onNavigate })
       </div>
 
       {/* User card */}
-      <div className="shrink-0 border-b border-slate-200/60 px-4 py-5">
-        <div className="relative overflow-hidden rounded-2xl border border-slate-200/60 bg-gradient-to-br from-slate-50/80 to-white p-4 shadow-sm">
+      <div className="shrink-0 border-b border-border px-4 py-5">
+        <div className="relative overflow-hidden rounded-2xl border border-border bg-gradient-to-br from-muted/80 to-card p-4 shadow-sm">
           <div
             className={`absolute -top-10 -right-10 h-24 w-24 rounded-full bg-gradient-to-br ${roleStyle.gradient} opacity-10 blur-2xl`}
           />
@@ -158,15 +158,15 @@ export default function DashboardSidebar({ instanceId = 'desktop', onNavigate })
             <div className="relative">
               <Avatar className="h-14 w-14 border-2 border-white shadow-md">
                 <AvatarFallback
-                  className={`bg-gradient-to-br ${roleStyle.gradient} text-lg font-bold text-white`}
+                  className={`bg-gradient-to-br ${roleStyle.gradient} text-lg font-bold text-on-primary`}
                 >
                   {getInitials(user?.full_name)}
                 </AvatarFallback>
               </Avatar>
-              <span className="absolute -right-0.5 -bottom-0.5 h-3.5 w-3.5 animate-pulse rounded-full border-2 border-white bg-emerald-500 shadow-sm" />
+              <span className="absolute -right-0.5 -bottom-0.5 h-3.5 w-3.5 animate-pulse rounded-full border-2 border-white bg-accent shadow-sm" />
             </div>
             <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-bold text-slate-900">{user?.full_name || 'User'}</p>
+              <p className="truncate text-sm font-bold text-foreground">{user?.full_name || 'User'}</p>
               <Badge className={`mt-0.5 border text-[10px] font-semibold capitalize ${roleStyle.badge}`}>
                 {ROLE_LABEL[role] || role}
               </Badge>
@@ -176,10 +176,10 @@ export default function DashboardSidebar({ instanceId = 'desktop', onNavigate })
       </div>
 
       {/* Navigation */}
-      <nav className="cph-scroll flex-1 space-y-5 overflow-y-auto px-3 py-4">
+      <nav className="cph-scroll min-h-0 flex-1 space-y-5 overflow-y-auto overscroll-contain px-3 py-4">
         {sections.map((section) => (
           <div key={section.label}>
-            <p className="mb-1.5 px-3.5 text-[10px] font-semibold tracking-wider text-slate-400 uppercase">
+            <p className="mb-1.5 px-3.5 text-[10px] font-semibold tracking-wider text-muted-foreground uppercase">
               {section.label}
             </p>
             <div className="space-y-1">
@@ -191,24 +191,24 @@ export default function DashboardSidebar({ instanceId = 'desktop', onNavigate })
                     <span
                       className={cn(
                         'relative flex cursor-pointer items-center gap-3 rounded-xl px-3.5 py-3 text-sm font-medium transition-all duration-300',
-                        active ? 'text-slate-900' : 'text-slate-600 hover:bg-slate-100/80 hover:text-slate-900'
+                        active ? 'text-foreground' : 'text-muted-foreground hover:bg-muted/80 hover:text-foreground'
                       )}
                     >
                       {active && (
                         <motion.span
                           layoutId={`${instanceId}-active`}
-                          className="absolute inset-0 rounded-xl border border-teal-200/60 bg-gradient-to-r from-teal-50 to-emerald-50"
+                          className="absolute inset-0 rounded-xl border border-primary/20 bg-primary/10"
                           transition={{ type: 'spring', stiffness: 380, damping: 30 }}
                         />
                       )}
                       <Icon
                         className={cn(
                           'relative z-10 h-[18px] w-[18px] shrink-0 transition-all duration-300',
-                          active ? 'scale-110 text-teal-600' : 'text-slate-400'
+                          active ? 'scale-110 text-primary' : 'text-muted-foreground/60'
                         )}
                       />
                       <span className="relative z-10 tracking-wide">{item.label}</span>
-                      {active && <ChevronRight className="relative z-10 ml-auto h-4 w-4 text-teal-600" />}
+                      {active && <ChevronRight className="relative z-10 ml-auto h-4 w-4 text-primary" />}
                     </span>
                   </Link>
                 );
@@ -219,20 +219,20 @@ export default function DashboardSidebar({ instanceId = 'desktop', onNavigate })
       </nav>
 
       {/* Footer */}
-      <div className="shrink-0 space-y-1 border-t border-slate-200/60 px-3 py-3">
+      <div className="shrink-0 space-y-1 border-t border-border px-3 py-3">
         <Link
           href="/"
           onClick={onNavigate}
-          className="group flex w-full items-center gap-3 rounded-xl border border-transparent px-3.5 py-2.5 text-sm font-medium text-slate-600 transition-all duration-200 hover:border-slate-200/60 hover:bg-slate-50 hover:text-slate-900"
+          className="group flex w-full items-center gap-3 rounded-xl border border-transparent px-3.5 py-2.5 text-sm font-medium text-muted-foreground transition-all duration-200 hover:border-border hover:bg-muted hover:text-foreground"
         >
-          <ExternalLink className="h-[18px] w-[18px] text-slate-400 transition-transform group-hover:translate-x-0.5" />
+          <ExternalLink className="h-[18px] w-[18px] text-muted-foreground/60 transition-transform group-hover:translate-x-0.5" />
           <span>Go to Main Site</span>
         </Link>
         <button
           onClick={handleLogout}
-          className="group flex w-full cursor-pointer items-center gap-3 rounded-xl border border-transparent px-3.5 py-2.5 text-sm font-semibold text-rose-600 transition-all duration-200 hover:border-rose-200/40 hover:bg-rose-50/80"
+          className="group flex w-full cursor-pointer items-center gap-3 rounded-xl border border-transparent px-3.5 py-2.5 text-sm font-semibold text-destructive transition-all duration-200 hover:border-destructive/30 hover:bg-destructive/10"
         >
-          <LogOut className="h-[18px] w-[18px] text-rose-500 transition-transform group-hover:translate-x-0.5" />
+          <LogOut className="h-[18px] w-[18px] text-destructive transition-transform group-hover:translate-x-0.5" />
           <span>Sign Out</span>
         </button>
       </div>
