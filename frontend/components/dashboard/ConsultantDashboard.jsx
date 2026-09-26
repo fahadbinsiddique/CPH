@@ -42,32 +42,28 @@ export default function ConsultantDashboard({
       icon: Calendar,
       label: "Today's Sessions",
       value: todayAppointments.length,
-      iconClassName: 'bg-gradient-to-br from-blue-100 to-indigo-100 text-blue-600',
-      gradient: 'from-blue-50/20 to-indigo-50/20',
+      iconClassName: 'bg-primary/10 text-primary',
       description: 'Scheduled',
     },
     {
       icon: Clock,
       label: 'Pending Requests',
       value: pendingAppointments.length,
-      iconClassName: 'bg-gradient-to-br from-amber-100 to-orange-100 text-amber-600',
-      gradient: 'from-amber-50/20 to-orange-50/20',
+      iconClassName: 'bg-secondary/50 text-foreground',
       description: 'Action needed',
     },
     {
       icon: CheckCircle2,
       label: 'Completed',
       value: completedAppointments.length,
-      iconClassName: 'bg-gradient-to-br from-emerald-100 to-teal-100 text-emerald-600',
-      gradient: 'from-emerald-50/20 to-teal-50/20',
+      iconClassName: 'bg-accent/10 text-accent',
       description: 'Done',
     },
     {
       icon: Users,
       label: 'Total Patients',
       value: uniquePatients,
-      iconClassName: 'bg-gradient-to-br from-purple-100 to-fuchsia-100 text-purple-600',
-      gradient: 'from-purple-50/20 to-fuchsia-50/20',
+      iconClassName: 'bg-muted text-muted-foreground',
       description: 'Active',
     },
   ];
@@ -96,7 +92,7 @@ export default function ConsultantDashboard({
         <>
           <Button
             size="sm"
-            className="dash-cta h-9 px-4 text-xs"
+            className="dash-cta min-h-11 cursor-pointer px-4 text-xs sm:min-h-9"
             disabled={processingId === appointment.id}
             onClick={() => updateStatus(appointment.id, 'confirmed')}
             aria-label={`Confirm appointment with ${appointment.client?.user?.full_name || 'patient'}`}
@@ -106,7 +102,7 @@ export default function ConsultantDashboard({
           <Button
             size="sm"
             variant="outline"
-            className="h-9 border-rose-200 px-4 text-xs font-medium text-rose-600 hover:bg-rose-50"
+            className="min-h-11 cursor-pointer border-destructive/30 px-4 text-xs font-medium text-destructive hover:bg-destructive/10 sm:min-h-9"
             disabled={processingId === appointment.id}
             onClick={() => updateStatus(appointment.id, 'cancelled')}
             aria-label={`Decline appointment with ${appointment.client?.user?.full_name || 'patient'}`}
@@ -121,7 +117,7 @@ export default function ConsultantDashboard({
         <Button
           size="sm"
           variant="outline"
-          className="h-9 rounded-xl border-teal-200 text-xs font-medium text-teal-700 hover:bg-teal-50"
+          className="h-9 cursor-pointer rounded-lg border-primary/30 text-xs font-medium text-foreground hover:border-primary/50 hover:bg-primary/10"
           aria-label={`Join session with ${appointment.client?.user?.full_name || 'patient'}`}
         >
           <Video className="mr-1.5 h-3 w-3" aria-hidden="true" />
@@ -136,24 +132,24 @@ export default function ConsultantDashboard({
   const itemMotionProps = reduceMotion ? {} : { variants: itemVariants };
 
   return (
-    <motion.div {...motionProps} className="space-y-8" role="region" aria-label="Consultant dashboard">
+    <motion.div {...motionProps} className="space-y-6 sm:space-y-8" role="region" aria-label="Consultant dashboard">
       {/* Stats Grid */}
       <section aria-labelledby="consultant-stats-heading" className="space-y-4">
         <h2 id="consultant-stats-heading" className="sr-only">Consultant Statistics</h2>
-        <div className="grid grid-cols-2 gap-4 md:gap-5 lg:grid-cols-4" role="list">
+        <div className="grid grid-cols-2 gap-3 sm:gap-4 md:gap-5 lg:grid-cols-4" role="list">
           {stats.map((stat, idx) => (
             <StatCard key={stat.label} {...stat} />
           ))}
         </div>
       </section>
 
-      <div className="grid grid-cols-1 items-start gap-8 xl:grid-cols-3">
+      <div className="grid grid-cols-1 items-start gap-6 xl:grid-cols-3">
         {/* Today's Appointments */}
         <section aria-labelledby="today-heading" {...itemMotionProps} className="space-y-4 xl:col-span-2">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 id="today-heading" className="text-lg font-bold tracking-tight text-slate-900">Today's Schedule</h2>
-              <p className="mt-0.5 text-sm text-slate-500">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div className="min-w-0">
+              <h2 id="today-heading" className="font-heading text-lg font-semibold tracking-tight text-foreground">Today&apos;s Schedule</h2>
+              <p className="mt-0.5 text-sm text-muted-foreground">
                 {todayAppointments.length > 0
                   ? `You have ${todayAppointments.length} session${todayAppointments.length > 1 ? 's' : ''} today`
                   : 'No sessions scheduled for today'}
@@ -163,7 +159,7 @@ export default function ConsultantDashboard({
               <Button
                 variant="ghost"
                 size="sm"
-                className="group rounded-xl text-xs font-semibold text-teal-600 hover:bg-teal-50/80 hover:text-teal-700"
+                className="group min-h-10 cursor-pointer rounded-lg px-3 text-xs font-semibold text-foreground hover:bg-primary/10 hover:text-foreground sm:min-h-8"
                 aria-label="View all appointments"
               >
                 View All
@@ -197,15 +193,15 @@ export default function ConsultantDashboard({
         {/* Pending Action Center */}
         <section aria-labelledby="pending-heading" {...itemMotionProps} className="space-y-4">
           <div>
-            <h2 id="pending-heading" className="flex items-center gap-2 text-lg font-bold tracking-tight text-slate-900">
+            <h2 id="pending-heading" className="font-heading flex items-center gap-2 text-lg font-semibold tracking-tight text-foreground">
               Pending Actions
               {pendingAppointments.length > 0 && (
-                <Badge className="bg-amber-100 text-amber-700 border-amber-200" aria-label={`${pendingAppointments.length} pending requests`}>
+                <Badge className="border-primary/20 bg-primary/10 text-foreground" aria-label={`${pendingAppointments.length} pending requests`}>
                   {pendingAppointments.length}
                 </Badge>
               )}
             </h2>
-            <p className="mt-0.5 text-sm text-slate-500">
+            <p className="mt-0.5 text-sm text-muted-foreground">
               {pendingAppointments.length > 0
                 ? `${pendingAppointments.length} request${pendingAppointments.length > 1 ? 's' : ''} waiting for response`
                 : 'All caught up!'}
@@ -213,7 +209,7 @@ export default function ConsultantDashboard({
           </div>
 
           {pendingAppointments.length > 0 ? (
-            <div className="cph-scroll max-h-[600px] space-y-3 overflow-y-auto pr-1" role="list" aria-label="Pending appointments">
+            <div className="space-y-3 xl:cph-scroll xl:max-h-[600px] xl:overflow-y-auto xl:pr-1" role="list" aria-label="Pending appointments">
               <AnimatePresence mode="popLayout">
                 {pendingAppointments.slice(0, 6).map((appointment) => (
                   <AppointmentCard key={appointment.id} appointment={appointment} personKey="client" actions={renderActions(appointment)} />
@@ -223,7 +219,7 @@ export default function ConsultantDashboard({
                 <Link href="/dashboard/appointments?filter=pending">
                   <Button
                     variant="outline"
-                    className="w-full rounded-xl border-slate-200 text-slate-600 hover:border-teal-300 hover:text-teal-700"
+                    className="w-full cursor-pointer rounded-lg border-border text-muted-foreground hover:border-primary/40 hover:text-foreground"
                   >
                     View {pendingAppointments.length - 6} more pending requests
                     <ArrowRight className="ml-2 h-4 w-4" aria-hidden="true" />

@@ -104,6 +104,9 @@ export default function LoginModal({ isOpen, setIsOpen, onRedirect }) {
             <DialogTitle className="text-2xl font-bold tracking-tight text-slate-900 font-sans">
               Centre for Psychological Health
             </DialogTitle>
+            <DialogDescription>
+              Sign in to access your Centre for Psychological Health account.
+            </DialogDescription>
 
           </div>
 

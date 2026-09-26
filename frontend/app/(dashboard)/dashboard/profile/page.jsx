@@ -103,7 +103,7 @@ export default function ProfilePage() {
                 >
                   <Avatar className="h-24 w-24 shadow-lg ring-4 ring-teal-50/80">
                     <AvatarFallback
-                      className={`bg-gradient-to-br text-3xl font-bold text-white shadow-inner ${roleStyle.gradient}`}
+                      className={`bg-gradient-to-br text-3xl font-bold text-on-primary shadow-inner ${roleStyle.gradient}`}
                     >
                       {getInitials(user?.full_name)}
                     </AvatarFallback>

@@ -1,21 +1,23 @@
+// Role accents follow design-system/mentalhealthapp/MASTER.md:
+// primary violet -> accent wellness green, black on-color text (4.5:1+).
 export const ROLE_STYLE = {
   admin: {
-    badge: 'bg-gradient-to-r from-teal-100 to-emerald-100 text-teal-700 border-teal-200/60',
-    gradient: 'from-teal-600 to-emerald-600',
-    chip: 'bg-teal-50 text-teal-700 border-teal-200',
-    iconColor: 'text-teal-600',
+    badge: 'bg-primary/10 text-foreground border-primary/20',
+    gradient: 'from-primary to-accent',
+    chip: 'bg-primary/10 text-foreground border-primary/20',
+    iconColor: 'text-primary',
   },
   consultant: {
-    badge: 'bg-gradient-to-r from-teal-100 to-emerald-100 text-teal-700 border-teal-200/60',
-    gradient: 'from-teal-600 to-emerald-600',
-    chip: 'bg-teal-50 text-teal-700 border-teal-200',
-    iconColor: 'text-teal-600',
+    badge: 'bg-primary/10 text-foreground border-primary/20',
+    gradient: 'from-primary to-accent',
+    chip: 'bg-primary/10 text-foreground border-primary/20',
+    iconColor: 'text-primary',
   },
   client: {
-    badge: 'bg-gradient-to-r from-teal-100 to-emerald-100 text-teal-700 border-teal-200/60',
-    gradient: 'from-teal-600 to-emerald-600',
-    chip: 'bg-teal-50 text-teal-700 border-teal-200',
-    iconColor: 'text-teal-600',
+    badge: 'bg-primary/10 text-foreground border-primary/20',
+    gradient: 'from-primary to-accent',
+    chip: 'bg-primary/10 text-foreground border-primary/20',
+    iconColor: 'text-primary',
   },
 };
 

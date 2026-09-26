@@ -41,29 +41,29 @@ export class DashboardErrorBoundary extends Component {
       }
 
       return (
-        <Card className="max-w-md mx-auto my-8 rounded-2xl border-red-100 bg-red-50/50 shadow-sm" role="alert">
+        <Card className="max-w-md mx-auto my-8 rounded-2xl border-destructive/20 bg-destructive/10 shadow-sm" role="alert">
           <CardContent className="space-y-4 p-6 text-center">
-            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full border border-red-200 bg-red-100" aria-hidden="true">
-              <AlertCircle className="h-6 w-6 text-red-500" />
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full border border-destructive/20 bg-destructive/10" aria-hidden="true">
+              <AlertCircle className="h-6 w-6 text-destructive" />
             </div>
             <div>
-              <h3 className="font-bold text-slate-800">Something went wrong</h3>
-              <p className="mt-1 text-sm text-slate-500">
+              <h3 className="font-bold text-foreground">Something went wrong</h3>
+              <p className="mt-1 text-sm text-muted-foreground">
                 {this.state.error?.message || 'An unexpected error occurred in the dashboard'}
               </p>
             </div>
             <Button 
               onClick={this.handleRetry} 
-              className="rounded-xl bg-teal-700 hover:bg-teal-800"
+              className="rounded-xl bg-primary text-primary-foreground hover:bg-primary/90"
               aria-label="Retry loading dashboard"
             >
               <RefreshCw className="mr-2 h-4 w-4" aria-hidden="true" />
               Try Again
             </Button>
             {process.env.NODE_ENV === 'development' && this.state.error && (
-              <details className="text-left mt-4 p-3 text-xs bg-slate-100 rounded-lg">
-                <summary className="font-mono text-slate-600 cursor-pointer">Error Details</summary>
-                <pre className="mt-2 whitespace-pre-wrap text-red-600">{this.state.error.stack}</pre>
+              <details className="text-left mt-4 p-3 text-xs bg-muted rounded-lg">
+                <summary className="font-mono text-muted-foreground cursor-pointer">Error Details</summary>
+                <pre className="mt-2 whitespace-pre-wrap text-destructive">{this.state.error.stack}</pre>
               </details>
             )}
           </CardContent>
@@ -89,8 +89,8 @@ export function DashboardSuspenseFallback({
           <AlertCircle className="h-6 w-6 text-amber-500" />
         </div>
         <div>
-          <h3 className="font-bold text-slate-800">Unable to Load</h3>
-          <p className="mt-1 text-sm text-slate-500">
+          <h3 className="font-bold text-foreground">Unable to Load</h3>
+          <p className="mt-1 text-sm text-muted-foreground">
             {error?.message || message}
           </p>
         </div>

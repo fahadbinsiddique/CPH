@@ -28,23 +28,23 @@ export default function AppointmentCard({
     person?.user?.full_name || person?.full_name || person?.user?.email || 'Unknown';
   const date = new Date(appointment.appointment_date);
 
-  // Use teal for online, teal-700 for in-person (consistent accent)
+  // Accent green for video sessions, primary violet for in-person (design system tokens)
   const sessionIcon = appointment.session_type === 'online' ? Video : MapPin;
-  const sessionColor = appointment.session_type === 'online' ? 'text-teal-500' : 'text-teal-700';
+  const sessionColor = appointment.session_type === 'online' ? 'text-accent' : 'text-primary';
   const sessionLabel = appointment.session_type === 'online' ? 'Video Session' : 'In-Person';
 
   return (
     <motion.div variants={cardVariants} layout>
       <Card variant="raised" className="group relative overflow-hidden">
         <div className="dash-accent" />
-        <CardContent className="p-5">
+        <CardContent className="p-4 sm:p-5">
           <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3 sm:gap-4">
               <div className="relative">
                 <UserAvatar
                   name={displayName}
                   size="lg"
-                  className="h-14 w-14 rounded-2xl transition-transform duration-300 group-hover:scale-105"
+                  className="h-12 w-12 shrink-0 rounded-xl transition-transform duration-200 group-hover:scale-105 sm:h-14 sm:w-14"
                 />
                 <span
                   className={cn(
@@ -55,17 +55,17 @@ export default function AppointmentCard({
               </div>
 
               <div className="min-w-0">
-                <h4 className="truncate text-sm font-bold text-stone-800 transition-colors group-hover:text-teal-600">
+                <h4 className="truncate text-sm font-semibold text-foreground transition-colors group-hover:text-primary">
                   {displayName}
                 </h4>
-                <div className="mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs font-medium text-stone-400">
-                  <span className="flex items-center gap-1 rounded-lg bg-stone-50/80 px-2 py-0.5">
-                    <Calendar className="h-3 w-3 text-teal-500" />
+                <div className="mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs font-medium text-muted-foreground">
+                  <span className="flex items-center gap-1 rounded-lg bg-muted px-2 py-0.5">
+                    <Calendar className="h-3 w-3 text-primary" />
                     {formatDate(date)}
                   </span>
-                  <span className="hidden text-stone-200 sm:inline">•</span>
-                  <span className="flex items-center gap-1 rounded-lg bg-stone-50/80 px-2 py-0.5">
-                    <Clock className="h-3 w-3 text-teal-500" />
+                  <span className="hidden text-border sm:inline">•</span>
+                  <span className="flex items-center gap-1 rounded-lg bg-muted px-2 py-0.5">
+                    <Clock className="h-3 w-3 text-primary" />
                     {appointment.appointment_time}
                   </span>
                 </div>
@@ -79,11 +79,11 @@ export default function AppointmentCard({
 
           <div
             className={cn(
-              'mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-stone-100/80 pt-3',
+              'mt-3 flex flex-col gap-3 border-t border-border pt-3 sm:flex-row sm:items-center sm:justify-between sm:gap-2',
               footerClassName
             )}
           >
-            <div className="flex items-center gap-3 text-xs text-stone-500">
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
               {showSessionType && (
                 <span className="flex items-center gap-1">
                   <sessionIcon className={`h-3.5 w-3.5 ${sessionColor}`} />
@@ -91,7 +91,7 @@ export default function AppointmentCard({
                 </span>
               )}
             </div>
-            {actions && <div className="flex items-center gap-2">{actions}</div>}
+            {actions && <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-2">{actions}</div>}
           </div>
         </CardContent>
       </Card>

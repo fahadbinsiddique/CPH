@@ -18,7 +18,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Dialog, DialogContent, DialogHeader,
-  DialogTitle, DialogFooter
+  DialogTitle, DialogDescription, DialogFooter
 } from '@/components/ui/dialog';
 import { toast } from 'sonner';
 import PageHeader from '@/components/dashboard/ui/PageHeader';
@@ -445,6 +445,11 @@ export default function ConsultantsClient({ initialConsultants = [], initialSpec
         <DialogContent className="cph-scroll max-h-[85dvh] sm:max-h-[90vh] sm:max-w-3xl overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{editing ? 'Edit Consultant' : 'Add New Consultant'}</DialogTitle>
+            <DialogDescription>
+              {editing
+                ? 'Update consultant details and role permissions.'
+                : 'Create a new consultant account with system access.'}
+            </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4 py-2">

@@ -146,7 +146,7 @@ export default async function DashboardPage() {
           title={`Welcome back, ${firstName}!`}
           subtitle="Here is a summary of your account activity and upcoming sessions."
           actions={
-            <Badge variant="outline" className="border-stone-200 text-stone-500" aria-label="Secure session">
+            <Badge variant="outline" className="border-border text-muted-foreground" aria-label="Secure session">
               <Shield className="mr-1 h-3 w-3" aria-hidden="true" />
               Secure
             </Badge>
