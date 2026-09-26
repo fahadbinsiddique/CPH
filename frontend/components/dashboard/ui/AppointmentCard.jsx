@@ -28,7 +28,6 @@ export default function AppointmentCard({
     person?.user?.full_name || person?.full_name || person?.user?.email || 'Unknown';
   const date = new Date(appointment.appointment_date);
 
-  // Accent green for video sessions, primary violet for in-person (design system tokens)
   const sessionIcon = appointment.session_type === 'online' ? Video : MapPin;
   const sessionColor = appointment.session_type === 'online' ? 'text-accent' : 'text-primary';
   const sessionLabel = appointment.session_type === 'online' ? 'Video Session' : 'In-Person';

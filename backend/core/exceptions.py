@@ -26,11 +26,10 @@ def custom_exception_handler(exc, context):
             getattr(response, 'data', None),
         )
 
-        # Normalise the data into {"errors": ...} format.
+        # Normalize error payload to {success: false, errors: {...}}.
         data = response.data
         if isinstance(data, dict) and 'errors' not in data:
-            # DRF returns {"field": ["error"]} or {"detail": "error"}.
-            # Wrap it so the frontend always reads response.data.errors.
+            # DRF: {"field": ["err"]} or {"detail": "err"} -> wrap for frontend.
             response.data = {'success': False, 'errors': data}
         elif isinstance(data, list):
             response.data = {'success': False, 'errors': {'detail': data}}

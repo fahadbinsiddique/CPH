@@ -11,8 +11,6 @@ export default function DashboardLayout({ children }) {
   const user = useAuthStore((s) => s.user);
   const scrollRef = useRef(null);
 
-  // The panel scrolls inside <main>, not the window — listen there, otherwise
-  // window.scrollY stays 0 and the topbar never picks up its elevated state.
   useEffect(() => {
     const el = scrollRef.current;
     if (!el) return undefined;

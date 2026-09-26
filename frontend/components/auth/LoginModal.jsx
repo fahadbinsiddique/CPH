@@ -63,7 +63,6 @@ export default function LoginModal({ isOpen, setIsOpen, onRedirect }) {
         );
       closeLoginModal();
 
-      // Seamlessly resume the action the user intended to perform (e.g. booking).
       const resumePath = consumeResumePath();
       if (resumePath) {
         router.push(resumePath);

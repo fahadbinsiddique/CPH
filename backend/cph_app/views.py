@@ -70,14 +70,7 @@ def clear_auth_cookies(response):
     return response
 
 
-# ── Refresh-token rotation grace ────────────────────────────────────────────
-# ROTATE_REFRESH_TOKENS + BLACKLIST_AFTER_ROTATION blacklists a refresh token
-# the instant it is exchanged. When two requests race (Next middleware and the
-# axios interceptor can both refresh at the same moment), the loser presents
-# the just-blacklisted token and would get a 401 — killing an otherwise
-# healthy session. For SIMPLE_JWT['REFRESH_ROTATION_GRACE'] seconds after a
-# rotation we remember which token it rotated into and serve that successor
-# idempotently instead.
+# Token rotation grace: cache successor JTI to survive concurrent refresh races.
 
 ROTATION_GRACE_CHAIN_DEPTH = 3
 
@@ -207,11 +200,7 @@ class LoginView(generics.GenericAPIView):
 
 
 class LogoutView(APIView):
-    # AllowAny: the access token only lives a minute, so logout most often
-    # arrives after it has already expired. Requiring authentication here made
-    # the backend answer 401, the httpOnly cookies could then never be deleted
-    # (JS cannot touch them), and the leftover refresh cookie kept the
-    # "logged out" session alive in middleware.
+    # AllowAny: access tokens expire fast; auth would 401 and leave stale cookies.
     permission_classes = [AllowAny]
 
     def post(self, request):
@@ -230,9 +219,7 @@ class LogoutView(APIView):
                 payload = decode_jwt_unverified(refresh_token)
                 jti = (payload or {}).get("jti")
                 if jti:
-                    # If a concurrent refresh already rotated this token,
-                    # blacklist its successor too and drop the grace mapping
-                    # so neither can be replayed after logout.
+                    # Concurrent refresh rotated token; blacklist successor and clear grace cache.
                     key = _rotation_cache_key(jti)
                     successor = cache.get(key)
                     if successor:
@@ -246,10 +233,9 @@ class LogoutView(APIView):
                 token.blacklist()
 
         except (TokenError, Exception) as e:
-            # If token blacklisting fails, continue gracefully and clear the browser cookies.
+            # Blacklist failed; clear cookies anyway.
             logger.warning("Logout token blacklisting skipped/failed: %s", e)
 
-        # Always return a response that clears the auth cookies.
         return clear_auth_cookies(response)
 
 
@@ -278,10 +264,7 @@ class RefreshTokenView(APIView):
             refresh = RefreshToken(refresh_token)
             original_jti = refresh.payload.get("jti")
         except TokenError:
-            # The cookie token is already blacklisted — almost always because
-            # a concurrent request rotated it moments ago (Next middleware +
-            # axios interceptor racing). Recover the successor instead of
-            # failing the session.
+            # Token blacklisted (concurrent refresh race); recover successor.
             payload = decode_jwt_unverified(refresh_token)
             original_jti = (payload or {}).get("jti")
             refresh = recover_rotated_refresh(refresh_token, grace)
@@ -328,7 +311,7 @@ class RefreshTokenView(APIView):
                 max_age=int(jwt["ACCESS_TOKEN_LIFETIME"].total_seconds()),
             )
 
-            # Persist the rotated refresh token cookie so the next refresh works.
+            # Persist rotated refresh token for next rotation.
             response.set_cookie(
                 key="refresh_token",
                 value=str(refresh),
@@ -423,8 +406,7 @@ class GoogleRateThrottle(AnonRateThrottle):
     scope = 'google_login'
 
     def get_rate(self):
-        # Read dynamically so override_settings / runtime config changes apply
-        # (THROTTLE_RATES on SimpleRateThrottle is snapshotted at import time).
+        # Dynamic throttle rate (import-time snapshot workaround).
         return api_settings.DEFAULT_THROTTLE_RATES.get(self.scope, '10/hour')
 
 
@@ -474,9 +456,7 @@ class GoogleOneTapLoginView(APIView):
         last_name = id_info.get('family_name', '')
         full_name = f"{first_name} {last_name}".strip() or email.split('@')[0]
 
-        # Match the stable Google user id first (survives email changes), then
-        # fall back to email for accounts that registered before the
-        # field existed.
+        # Match by stable google_sub first, fall back to email for legacy accounts.
         user = None
         if google_sub:
             user = User.objects.filter(google_sub=google_sub).first()
@@ -493,7 +473,7 @@ class GoogleOneTapLoginView(APIView):
                 is_active=True,
             )
         else:
-            # Link the stable Google id when we matched by email only.
+            # Backfill google_sub for email-matched legacy account.
             if google_sub and not user.google_sub:
                 user.google_sub = google_sub
                 user.save(update_fields=['google_sub'])

@@ -8,26 +8,27 @@
 
 /* =========================
    PREMIUM BUTTON SYSTEM
+   Palette aligned with MASTER.md (lavender primary, green accent)
 ========================= */
 
-/* Primary solid CTA */
+/* Primary solid CTA — lavender */
 @utility btn-primary {
-  @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-2xl bg-teal-700 px-7 py-3.5 text-base font-semibold text-white shadow-md shadow-teal-900/10 transition-[background-color,border-color,color,box-shadow,scale] duration-300 hover:bg-teal-800 hover:shadow-lg hover:shadow-teal-900/15 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
+  @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-2xl bg-primary px-7 py-3.5 text-base font-semibold text-on-primary shadow-md shadow-primary/20 transition-[background-color,border-color,color,box-shadow,scale] duration-300 hover:brightness-95 hover:shadow-lg active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
 }
 
-/* Secondary soft outline CTA */
+/* Secondary soft outline CTA — lavender border */
 @utility btn-outline {
-  @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-2xl border border-stone-200 bg-white px-7 py-3.5 text-base font-semibold text-stone-700 shadow-sm transition-[background-color,border-color,color,box-shadow,scale] duration-300 hover:border-teal-300 hover:bg-teal-50/60 hover:text-teal-800 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
+  @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-2xl border border-primary/30 bg-card px-7 py-3.5 text-base font-semibold text-primary shadow-sm transition-[background-color,border-color,color,box-shadow,scale] duration-300 hover:border-primary/50 hover:bg-primary/10 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
 }
 
-/* Tertiary text link */
+/* Tertiary text link — muted foreground */
 @utility btn-ghost {
-  @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-base font-medium text-stone-600 transition-[background-color,color] duration-200 hover:bg-stone-100 hover:text-teal-700 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
+  @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-base font-medium text-muted-foreground transition-[background-color,color] duration-200 hover:bg-muted hover:text-foreground active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
 }
 
 /* Destructive */
 @utility btn-destructive {
-  @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-2xl bg-rose-600 px-7 py-3.5 text-base font-semibold text-white shadow-md shadow-rose-900/10 transition-[background-color,border-color,color,box-shadow,scale] duration-300 hover:bg-rose-700 hover:shadow-lg hover:shadow-rose-900/15 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
+  @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-2xl bg-destructive px-7 py-3.5 text-base font-semibold text-destructive-foreground shadow-md shadow-destructive/20 transition-[background-color,border-color,color,box-shadow,scale] duration-300 hover:brightness-95 hover:shadow-lg active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-destructive focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
 }
 
 /* =========================
@@ -124,19 +125,20 @@
 }
 
 @utility eyebrow {
-  @apply mb-4 inline-flex items-center gap-2 rounded-full border border-teal-200/70 bg-teal-50/80 px-3.5 py-1.5 text-xs font-semibold tracking-wide text-teal-700;
+  @apply mb-4 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3.5 py-1.5 text-xs font-semibold tracking-wide text-primary;
 }
 
 @utility section-title {
-  @apply text-3xl font-bold tracking-tight text-stone-900 md:text-4xl xl:text-[2.75rem] xl:leading-[1.12];
+  @apply font-heading text-3xl font-bold tracking-tight text-foreground md:text-4xl xl:text-[2.75rem] xl:leading-[1.12];
 }
 
 @utility section-sub {
-  @apply mt-4 text-base leading-relaxed text-stone-600 md:text-lg prose-normal;
+  @apply mt-4 text-base leading-relaxed text-muted-foreground md:text-lg prose-normal;
 }
 
 /* =========================
    CARD ELEVATION SYSTEM
+   Uses design system tokens
 ========================= */
 
 @utility card-flat {
@@ -152,15 +154,15 @@
 }
 
 @utility card-bordered {
-  @apply bg-card rounded-2xl border border-border/60 transition-all duration-300 hover:border-teal-200/80;
+  @apply bg-card rounded-2xl border border-border/60 transition-all duration-300 hover:border-primary/40;
 }
 
 @utility card-glass {
-  @apply bg-white/80 backdrop-blur-sm rounded-2xl border border-white/20 shadow-soft transition-all duration-500;
+  @apply bg-card/80 backdrop-blur-sm rounded-2xl border border-border/20 shadow-soft transition-all duration-500;
 }
 
 @utility card-glass-hover {
-  @apply hover:border-teal-200/40 hover:shadow-card;
+  @apply hover:border-primary/20 hover:shadow-card;
 }
 
 /* Radius variants */
@@ -171,12 +173,13 @@
 
 /* =========================
    CALM SCROLLBAR
-   Thin, branded scrollbar for scrollable panels (e.g. onboarding modal)
+   Thin, branded scrollbar for scrollable panels
+   Uses design system primary color
 ========================= */
 
 @utility cph-scroll {
   scrollbar-width: thin;
-  scrollbar-color: oklch(0.82 0.06 181.5) transparent;
+  scrollbar-color: var(--color-primary) transparent;
 
   &::-webkit-scrollbar {
     width: 8px;
@@ -187,10 +190,11 @@
   }
   &::-webkit-scrollbar-thumb {
     border-radius: 9999px;
-    background-color: oklch(0.82 0.06 181.5);
+    background-color: var(--color-primary);
   }
   &::-webkit-scrollbar-thumb:hover {
-    background-color: oklch(0.72 0.11 181.5);
+    background-color: var(--color-primary);
+    opacity: 0.8;
   }
 }
 
@@ -229,7 +233,7 @@
 }
 
 @utility text-meta {
-  @apply text-sm font-medium text-stone-500;
+  @apply text-sm font-medium text-muted-foreground;
 }
 
 /* Prose width constraints */
@@ -264,6 +268,7 @@
   --color-on-secondary: #0f172a;
   --color-on-accent: #000000;
   --color-on-destructive: #ffffff;
+  --color-destructive-foreground: var(--destructive-foreground);
 
   --font-sans: var(--font-geist-sans), sans-serif;
   --font-mono: var(--font-geist-mono), monospace;
@@ -385,76 +390,80 @@
 }
 
 :root {
-  --background: oklch(0.986 0.008 85);
-  --foreground: oklch(0.28 0.025 65);
-  --card: oklch(0.997 0.004 85);
-  --card-foreground: oklch(0.26 0.023 65);
-  --popover: oklch(0.997 0.004 85);
-  --popover-foreground: oklch(0.26 0.023 65);
-  --primary: #0f766e;
-  --primary-foreground: oklch(0.99 0.006 170);
-  --secondary: oklch(0.955 0.016 85);
-  --secondary-foreground: oklch(0.42 0.085 182.4);
-  --muted: oklch(0.957 0.012 85);
-  --muted-foreground: oklch(0.5 0.02 65);
-  --accent: oklch(0.948 0.05 168);
-  --accent-foreground: oklch(0.44 0.08 168);
-  --accent-soft: oklch(0.93 0.06 170);
-  --accent-soft-foreground: oklch(0.35 0.1 170);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.905 0.014 80);
-  --input: oklch(0.905 0.014 80);
-  --ring: oklch(0.696 0.191 182.5);
-  --chart-1: #0f766e;
-  --chart-2: oklch(0.586 0.164 162.2);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.587 0.187 235.6);
-  --chart-5: oklch(0.601 0.126 265.2);
+  /* Marketing site palette — aligned with MASTER.md design system */
+  --background: #faf5ff;
+  --foreground: #4c1d95;
+  --card: #ffffff;
+  --card-foreground: #4c1d95;
+  --popover: #ffffff;
+  --popover-foreground: #4c1d95;
+  --primary: #8b5cf6;
+  --primary-foreground: #000000;
+  --secondary: #c4b5fd;
+  --secondary-foreground: #0f172a;
+  --muted: #edeff9;
+  --muted-foreground: #475569;
+  --accent: #059669;
+  --accent-foreground: #000000;
+  --accent-soft: #ecfdf5;
+  --accent-soft-foreground: #065f46;
+  --destructive: #dc2626;
+  --destructive-foreground: #ffffff;
+  --border: #ede9fe;
+  --input: #ede9fe;
+  --ring: #8b5cf6;
+  --chart-1: #8b5cf6;
+  --chart-2: #059669;
+  --chart-3: #c4b5fd;
+  --chart-4: #4c1d95;
+  --chart-5: #f59e0b;
   --radius: 0.75rem;
-  --sidebar: oklch(0.986 0.008 85);
-  --sidebar-foreground: oklch(0.28 0.025 65);
-  --sidebar-primary: #0f766e;
-  --sidebar-primary-foreground: oklch(0.99 0.006 170);
-  --sidebar-accent: oklch(0.955 0.016 85);
-  --sidebar-accent-foreground: oklch(0.42 0.085 182.4);
-  --sidebar-border: oklch(0.905 0.014 80);
-  --sidebar-ring: oklch(0.696 0.191 182.5);
+  --sidebar: #ffffff;
+  --sidebar-foreground: #4c1d95;
+  --sidebar-primary: #8b5cf6;
+  --sidebar-primary-foreground: #000000;
+  --sidebar-accent: #edeff9;
+  --sidebar-accent-foreground: #4c1d95;
+  --sidebar-border: #ede9fe;
+  --sidebar-ring: #8b5cf6;
 }
 
 .dark {
-  --background: oklch(0.205 0.014 85);
-  --foreground: oklch(0.962 0.012 85);
-  --card: oklch(0.252 0.017 85);
-  --card-foreground: oklch(0.962 0.012 85);
-  --popover: oklch(0.252 0.017 85);
-  --popover-foreground: oklch(0.962 0.012 85);
-  --primary: oklch(0.777 0.152 181.9);
-  --primary-foreground: oklch(0.24 0.02 190);
-  --secondary: oklch(0.315 0.02 85);
-  --secondary-foreground: oklch(0.962 0.012 85);
-  --muted: oklch(0.305 0.018 85);
-  --muted-foreground: oklch(0.71 0.022 85);
-  --accent: oklch(0.35 0.045 165);
-  --accent-foreground: oklch(0.962 0.012 85);
-  --accent-soft: oklch(0.32 0.05 165);
-  --accent-soft-foreground: oklch(0.92 0.03 165);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(0.97 0.012 85 / 12%);
-  --input: oklch(0.97 0.012 85 / 15%);
-  --ring: oklch(0.696 0.191 182.5);
-  --chart-1: oklch(0.777 0.152 181.9);
-  --chart-2: oklch(0.696 0.185 162.5);
-  --chart-3: oklch(0.795 0.171 70.08);
-  --chart-4: oklch(0.677 0.187 235.6);
-  --chart-5: oklch(0.645 0.126 265.2);
-  --sidebar: oklch(0.252 0.017 85);
-  --sidebar-foreground: oklch(0.962 0.012 85);
-  --sidebar-primary: oklch(0.777 0.152 181.9);
-  --sidebar-primary-foreground: oklch(0.24 0.02 190);
-  --sidebar-accent: oklch(0.315 0.02 85);
-  --sidebar-accent-foreground: oklch(0.962 0.012 85);
-  --sidebar-border: oklch(0.97 0.012 85 / 12%);
-  --sidebar-ring: oklch(0.777 0.152 181.9);
+  /* Marketing site dark palette — aligned with MASTER.md design system */
+  --background: #1a0f2e;
+  --foreground: #e9d8fd;
+  --card: #24133a;
+  --card-foreground: #e9d8fd;
+  --popover: #24133a;
+  --popover-foreground: #e9d8fd;
+  --primary: #a78bfa;
+  --primary-foreground: #000000;
+  --secondary: #7c3aed;
+  --secondary-foreground: #faf5ff;
+  --muted: #3b1f5c;
+  --muted-foreground: #c4b5fd;
+  --accent: #10b981;
+  --accent-foreground: #000000;
+  --accent-soft: #064e3b;
+  --accent-soft-foreground: #6ee7b7;
+  --destructive: #f87171;
+  --destructive-foreground: #000000;
+  --border: #3b1f5c;
+  --input: #3b1f5c;
+  --ring: #a78bfa;
+  --chart-1: #a78bfa;
+  --chart-2: #10b981;
+  --chart-3: #7c3aed;
+  --chart-4: #e9d8fd;
+  --chart-5: #fbbf24;
+  --sidebar: #24133a;
+  --sidebar-foreground: #e9d8fd;
+  --sidebar-primary: #a78bfa;
+  --sidebar-primary-foreground: #000000;
+  --sidebar-accent: #3b1f5c;
+  --sidebar-accent-foreground: #e9d8fd;
+  --sidebar-border: #3b1f5c;
+  --sidebar-ring: #a78bfa;
 }
 
 @layer base {

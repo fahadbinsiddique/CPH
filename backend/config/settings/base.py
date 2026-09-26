@@ -92,10 +92,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-# Database
-# Resolves in this order: DATABASE_URL -> DB_NAME/DB_USER/... -> SQLite (dev fallback).
-# Individual values and ssl requirements are overridden per-environment in
-# dev.py / prod.py / test.py.
+# DB config order: DATABASE_URL -> DB_* -> SQLite (dev fallback). Env-specific overrides in dev.py/prod.py/test.py.
 DATABASES = {
     'default': database_config(),
 }

@@ -34,8 +34,6 @@ export default function DashboardTopbar({ scrolled }) {
   const roleStyle = getRoleStyle(role);
   const pageLabel = getPageLabel(pathname, role);
 
-  // Account menu is click-driven so it works with touch and keyboard
-  // (hover-only menus are unreachable on phones).
   useEffect(() => {
     if (!menuOpen) return undefined;
     const handlePointerDown = (event) => {

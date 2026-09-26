@@ -49,10 +49,7 @@ class AppointmentListView(generics.ListAPIView):
 
     def get_queryset(self):
         user = self.request.user
-        # NB: AppointmentSerializer nests ConsultantListSerializer, which reads
-        # `consultant.specializations`. Without the prefetch that relation is
-        # re-queried once per row (5 identical SELECTs on a 5-row list), which
-        # costs ~375ms per row against a remote database.
+        # Prefetch specializations to avoid N+1 on ConsultantListSerializer.
         if user.role == 'consultant':
             return Appointment.objects.filter(
                 consultant__user=user
@@ -163,7 +160,7 @@ class AdminStatsView(APIView):
 
         User = get_user_model()
 
-        # Single query with aggregation for appointment counts
+        # Single aggregated query for appointment counts.
         appointment_stats = Appointment.objects.aggregate(
             total=Count('id'),
             pending=Count('id', filter=Q(status='pending')),
@@ -172,9 +169,7 @@ class AdminStatsView(APIView):
             cancelled=Count('id', filter=Q(status='cancelled')),
         )
 
-        # Both Consultant counts share a table, so a conditional aggregate
-        # replaces two separate COUNT(*) round trips. Each round trip to the
-        # (remote) database costs ~315ms, so merging them is worth ~630ms.
+        # Conditional aggregate merges two COUNT(*) into one round-trip (~630ms saved).
         consultant_stats = Consultant.objects.aggregate(
             total_consultants=Count('id'),
             verified_consultants=Count('id', filter=Q(is_verified=True)),
@@ -205,7 +200,7 @@ class AdminAnalyticsView(APIView):
         since = timezone.now() - timedelta(days=days - 1)
         since_date = timezone.localdate() - timedelta(days=days - 1)
 
-        # Parallelizable queries for daily series
+        # Parallel daily series queries.
         appointment_daily = (
             Appointment.objects
             .filter(created_at__gte=since)
@@ -246,7 +241,7 @@ class AdminAnalyticsView(APIView):
                 'assessments': quiz_by_day.get(key, 0),
             })
 
-        # Top consultants — use select_related to avoid N+1
+        # Top consultants — select_related avoids N+1.
         top_consultants = list(
             Consultant.objects
             .select_related('user')
@@ -260,11 +255,7 @@ class AdminAnalyticsView(APIView):
             for row in top_consultants
         ]
 
-        # Revenue, session mix and status breakdown all aggregate the same
-        # Appointment table. Three separate round trips cost ~315ms each
-        # against the remote database, so collapse them into one conditional
-        # aggregate driven by the model's fixed choice lists. `consultant` is a
-        # single-row FK join, so the SUM cannot fan the COUNTs out.
+        # One conditional aggregate for revenue + status + session mix (avoids 3 round-trips).
         appointment_totals = Appointment.objects.aggregate(
             revenue=Sum(
                 'consultant__consultation_fee',
@@ -282,8 +273,7 @@ class AdminAnalyticsView(APIView):
 
         revenue_estimate = appointment_totals['revenue'] or 0
 
-        # Emit only non-empty session types, matching the previous
-        # values().annotate() behaviour (absent type = absent row).
+        # Skip empty session types (matches values().annotate()).
         session_types = [
             {'session_type': value, 'count': appointment_totals[f'session_{value}']}
             for value, _ in Appointment.SESSION_CHOICES
