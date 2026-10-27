@@ -11,24 +11,44 @@
    Palette aligned with MASTER.md (lavender primary, green accent)
 ========================= */
 
-/* Primary solid CTA — lavender */
+/* Primary solid CTA - Lavender — lavender */
 @utility btn-primary {
-  @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-2xl bg-primary px-7 py-3.5 text-base font-semibold text-on-primary shadow-md shadow-primary/20 transition-[background-color,border-color,color,box-shadow,scale] duration-300 hover:brightness-95 hover:shadow-lg active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
+  @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-2xl bg-violet-600 px-7 py-3.5 text-base font-semibold text-white shadow-md shadow-violet-900/10 transition-[background-color,border-color,color,box-shadow,scale] duration-300 hover:bg-violet-700 hover:shadow-lg hover:shadow-violet-900/15 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
+}
+
+/* Primary large (hero) */
+@utility btn-primary-lg {
+  @apply inline-flex cursor-pointer items-center justify-center gap-3 rounded-2xl bg-violet-600 px-10 py-4.5 text-lg font-semibold text-white shadow-xl shadow-violet-900/15 transition-[background-color,border-color,color,box-shadow,scale] duration-300 hover:bg-violet-700 hover:shadow-2xl hover:shadow-violet-900/20 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
 }
 
 /* Secondary soft outline CTA — lavender border */
 @utility btn-outline {
-  @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-2xl border border-primary/30 bg-card px-7 py-3.5 text-base font-semibold text-primary shadow-sm transition-[background-color,border-color,color,box-shadow,scale] duration-300 hover:border-primary/50 hover:bg-primary/10 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
+  @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-2xl border border-stone-200 bg-white px-7 py-3.5 text-base font-semibold text-stone-700 shadow-sm transition-[background-color,border-color,color,box-shadow,scale] duration-300 hover:border-violet-300 hover:bg-violet-50/60 hover:text-violet-800 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
+}
+
+/* Secondary large */
+@utility btn-outline-lg {
+  @apply inline-flex cursor-pointer items-center justify-center gap-3 rounded-2xl border-2 border-stone-200 bg-white px-10 py-4.5 text-lg font-semibold text-stone-700 shadow-sm transition-[background-color,border-color,color,box-shadow,scale] duration-300 hover:border-violet-300 hover:bg-violet-50/60 hover:text-violet-800 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
 }
 
 /* Tertiary text link — muted foreground */
 @utility btn-ghost {
-  @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-base font-medium text-muted-foreground transition-[background-color,color] duration-200 hover:bg-muted hover:text-foreground active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
+  @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-base font-medium text-stone-600 transition-[background-color,color] duration-200 hover:bg-stone-100 hover:text-violet-700 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
 }
 
 /* Destructive */
 @utility btn-destructive {
   @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-2xl bg-destructive px-7 py-3.5 text-base font-semibold text-destructive-foreground shadow-md shadow-destructive/20 transition-[background-color,border-color,color,box-shadow,scale] duration-300 hover:brightness-95 hover:shadow-lg active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-destructive focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
+}
+
+/* Glass button for dark/overlay contexts */
+@utility btn-glass {
+  @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20 px-7 py-3.5 text-base font-semibold text-white shadow-lg transition-[background-color,border-color,color,box-shadow,scale] duration-300 hover:bg-white/20 hover:border-white/30 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 focus-visible:ring-offset-2 focus-visible:ring-offset-stone-900 disabled:pointer-events-none disabled:opacity-50;
+}
+
+/* Glass button for dark/overlay contexts */
+@utility btn-glass {
+  @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20 px-7 py-3.5 text-base font-semibold text-white shadow-lg transition-[background-color,border-color,color,box-shadow,scale] duration-300 hover:bg-white/20 hover:border-white/30 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 focus-visible:ring-offset-2 focus-visible:ring-offset-stone-900 disabled:pointer-events-none disabled:opacity-50;
 }
 
 /* =========================
@@ -75,7 +95,7 @@
 }
 
 /* Calm scrollbar, in dashboard colours (cph-scroll defaults to the
-   marketing site's teal). */
+   marketing site's violet). */
 .dash-shell .cph-scroll {
   scrollbar-color: oklch(0.82 0.12 293) transparent;
 }
@@ -87,7 +107,7 @@
 }
 
 /* Neumorphic elevation for every card inside the dashboard (the shared
-   card-raised/card-float shadows carry the marketing site's teal tint). */
+   card-raised/card-float shadows carry the marketing site's violet tint). */
 .dash-shell [data-slot="card"] {
   border-radius: 1rem;
   box-shadow: var(--shadow-neu);
@@ -98,7 +118,7 @@
   box-shadow: var(--shadow-neu-lg);
 }
 
-/* card-bordered / card-glass carry marketing-site teal hover borders */
+/* card-bordered / card-glass carry marketing-site violet hover borders */
 .dash-shell [data-slot="card"][data-variant="bordered"]:hover,
 .dash-shell [data-slot="card"][data-variant="glass"]:hover {
   border-color: color-mix(in oklch, var(--primary) 35%, transparent);
@@ -125,7 +145,7 @@
 }
 
 @utility eyebrow {
-  @apply mb-4 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3.5 py-1.5 text-xs font-semibold tracking-wide text-primary;
+  @apply mb-4 inline-flex items-center gap-2 rounded-full border border-violet-200/70 bg-violet-50/80 px-3.5 py-1.5 text-xs font-semibold tracking-wide text-violet-700;
 }
 
 @utility section-title {
@@ -135,6 +155,7 @@
 @utility section-sub {
   @apply mt-4 text-base leading-relaxed text-muted-foreground md:text-lg prose-normal;
 }
+
 
 /* =========================
    CARD ELEVATION SYSTEM
@@ -154,7 +175,7 @@
 }
 
 @utility card-bordered {
-  @apply bg-card rounded-2xl border border-border/60 transition-all duration-300 hover:border-primary/40;
+  @apply bg-card rounded-2xl border border-border/60 transition-all duration-300 hover:border-violet-200/80;
 }
 
 @utility card-glass {
@@ -162,7 +183,38 @@
 }
 
 @utility card-glass-hover {
-  @apply hover:border-primary/20 hover:shadow-card;
+  @apply hover:border-violet-200/40 hover:shadow-card;
+}
+
+/* Neumorphic cards (for wellness/calm feel) */
+@utility card-neu {
+  @apply bg-card rounded-2xl transition-all duration-500;
+  box-shadow: var(--shadow-neu);
+}
+
+@utility card-neu-hover {
+  @apply hover:shadow-[var(--shadow-neu-lg)];
+}
+
+@utility card-neu-pressed {
+  @apply active:shadow-[var(--shadow-neu-inset)];
+}
+
+/* Interactive card with subtle lift */
+@utility card-interactive {
+  @apply bg-card rounded-2xl border border-border/40 shadow-soft transition-all duration-300 hover:shadow-float hover:border-violet-200/60 hover:-translate-y-1 active:scale-[0.99] active:translate-y-0;
+}
+
+/* Feature card with accent top border */
+@utility card-feature {
+  @apply relative bg-card rounded-2xl border border-border/40 overflow-hidden transition-all duration-300 hover:shadow-float hover:border-violet-200/60;
+  &::before {
+    content: '';
+    @apply absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-violet-500 to-emerald-500 opacity-0 transition-opacity duration-300;
+  }
+  &:hover::before {
+    @apply opacity-100;
+  }
 }
 
 /* Radius variants */
@@ -172,6 +224,134 @@
 @utility radius-pill { @apply rounded-full; }
 
 /* =========================
+   BENTO GRID UTILITIES
+========================= */
+
+@utility bento-base {
+  @apply grid gap-4 md:gap-6;
+}
+
+@utility bento-2col {
+  @apply bento-base grid-cols-1 md:grid-cols-2;
+}
+
+@utility bento-3col {
+  @apply bento-base grid-cols-1 md:grid-cols-2 lg:grid-cols-3;
+}
+
+@utility bento-4col {
+  @apply bento-base grid-cols-1 md:grid-cols-2 lg:grid-cols-4;
+}
+
+/* Asymmetric bento - hero + 3 */
+@utility bento-asymmetric-a {
+  @apply grid gap-4 md:gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3;
+  grid-template-areas:
+    "a a b"
+    "a a c";
+}
+@utility bento-asymmetric-b {
+  @apply grid gap-4 md:gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3;
+  grid-template-areas:
+    "a b b"
+    "c b b";
+}
+
+/* Bento cell spans */
+@utility bento-span-hero { grid-area: a; @apply lg:col-span-2 lg:row-span-2; }
+@utility bento-span-tall { grid-area: b; @apply lg:row-span-2; }
+@utility bento-span-wide { grid-area: c; @apply lg:col-span-2; }
+
+/* =========================
+   BACKGROUND PATTERNS
+========================= */
+
+/* Faint dot grid for marketing sections. The radial mask fades the dots out
+   toward the edges so they read as texture, not wallpaper. */
+@utility pattern-dots {
+  background-image: radial-gradient(circle at 1px 1px, rgb(139 92 246 / 0.16) 1px, transparent 0);
+  background-size: 24px 24px;
+  -webkit-mask-image: radial-gradient(ellipse 65% 55% at 50% 45%, #000 20%, transparent 95%);
+  mask-image: radial-gradient(ellipse 65% 55% at 50% 45%, #000 20%, transparent 95%);
+}
+
+/* =========================
+   GRADIENT TEXT UTILITIES
+========================= */
+
+@utility gradient-text-primary {
+  @apply bg-gradient-to-r from-violet-600 to-purple-600 bg-clip-text text-transparent;
+}
+
+@utility gradient-text-accent {
+  @apply bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent;
+}
+
+@utility gradient-text-warm {
+  @apply bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent;
+}
+
+/* =========================
+   ANIMATION UTILITIES
+========================= */
+
+@utility animate-fade-in {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+@utility animate-slide-up {
+  animation: slideUp 0.6s ease-out forwards;
+}
+
+@utility animate-scale-in {
+  animation: scaleIn 0.4s ease-out forwards;
+}
+
+@utility animate-shimmer {
+  animation: shimmer 2s ease-in-out infinite;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* Stagger delays */
+@utility stagger-1 { animation-delay: 0.05s; }
+@utility stagger-2 { animation-delay: 0.1s; }
+@utility stagger-3 { animation-delay: 0.15s; }
+@utility stagger-4 { animation-delay: 0.2s; }
+@utility stagger-5 { animation-delay: 0.25s; }
+@utility stagger-6 { animation-delay: 0.3s; }
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-in,
+  .animate-slide-up,
+  .animate-scale-in,
+  .animate-shimmer {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+/* =========================
    CALM SCROLLBAR
    Thin, branded scrollbar for scrollable panels
    Uses design system primary color
@@ -179,7 +359,7 @@
 
 @utility cph-scroll {
   scrollbar-width: thin;
-  scrollbar-color: var(--color-primary) transparent;
+  scrollbar-color: oklch(0.82 0.06 293) transparent;
 
   &::-webkit-scrollbar {
     width: 8px;
@@ -190,11 +370,10 @@
   }
   &::-webkit-scrollbar-thumb {
     border-radius: 9999px;
-    background-color: var(--color-primary);
+    background-color: oklch(0.82 0.06 293);
   }
   &::-webkit-scrollbar-thumb:hover {
-    background-color: var(--color-primary);
-    opacity: 0.8;
+    background-color: oklch(0.72 0.11 293);
   }
 }
 
@@ -251,10 +430,10 @@
 
 @theme inline {
   /* Shadows — warm neutral base, soft premium feel */
-  --shadow-soft: 0 1px 2px rgb(15 118 110 / 0.04), 0 8px 24px -8px rgb(15 118 110 / 0.08);
-  --shadow-card: 0 1px 2px rgb(15 118 110 / 0.04), 0 16px 40px -16px rgb(15 118 110 / 0.12);
-  --shadow-float: 0 8px 24px -8px rgb(15 118 110 / 0.1), 0 24px 48px -16px rgb(15 118 110 / 0.15);
-  --shadow-glow: 0 0 0 1px rgb(15 118 110 / 0.1), 0 8px 32px -8px rgb(15 118 110 / 0.2);
+  --shadow-soft: 0 1px 2px rgb(139 92 246 / 0.04), 0 8px 24px -8px rgb(139 92 246 / 0.08);
+  --shadow-card: 0 1px 2px rgb(139 92 246 / 0.04), 0 16px 40px -16px rgb(139 92 246 / 0.12);
+  --shadow-float: 0 8px 24px -8px rgb(139 92 246 / 0.1), 0 24px 48px -16px rgb(139 92 246 / 0.15);
+  --shadow-glow: 0 0 0 1px rgb(139 92 246 / 0.1), 0 8px 32px -8px rgb(139 92 246 / 0.2);
 
   /* Neumorphism / Soft UI — dual light-source shadows (MASTER.md style spec:
      light top-left, dark bottom-right, 15px blur) */
@@ -389,8 +568,12 @@
   --font-plus-jakarta: var(--font-lora);
 }
 
+/* =========================
+   MARKETING SITE TOKENS (Light Mode)
+   Lavender primary, Emerald accent, Light lavender background
+========================= */
+
 :root {
-  /* Marketing site palette — aligned with MASTER.md design system */
   --background: #faf5ff;
   --foreground: #4c1d95;
   --card: #ffffff;
@@ -398,13 +581,13 @@
   --popover: #ffffff;
   --popover-foreground: #4c1d95;
   --primary: #8b5cf6;
-  --primary-foreground: #000000;
-  --secondary: #c4b5fd;
-  --secondary-foreground: #0f172a;
+  --primary-foreground: #ffffff;
+  --secondary: #edeff9;
+  --secondary-foreground: #4c1d95;
   --muted: #edeff9;
   --muted-foreground: #475569;
   --accent: #059669;
-  --accent-foreground: #000000;
+  --accent-foreground: #ffffff;
   --accent-soft: #ecfdf5;
   --accent-soft-foreground: #065f46;
   --destructive: #dc2626;
@@ -418,51 +601,54 @@
   --chart-4: #4c1d95;
   --chart-5: #f59e0b;
   --radius: 0.75rem;
-  --sidebar: #ffffff;
-  --sidebar-foreground: #4c1d95;
-  --sidebar-primary: #8b5cf6;
-  --sidebar-primary-foreground: #000000;
-  --sidebar-accent: #edeff9;
-  --sidebar-accent-foreground: #4c1d95;
-  --sidebar-border: #ede9fe;
-  --sidebar-ring: #8b5cf6;
+  --sidebar: oklch(0.986 0.008 85);
+  --sidebar-foreground: oklch(0.28 0.025 65);
+  --sidebar-primary: #0f766e;
+  --sidebar-primary-foreground: oklch(0.99 0.006 170);
+  --sidebar-accent: oklch(0.955 0.016 85);
+  --sidebar-accent-foreground: oklch(0.42 0.085 182.4);
+  --sidebar-border: oklch(0.905 0.014 80);
+  --sidebar-ring: oklch(0.696 0.191 182.5);
 }
 
+/* =========================
+   DARK MODE TOKENS
+========================= */
+
 .dark {
-  /* Marketing site dark palette — aligned with MASTER.md design system */
-  --background: #1a0f2e;
-  --foreground: #e9d8fd;
-  --card: #24133a;
-  --card-foreground: #e9d8fd;
-  --popover: #24133a;
-  --popover-foreground: #e9d8fd;
+  --background: #1e1b2e;
+  --foreground: #f0ebfa;
+  --card: #25213a;
+  --card-foreground: #f0ebfa;
+  --popover: #25213a;
+  --popover-foreground: #f0ebfa;
   --primary: #a78bfa;
-  --primary-foreground: #000000;
-  --secondary: #7c3aed;
-  --secondary-foreground: #faf5ff;
-  --muted: #3b1f5c;
-  --muted-foreground: #c4b5fd;
+  --primary-foreground: #1e1b2e;
+  --secondary: #3d385c;
+  --secondary-foreground: #f0ebfa;
+  --muted: #3d385c;
+  --muted-foreground: #a5a0c8;
   --accent: #10b981;
-  --accent-foreground: #000000;
+  --accent-foreground: #ffffff;
   --accent-soft: #064e3b;
-  --accent-soft-foreground: #6ee7b7;
+  --accent-soft-foreground: #a7f3d0;
   --destructive: #f87171;
-  --destructive-foreground: #000000;
-  --border: #3b1f5c;
-  --input: #3b1f5c;
+  --destructive-foreground: #ffffff;
+  --border: #3d385c;
+  --input: #3d385c;
   --ring: #a78bfa;
   --chart-1: #a78bfa;
   --chart-2: #10b981;
-  --chart-3: #7c3aed;
-  --chart-4: #e9d8fd;
+  --chart-3: #c4b5fd;
+  --chart-4: #4c1d95;
   --chart-5: #fbbf24;
-  --sidebar: #24133a;
-  --sidebar-foreground: #e9d8fd;
+  --sidebar: #25213a;
+  --sidebar-foreground: #f0ebfa;
   --sidebar-primary: #a78bfa;
-  --sidebar-primary-foreground: #000000;
-  --sidebar-accent: #3b1f5c;
-  --sidebar-accent-foreground: #e9d8fd;
-  --sidebar-border: #3b1f5c;
+  --sidebar-primary-foreground: #1e1b2e;
+  --sidebar-accent: #3d385c;
+  --sidebar-accent-foreground: #f0ebfa;
+  --sidebar-border: #3d385c;
   --sidebar-ring: #a78bfa;
 }
 
@@ -495,8 +681,8 @@
   }
 
   ::selection {
-    background-color: oklch(0.91 0.096 181.4);
-    color: oklch(0.29 0.04 190);
+    background-color: #c4b5fd;
+    color: #4c1d95;
   }
 
   /* Respect reduced-motion preferences globally (mental-health first accessibility) */
@@ -532,12 +718,12 @@
 
 /* =========================
    TAWK.TO CPH BRAND THEMING
-   Match the live-chat widget to the CPH teal palette.
+   Match the live-chat widget to the CPH lavender palette.
 ========================= */
 
 :root {
-  --tawk-header-background-color: #0f766e !important;
-  --tawk-header-background-color-alpha: #0f766e80 !important;
+  --tawk-header-background-color: #8b5cf6 !important;
+  --tawk-header-background-color-alpha: #8b5cf680 !important;
   --tawk-header-text-color: #ffffff !important;
   --tawk-header-override-padding-top: 1rem !important;
   --tawk-footer-override-padding-bottom: 0 !important;
@@ -550,16 +736,16 @@
 }
 
 .tawk-visitor-chat-bubble {
-  background: #f5f5f4 !important;
-  color: #44403c !important;
+  background: #faf5ff !important;
+  color: #4c1d95 !important;
 }
 
 .tawk-visitor-chat-bubble .tawk-timeago {
-  color: #44403c !important;
+  color: #4c1d95 !important;
 }
 
 .tawk-agent-chat-bubble {
-  background: #0f766e !important;
+  background: #8b5cf6 !important;
   color: #ffffff !important;
 }
 
@@ -568,7 +754,7 @@
 }
 
 .tawk-agent-chat-bubble-dots {
-  background: #0f766e !important;
+  background: #8b5cf6 !important;
 }
 
 .tawk-button-hover:hover,
@@ -589,7 +775,7 @@
 .cph-editor .ProseMirror p.is-editor-empty:first-child::before {
   content: attr(data-placeholder);
   float: left;
-  color: oklch(0.7 0.02 200);
+  color: #a5a0c8;
   pointer-events: none;
   height: 0;
 }
@@ -607,8 +793,8 @@
 
 .cph-editor .ProseMirror pre {
   border-radius: 0.75rem;
-  background: oklch(0.21 0.034 260);
-  color: oklch(0.95 0 0);
+  background: #1e1b2e;
+  color: #f0ebfa;
   padding: 0.875rem 1rem;
   overflow-x: auto;
 }
@@ -620,19 +806,19 @@
 }
 
 .cph-editor .ProseMirror blockquote {
-  border-left: 4px solid oklch(0.79 0.05 181);
+  border-left: 4px solid #8b5cf6;
   padding-left: 1rem;
-  color: oklch(0.45 0.02 200);
+  color: #a5a0c8;
 }
 
 .cph-editor .ProseMirror hr {
   border: none;
-  border-top: 1px solid oklch(0.9 0.01 200);
+  border-top: 1px solid #ede9fe;
   margin: 1.5rem 0;
 }
 
 .cph-editor .ProseMirror a {
-  color: oklch(0.53 0.13 181);
+  color: #8b5cf6;
   text-decoration: underline;
   text-underline-offset: 2px;
 }
@@ -667,16 +853,16 @@
 
 .blog-prose :not(pre) > code {
   border-radius: 0.375rem;
-  background: oklch(0.96 0.008 200);
-  color: oklch(0.35 0.05 260);
+  background: #edeff9;
+  color: #4c1d95;
   padding: 0.15rem 0.4rem;
   font-size: 0.85em;
 }
 
 .blog-prose pre {
   border-radius: 0.75rem;
-  background: oklch(0.21 0.034 260);
-  color: oklch(0.95 0 0);
+  background: #1e1b2e;
+  color: #f0ebfa;
   padding: 1rem 1.25rem;
   overflow-x: auto;
 }

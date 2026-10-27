@@ -87,8 +87,7 @@ export default function QuizPage() {
   if (isLoading) {
     return (
       <main
-        className="flex min-h-screen items-center justify-center bg-gradient-to-b from-white via-white to-teal-50/40 px-4"
-        style={{ paddingTop: headerOffset }}
+        className="flex min-h-screen items-center justify-center bg-gradient-to-b from-white via-white to-teal-50/40 px-4 pt-32"
       >
         <AssessmentScreenLoader />
       </main>
@@ -98,8 +97,7 @@ export default function QuizPage() {
   if (queued) {
     return (
       <main
-        className="flex min-h-screen items-center justify-center bg-gradient-to-b from-white via-white to-teal-50/40 px-4"
-        style={{ paddingTop: headerOffset }}
+        className="flex min-h-screen items-center justify-center bg-gradient-to-b from-white via-white to-teal-50/40 px-4 pt-32"
       >
         <div className="w-full max-w-md text-center">
           <div className="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br from-amber-400 to-orange-500 shadow-lg shadow-amber-500/20">
@@ -154,9 +152,12 @@ export default function QuizPage() {
   if (!started) {
     return (
       <main className="min-h-screen bg-gradient-to-b from-white via-white to-teal-50/40">
+        {/* Static pt-32: padding tied to the live header height would shift the
+            whole document when the utility bar collapses on scroll. topOffset
+            below stays dynamic — position-only, no reflow, and it must follow
+            the collapsed header. */}
         <div
-          className="mx-auto flex min-h-screen w-full max-w-2xl flex-col px-4 py-10 sm:px-6"
-          style={{ paddingTop: headerOffset }}
+          className="mx-auto flex min-h-screen w-full max-w-2xl flex-col px-4 pt-32 pb-10 sm:px-6"
         >
           <Link
             href="/assessment"

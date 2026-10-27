@@ -9,13 +9,11 @@ import { Button } from '@/components/ui/button'
 import ResultCard from '@/components/assessment/ResultCard'
 import AssessmentDisclaimer from '@/components/assessment/AssessmentDisclaimer'
 import { ResultSkeleton } from '@/components/assessment/AssessmentSkeleton'
-import { useHeaderHeight } from '@/hooks/useHeaderHeight'
 import { assessmentService } from '@/services/assessmentService'
 
 export default function ResultPage() {
   const { id } = useParams()
   const router = useRouter()
-  const headerOffset = useHeaderHeight()
   const [result, setResult] = useState(null)
   const [error, setError] = useState(false)
 
@@ -39,8 +37,7 @@ export default function ResultPage() {
   if (isLoading) {
     return (
       <main
-        className="min-h-screen bg-gradient-to-b from-white via-white to-teal-50/40 pb-16"
-        style={{ paddingTop: headerOffset }}
+        className="min-h-screen bg-gradient-to-b from-white via-white to-teal-50/40 pb-16 pt-32"
       >
         <div className="mx-auto w-full max-w-2xl px-4 pt-10 sm:px-6">
           <ResultSkeleton />
@@ -52,8 +49,7 @@ export default function ResultPage() {
   if (error || !result) {
     return (
       <main
-        className="flex min-h-screen items-center justify-center bg-gradient-to-b from-white via-white to-teal-50/40 px-4"
-        style={{ paddingTop: headerOffset }}
+        className="flex min-h-screen items-center justify-center bg-gradient-to-b from-white via-white to-teal-50/40 px-4 pt-32"
       >
         <div className="w-full max-w-md rounded-3xl border border-stone-200/70 bg-white p-10 text-center shadow-soft">
           <AlertCircle className="mx-auto mb-3 h-10 w-10 text-stone-300" aria-hidden="true" />
@@ -79,7 +75,7 @@ export default function ResultPage() {
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-white via-white to-teal-50/40 pb-16">
-      <div className="mx-auto w-full max-w-2xl px-4 sm:px-6" style={{ paddingTop: headerOffset }}>
+      <div className="mx-auto w-full max-w-2xl px-4 pt-32 sm:px-6">
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
