@@ -17,24 +17,31 @@ import {
   Globe,
 } from 'lucide-react'
 import { SOCIAL_LINKS } from '@/lib/social'
+import { useReducedMotion } from '@/hooks/useReducedMotion'
 
-const Input = ({ type = 'text', placeholder, className, ...props }) => (
+const Input = ({ type = 'text', placeholder, className, invalid, ...props }) => (
   <input
     type={type}
     placeholder={placeholder}
-    className={`flex h-11 w-full rounded-xl border border-stone-700/50 bg-white/5 px-4 py-2 text-sm text-white placeholder:text-stone-500 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
+    aria-invalid={invalid || undefined}
+    className={`flex h-11 w-full rounded-xl border bg-white/5 px-4 py-2 text-sm text-white placeholder:text-stone-400 transition-all focus:outline-none focus:ring-2 focus:border-transparent ${
+      invalid
+        ? 'border-red-500/60 focus:ring-red-500/70'
+        : 'border-white/10 focus:ring-violet-500'
+    } ${className}`}
     {...props}
   />
 )
 
 const Button = ({ children, variant = 'default', className, ...props }) => {
   const variants = {
-    default: 'bg-violet-600 text-white hover:bg-violet-700 shadow-lg shadow-violet-600/20',
+    default:
+      'bg-violet-600 text-white hover:bg-violet-700 shadow-lg shadow-violet-600/20',
     outline: 'border border-white/20 text-white hover:bg-white/10',
   }
   return (
     <button
-      className={`inline-flex items-center justify-center rounded-xl px-4 py-2.5 text-sm font-medium transition-all ${variants[variant]} ${className}`}
+      className={`inline-flex cursor-pointer items-center justify-center rounded-xl px-4 py-2.5 text-sm font-medium transition-all ${variants[variant]} ${className}`}
       {...props}
     >
       {children}
@@ -42,19 +49,45 @@ const Button = ({ children, variant = 'default', className, ...props }) => {
   )
 }
 
-const NOISE_SVG = "data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E";
+const NOISE_SVG =
+  "data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E"
+
+// Shared focus ring for every interactive element in the footer
+const FOCUS_RING =
+  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 focus-visible:ring-offset-2 focus-visible:ring-offset-stone-950'
 
 const Footer = () => {
   const [email, setEmail] = useState('')
+  const [error, setError] = useState('')
   const [subscribed, setSubscribed] = useState(false)
+  const reduceMotion = useReducedMotion()
+
+  // Entrance animation that is skipped entirely under prefers-reduced-motion
+  const rise = (delay = 0) =>
+    reduceMotion
+      ? {}
+      : {
+          initial: { opacity: 0, y: 20 },
+          whileInView: { opacity: 1, y: 0 },
+          viewport: { once: true, amount: 0.1 },
+          transition: { duration: 0.5, delay, ease: [0.16, 1, 0.3, 1] },
+        }
 
   const handleSubscribe = (e) => {
     e.preventDefault()
-    if (email) {
-      setSubscribed(true)
-      setEmail('')
-      setTimeout(() => setSubscribed(false), 3000)
+    const trimmed = email.trim()
+    if (!trimmed) {
+      setError('Please enter your email address.')
+      return
     }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
+      setError('Please enter a valid email address, e.g. name@example.com.')
+      return
+    }
+    setError('')
+    setSubscribed(true)
+    setEmail('')
+    setTimeout(() => setSubscribed(false), 3000)
   }
 
   const footerLinks = {
@@ -74,29 +107,39 @@ const Footer = () => {
   }
 
   const trustBadges = [
-    { icon: ShieldCheck, label: '100% Confidential' },
-    { icon: Sparkles, label: 'Licensed Experts' },
+    { icon: ShieldCheck, label: '100% Confidential', accent: 'text-emerald-400' },
+    { icon: Sparkles, label: 'Licensed Experts', accent: 'text-violet-400' },
   ]
 
+  const linkListClass =
+    'group flex min-h-11 items-center gap-1.5 rounded-lg text-sm text-stone-400 transition-colors duration-200 hover:text-violet-300 ' +
+    FOCUS_RING
+
   return (
-    <footer className="relative bg-stone-950 text-stone-300 overflow-hidden">
+    <footer className="relative overflow-hidden bg-stone-950 text-stone-300">
       {/* Subtle noise overlay */}
-      <div className="pointer-events-none absolute inset-0 opacity-[0.03]" aria-hidden="true" style={{ backgroundImage: `url("${NOISE_SVG}")` }} />
+      <div
+        className="pointer-events-none absolute inset-0 opacity-[0.03]"
+        aria-hidden="true"
+        style={{ backgroundImage: `url("${NOISE_SVG}")` }}
+      />
 
       {/* Top Decorative Line */}
-      <div className="relative h-1 bg-gradient-to-r from-transparent via-violet-500/30 to-transparent" />
+      <div
+        className="relative h-1 bg-gradient-to-r from-transparent via-violet-500/40 to-transparent"
+        aria-hidden="true"
+      />
 
-      <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8 py-16">
-        {/* Main Content Grid - 3 columns on large screens */}
-        <div className="grid lg:grid-cols-4 gap-10 lg:gap-12 mb-16">
-          {/* Brand Column - Full width on mobile, 1.5fr on lg */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="lg:col-span-1.5"
-          >
-            <Link href="/" className="inline-block">
+      <div className="relative z-10 mx-auto max-w-7xl px-6 py-16 lg:px-8">
+        {/* Main Content Grid — real12-col spans so wide columns actually apply */}
+        <div className="mb-14 grid gap-10 md:grid-cols-2 xl:grid-cols-12 xl:gap-12">
+          {/* Brand Column */}
+          <motion.div className="md:col-span-2 xl:col-span-4" {...rise(0)}>
+            <Link
+              href="/"
+              className={`inline-block rounded-lg ${FOCUS_RING}`}
+              aria-label="Centre For Psychological Health — home"
+            >
               <Image
                 src={'/logo1.png'}
                 width={250}
@@ -105,55 +148,102 @@ const Footer = () => {
                 className="object-contain brightness-100"
               />
             </Link>
-            <p className="text-sm text-stone-400 leading-relaxed max-w-sm mt-3">
-              A safe and supportive mental wellness platform connecting you with licensed therapists
-              and tools for emotional well-being.
+            <p className="mt-3 max-w-sm text-sm leading-relaxed text-stone-400">
+              A safe and supportive mental wellness platform connecting you with
+              licensed therapists and tools for emotional well-being.
             </p>
 
             {/* Trust Badges */}
-            <div className="flex flex-wrap gap-3 mt-5">
+            <div className="mt-5 flex flex-wrap gap-3">
               {trustBadges.map((badge, idx) => {
                 const Icon = badge.icon
                 return (
                   <div
                     key={idx}
-                    className="flex items-center gap-1.5 bg-white/5 rounded-full px-3 py-1.5 border border-white/5"
+                    className="flex items-center gap-1.5 rounded-full border border-white/5 bg-white/5 px-3 py-1.5"
                   >
-                    <Icon className="w-3.5 h-3.5 text-violet-400" />
-                    <span className="text-xs text-stone-300 font-medium">{badge.label}</span>
+                    <Icon
+                      className={`h-3.5 w-3.5 ${badge.accent}`}
+                      aria-hidden="true"
+                    />
+                    <span className="text-xs font-medium text-stone-300">
+                      {badge.label}
+                    </span>
                   </div>
                 )
               })}
             </div>
 
             {/* Newsletter */}
-            <div className="mt-6">
-              <p className="text-sm font-medium text-white mb-2 flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-violet-400" />
-                Subscribe to our newsletter
-              </p>
-              <form onSubmit={handleSubscribe} className="flex gap-2">
-                <Input
-                  type="email"
-                  placeholder="Enter your email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="flex-1"
-                  required
+            <div className="mt-6 max-w-md">
+              <h3
+                id="footer-newsletter-heading"
+                className="mb-2 flex items-center gap-2 text-sm font-semibold text-white"
+              >
+                <Sparkles
+                  className="h-4 w-4 text-violet-400"
+                  aria-hidden="true"
                 />
-                <Button type="submit" className="px-4" aria-label="Subscribe to newsletter">
-                  <Send className="w-4 h-4" />
-                </Button>
+                Subscribe to our newsletter
+              </h3>
+              <form onSubmit={handleSubscribe} noValidate>
+                <label
+                  htmlFor="footer-newsletter-email"
+                  className="mb-1.5 block text-xs font-medium text-stone-400"
+                >
+                  Email address
+                </label>
+                <div className="flex gap-2">
+                  <Input
+                    id="footer-newsletter-email"
+                    type="email"
+                    name="email"
+                    autoComplete="email"
+                    placeholder="you@example.com"
+                    value={email}
+                    onChange={(e) => {
+                      setEmail(e.target.value)
+                      if (error) setError('')
+                    }}
+                    invalid={!!error}
+                    aria-describedby={error ? 'footer-newsletter-error' : undefined}
+                    className="flex-1"
+                    required
+                  />
+                  <Button
+                    type="submit"
+                    className="h-11 w-11 shrink-0 px-0"
+                    aria-label="Subscribe to newsletter"
+                  >
+                    <Send className="h-4 w-4" aria-hidden="true" />
+                  </Button>
+                </div>
               </form>
+
+              {/* Errors announced to screen readers, focusable by keyboard */}
+              {error && (
+                <p
+                  id="footer-newsletter-error"
+                  role="alert"
+                  className="mt-2 flex items-start gap-1.5 text-xs leading-relaxed text-red-400"
+                >
+                  {error}
+                </p>
+              )}
+
               <AnimatePresence>
                 {subscribed && (
                   <motion.p
-                    initial={{ opacity: 0, y: -10 }}
+                    role="status"
+                    initial={reduceMotion ? false : { opacity: 0, y: -8 }}
                     animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    className="flex items-center gap-1.5 text-xs text-violet-400 mt-2"
+                    exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: -8 }}
+                    className="mt-2 flex items-center gap-1.5 text-xs text-emerald-400"
                   >
-                    <CheckCircle2 className="w-3.5 h-3.5" />
+                    <CheckCircle2
+                      className="h-3.5 w-3.5"
+                      aria-hidden="true"
+                    />
                     Thanks! You are subscribed.
                   </motion.p>
                 )}
@@ -162,24 +252,19 @@ const Footer = () => {
           </motion.div>
 
           {/* Links Column */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.1 }}
-            className="lg:col-span-1"
-          >
-            {/* Quick Links */}
+          <motion.div className="xl:col-span-3" {...rise(0.1)}>
             <div>
-              <h3 className="text-white font-semibold mb-4 text-lg">Quick Links</h3>
-              <ul className="space-y-2.5">
+              <h3 className="mb-3 text-base font-semibold text-white">
+                Quick Links
+              </h3>
+              <ul className="-ml-2 space-y-1">
                 {footerLinks.quick.map((item) => (
                   <li key={item.name}>
-                    <Link
-                      href={item.href}
-                      className="text-stone-400 hover:text-violet-300 transition-colors duration-200 flex items-center gap-1 group"
-                    >
-                      <ChevronRight className="w-3 h-3 opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
+                    <Link href={item.href} className={linkListClass}>
+                      <ChevronRight
+                        className="h-3 w-3 -translate-x-1 opacity-0 transition-all group-hover:translate-x-0 group-hover:opacity-100"
+                        aria-hidden="true"
+                      />
                       {item.name}
                     </Link>
                   </li>
@@ -187,17 +272,16 @@ const Footer = () => {
               </ul>
             </div>
 
-            {/* Legal */}
             <div className="mt-8">
-              <h3 className="text-white font-semibold mb-4 text-lg">Legal</h3>
-              <ul className="space-y-2.5">
+              <h3 className="mb-3 text-base font-semibold text-white">Legal</h3>
+              <ul className="-ml-2 space-y-1">
                 {footerLinks.legal.map((item) => (
                   <li key={item.name}>
-                    <Link
-                      href={item.href}
-                      className="text-stone-400 hover:text-violet-300 transition-colors duration-200 flex items-center gap-1 group"
-                    >
-                      <ChevronRight className="w-3 h-3 opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
+                    <Link href={item.href} className={linkListClass}>
+                      <ChevronRight
+                        className="h-3 w-3 -translate-x-1 opacity-0 transition-all group-hover:translate-x-0 group-hover:opacity-100"
+                        aria-hidden="true"
+                      />
                       {item.name}
                     </Link>
                   </li>
@@ -206,33 +290,46 @@ const Footer = () => {
             </div>
           </motion.div>
 
-          {/* Contact & Map Column - Full width on mobile, 1.5fr on lg */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.2 }}
-            className="lg:col-span-1.5"
-          >
-            <h3 className="text-white font-semibold mb-4 text-lg">Contact & Location</h3>
+          {/* Contact & Map Column */}
+          <motion.div className="md:col-span-2 xl:col-span-5" {...rise(0.2)}>
+            <h3 className="mb-3 text-base font-semibold text-white">
+              Contact &amp; Location
+            </h3>
             <div className="space-y-3 text-sm">
-              <div className="flex items-center gap-3 bg-white/5 rounded-xl px-3 py-2.5 border border-white/5 hover:border-violet-500/20 transition-colors group">
-                <Mail className="w-4 h-4 text-violet-400 group-hover:scale-110 transition-transform" />
-                <a href="mailto:info@cph.com" className="text-stone-300 hover:text-white transition">
+              <div className="group flex items-center gap-3 rounded-xl border border-white/5 bg-white/5 px-3 py-2.5 transition-colors hover:border-violet-500/30">
+                <Mail
+                  className="h-4 w-4 shrink-0 text-violet-400 transition-transform group-hover:scale-110"
+                  aria-hidden="true"
+                />
+                <a
+                  href="mailto:info@cph.com"
+                  className={`rounded text-stone-300 transition-colors hover:text-white ${FOCUS_RING}`}
+                >
                   info@cph.com
                 </a>
               </div>
-              <div className="flex items-center gap-3 bg-white/5 rounded-xl px-3 py-2.5 border border-white/5 hover:border-violet-500/20 transition-colors group">
-                <Phone className="w-4 h-4 text-violet-400 group-hover:scale-110 transition-transform" />
-                <a href="tel:+8801762389523" className="text-stone-300 hover:text-white transition">
+              <div className="group flex items-center gap-3 rounded-xl border border-white/5 bg-white/5 px-3 py-2.5 transition-colors hover:border-violet-500/30">
+                <Phone
+                  className="h-4 w-4 shrink-0 text-violet-400 transition-transform group-hover:scale-110"
+                  aria-hidden="true"
+                />
+                <a
+                  href="tel:+8801762389523"
+                  className={`rounded text-stone-300 transition-colors hover:text-white ${FOCUS_RING}`}
+                >
                   +880 1762-389523
                 </a>
               </div>
-              <div className="flex items-start gap-3 bg-white/5 rounded-xl px-3 py-2.5 border border-white/5 hover:border-violet-500/20 transition-colors group">
-                <MapPin className="w-4 h-4 text-violet-400 mt-0.5 group-hover:scale-110 transition-transform" />
-                <span className="text-stone-300 text-xs leading-relaxed">
-                  28/1 Green Corner (5th floor),<br />
-                  Green Road, Dhanmondi 1205<br />
+              <div className="group flex items-start gap-3 rounded-xl border border-white/5 bg-white/5 px-3 py-2.5 transition-colors hover:border-violet-500/30">
+                <MapPin
+                  className="mt-0.5 h-4 w-4 shrink-0 text-violet-400 transition-transform group-hover:scale-110"
+                  aria-hidden="true"
+                />
+                <span className="text-xs leading-relaxed text-stone-400">
+                  28/1 Green Corner (5th floor),
+                  <br />
+                  Green Road, Dhanmondi 1205
+                  <br />
                   Dhaka, Bangladesh
                 </span>
               </div>
@@ -240,10 +337,17 @@ const Footer = () => {
 
             {/* Social Icons */}
             <div className="mt-6">
-              <p className="text-xs text-stone-500 font-medium uppercase tracking-wider mb-3">
+              <p
+                className="mb-3 text-xs font-medium uppercase tracking-wider text-stone-400"
+                id="footer-follow-label"
+              >
                 Follow Us
               </p>
-              <div className="flex items-center gap-3">
+              <div
+                className="flex items-center gap-3"
+                role="list"
+                aria-labelledby="footer-follow-label"
+              >
                 {SOCIAL_LINKS.map((social) => {
                   const Icon = social.icon
                   return (
@@ -252,10 +356,11 @@ const Footer = () => {
                       href={social.href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-stone-400 hover:text-violet-300 hover:bg-violet-500/10 hover:border-violet-500/30 transition-all hover:-translate-y-0.5"
+                      role="listitem"
                       aria-label={social.label}
+                      className={`flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-stone-400 transition-all hover:-translate-y-0.5 hover:border-violet-500/40 hover:bg-violet-500/10 hover:text-violet-300 ${FOCUS_RING}`}
                     >
-                      <Icon className="w-4 h-4" />
+                      <Icon className="h-4 w-4" aria-hidden="true" />
                     </a>
                   )
                 })}
@@ -263,8 +368,8 @@ const Footer = () => {
             </div>
 
             {/* Google Maps Embed */}
-            <div className="mt-8 rounded-2xl overflow-hidden border border-stone-800 bg-stone-900">
-              <div className="aspect-[4/3] w-full">
+            <div className="mt-8 overflow-hidden rounded-2xl border border-stone-800 bg-stone-900">
+              <div className="aspect-[16/9] w-full sm:aspect-[4/3] xl:aspect-[16/9]">
                 <iframe
                   title="CPH Centre for Psychological Health Location"
                   src="https://www.google.com/maps?q=Green+Corner,+Green+Road,+Dhanmondi,+Dhaka+1205,+Bangladesh&z=16&output=embed"
@@ -272,13 +377,17 @@ const Footer = () => {
                   allowFullScreen=""
                   loading="lazy"
                   referrerPolicy="no-referrer-when-downgrade"
-                  className="w-full h-full"
+                  className="h-full w-full"
                 ></iframe>
               </div>
-              <div className="px-4 py-3 bg-stone-900/50 border-t border-stone-800">
-                <p className="text-xs text-stone-500 text-center">
-                  <Globe className="w-3 h-3 inline mr-1" />
-                  28/1 Green Corner, Green Road, Dhanmondi 1205, Dhaka, Bangladesh
+              <div className="border-t border-stone-800 bg-stone-900/50 px-4 py-3">
+                <p className="text-center text-xs text-stone-400">
+                  <Globe
+                    className="mr-1 inline h-3 w-3"
+                    aria-hidden="true"
+                  />
+                  28/1 Green Corner, Green Road, Dhanmondi 1205, Dhaka,
+                  Bangladesh
                 </p>
               </div>
             </div>
@@ -286,45 +395,63 @@ const Footer = () => {
         </div>
 
         {/* Divider */}
-        <div className="relative my-10">
-          <div className="border-t border-stone-800" />
-        </div>
+        <div className="border-t border-stone-800" aria-hidden="true" />
 
         {/* Bottom Section */}
-        <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-sm">
-          <p className="text-stone-500">
-            © {new Date().getFullYear()} Centre For Psychological Health. All rights reserved.
+        <div className="flex flex-col items-center justify-between gap-5 pt-6 text-sm md:flex-row">
+          <p className="text-center text-stone-400 md:text-left">
+            © {new Date().getFullYear()} Centre For Psychological Health. All
+            rights reserved.
           </p>
-          <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs">
-            <Link href="/privacy" className="text-stone-500 hover:text-violet-300 transition-colors">
+
+          <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs">
+            <Link
+              href="/privacy"
+              className={`rounded px-1 py-1 text-stone-400 transition-colors hover:text-violet-300 ${FOCUS_RING}`}
+            >
               Privacy Policy
             </Link>
-            <span className="text-stone-700">|</span>
-            <Link href="/terms" className="text-stone-500 hover:text-violet-300 transition-colors">
+            <span className="text-stone-600" aria-hidden="true">
+              |
+            </span>
+            <Link
+              href="/terms"
+              className={`rounded px-1 py-1 text-stone-400 transition-colors hover:text-violet-300 ${FOCUS_RING}`}
+            >
               Terms of Service
             </Link>
-            <span className="text-stone-700">|</span>
-            <Link href="/cookies" className="text-stone-500 hover:text-violet-300 transition-colors">
+            <span className="text-stone-600" aria-hidden="true">
+              |
+            </span>
+            <Link
+              href="/cookies"
+              className={`rounded px-1 py-1 text-stone-400 transition-colors hover:text-violet-300 ${FOCUS_RING}`}
+            >
               Cookie Policy
             </Link>
-            <span className="text-stone-700">|</span>
-            <span className="sm:flex hidden sm:block items-center gap-1 text-stone-600">
-              <ShieldCheck className="w-3 h-3 text-violet-500" />
+            <span className="hidden items-center gap-1 text-stone-400 sm:flex">
+              <ShieldCheck
+                className="h-3 w-3 text-emerald-400"
+                aria-hidden="true"
+              />
               Secure
             </span>
           </div>
-        </div>
 
-        {/* Back to Top Button */}
-        <motion.button
-          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          className="absolute bottom-8 left-8 cursor-pointer p-3 rounded-full bg-violet-600/20 backdrop-blur-sm border border-violet-500/20 text-violet-400 hover:bg-violet-600/30 transition-all hover:border-violet-500/40 sm:block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 focus-visible:ring-offset-2 focus-visible:ring-offset-stone-900"
-          aria-label="Back to top"
-        >
-          <ArrowUp className="w-4 h-4" />
-        </motion.button>
+          {/* Back to Top — inline so it can never overlap content */}
+          <motion.button
+            onClick={() =>
+              window.scrollTo({ top: 0, behavior: 'smooth' })
+            }
+            whileHover={reduceMotion ? undefined : { scale: 1.05 }}
+            whileTap={reduceMotion ? undefined : { scale: 0.95 }}
+            aria-label="Back to top"
+            className={`inline-flex h-11 cursor-pointer items-center gap-2 rounded-full border border-violet-500/30 bg-violet-600/15 px-4 text-xs font-medium text-violet-300 backdrop-blur-sm transition-colors hover:border-violet-500/50 hover:bg-violet-600/25 ${FOCUS_RING}`}
+          >
+            <ArrowUp className="h-4 w-4" aria-hidden="true" />
+            <span className="hidden sm:inline">Back to top</span>
+          </motion.button>
+        </div>
       </div>
     </footer>
   )
