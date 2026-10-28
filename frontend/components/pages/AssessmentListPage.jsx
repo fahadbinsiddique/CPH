@@ -9,7 +9,6 @@ import { Button } from '@/components/ui/button'
 import AssessmentCard from '@/components/assessment/AssessmentCard'
 import AssessmentDisclaimer from '@/components/assessment/AssessmentDisclaimer'
 import { AssessmentListSkeleton } from '@/components/assessment/AssessmentSkeleton'
-import { useHeaderHeight } from '@/hooks/useHeaderHeight'
 import { assessmentService } from '@/services/assessmentService'
 
 const TRUST_POINTS = [
@@ -31,7 +30,6 @@ const TRUST_POINTS = [
 ]
 
 export default function AssessmentListPage() {
-  const headerOffset = useHeaderHeight()
   const [quizzes, setQuizzes] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
@@ -56,7 +54,7 @@ export default function AssessmentListPage() {
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-white via-white to-teal-50/40">
-      <div className="mx-auto w-full max-w-5xl px-4 sm:px-6" style={{ paddingTop: headerOffset }}>
+      <div className="mx-auto w-full max-w-5xl px-4 pt-32 sm:px-6">
         {/* Intro */}
         <div className="pt-12 pb-14 text-center sm:pt-16">
           <motion.div

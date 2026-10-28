@@ -2,8 +2,8 @@
 
 import { useMemo, useEffect, useState, useCallback } from 'react'
 import Link from 'next/link'
-import { motion, useReducedMotion } from 'framer-motion'
-import { MessageCircle, ArrowRight, Sparkles, Loader2, UserX } from 'lucide-react'
+import { motion, useReducedMotion } from 'motion/react'
+import { MessageCircle, ArrowRight, Sparkles, Loader2, UserX, Star, MapPin, Video, MessageSquare } from 'lucide-react'
 import Autoplay from 'embla-carousel-autoplay'
 import {
   Carousel,
@@ -66,7 +66,7 @@ const TherapistsSection = () => {
     () =>
       prefersReducedMotion
         ? undefined
-        : Autoplay({ delay: 5000, stopOnInteraction: false }),
+        : Autoplay({ delay: 6000, stopOnInteraction: false }),
     [prefersReducedMotion]
   )
 
@@ -88,22 +88,19 @@ const TherapistsSection = () => {
   )
 
   return (
-    <section className="section-pad section-pad-lg relative overflow-hidden bg-white">
+    <section className="section-pad section-pad-lg relative overflow-hidden bg-stone-50/30" aria-labelledby="therapists-heading">
       <div className="pointer-events-none absolute inset-0" aria-hidden="true">
-        <div className="absolute -left-20 -top-24 h-80 w-80 rounded-full bg-teal-50 blur-3xl" />
-        <div className="absolute -bottom-24 -right-24 h-80 w-80 rounded-full bg-emerald-50 blur-3xl" />
+        <div className="absolute -left-20 -top-24 h-80 w-80 rounded-full bg-violet-50/50 blur-3xl" />
+        <div className="absolute -bottom-24 -right-24 h-80 w-80 rounded-full bg-emerald-50/50 blur-3xl" />
       </div>
 
       <div className="section-shell relative z-10">
         <Reveal className="section-head" y={24}>
-          <span className="eyebrow">
-            <Sparkles className="h-3.5 w-3.5" />
-            Expert Care
-          </span>
-          <h2 className="section-title">Meet Our Specialists</h2>
+          <h2 id="therapists-heading" className="section-title">
+            Meet our <span className="gradient-text-primary">specialists</span>
+          </h2>
           <p className="section-sub">
-            Connect with licensed professionals who are here to support your mental wellness
-            journey.
+            Connect with licensed professionals who are here to support your mental wellness journey.
           </p>
         </Reveal>
 
@@ -127,7 +124,7 @@ const TherapistsSection = () => {
                 <Button
                   variant="outline"
                   onClick={fetchTherapists}
-                  className="rounded-xl text-stone-700 hover:text-teal-700"
+                  className="rounded-xl text-stone-700 hover:text-violet-700"
                 >
                   <Loader2 className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
                   Try again
@@ -135,8 +132,8 @@ const TherapistsSection = () => {
               </div>
             ) : therapists.length === 0 ? (
               <div className="flex flex-col items-center justify-center gap-4 py-14 text-center">
-                <div className="flex h-14 w-14 items-center justify-center rounded-full bg-teal-50">
-                  <Sparkles className="h-6 w-6 text-teal-600" />
+                <div className="flex h-14 w-14 items-center justify-center rounded-full bg-violet-50">
+                  <Sparkles className="h-6 w-6 text-violet-600" />
                 </div>
                 <div>
                   <p className="text-base font-semibold text-stone-800">No specialists yet</p>
@@ -144,7 +141,7 @@ const TherapistsSection = () => {
                     Our specialists will be listed here soon. Stay tuned!
                   </p>
                 </div>
-                <Button asChild variant="outline" className="rounded-xl text-stone-700 hover:text-teal-700">
+                <Button asChild variant="outline" className="rounded-xl text-stone-700 hover:text-violet-700">
                   <Link href="/consultant">Browse the directory</Link>
                 </Button>
               </div>
@@ -162,6 +159,10 @@ const TherapistsSection = () => {
                     const title = doc.specializations?.[0]?.name || 'Consultant Psychologist'
                     const profileImg = normalizeProfileImage(doc.profile_image)
                     const showFallback = failedImages.has(doc.id)
+                    const rating = doc.rating || 4.9
+                    const reviewCount = doc.review_count || 0
+                    const location = doc.location || 'Online'
+                    const sessionTypes = doc.session_types || ['Video', 'Chat']
 
                     return (
                       <CarouselItem
@@ -175,9 +176,9 @@ const TherapistsSection = () => {
                           transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
                           className="h-full"
                         >
-                          <div className="group flex h-full flex-col overflow-hidden rounded-2xl border border-stone-200/70 bg-white shadow-soft transition-all duration-500 hover:-translate-y-2 hover:border-teal-200 hover:shadow-float">
-                            {/* ================= Portrait Container (Fixed Height & Scaled Image) ================= */}
-                            <div className="relative h-64 sm:h-72 w-full shrink-0 overflow-hidden bg-gradient-to-br from-teal-50/60 to-emerald-50/60 p-2">
+                          <div className="group flex h-full flex-col overflow-hidden rounded-2xl border border-stone-200/70 bg-white shadow-soft transition-all duration-500 hover:-translate-y-2 hover:border-violet-200 hover:shadow-float">
+                            {/* ================= Portrait Container ================= */}
+                            <div className="relative h-64 sm:h-72 w-full shrink-0 overflow-hidden bg-gradient-to-br from-violet-50/60 to-purple-50/60 p-2">
                               {profileImg && !showFallback ? (
                                 <>
                                   {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -187,14 +188,26 @@ const TherapistsSection = () => {
                                     loading="lazy"
                                     decoding="async"
                                     onError={() => handleImageError(doc.id)}
-                                    className="h-full w-full object-contain object-bottom transition-transform duration-500 group-hover:scale-105"
+                                    className="h-full w-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
                                   />
-                                  <div className="pointer-events-none absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-white/80 to-transparent" />
+                                  <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/40 to-transparent" />
+                                  {/* Session type badges */}
+                                  <div className="absolute bottom-3 left-3 right-3 flex flex-wrap gap-1.5">
+                                    {sessionTypes.slice(0, 2).map((type) => (
+                                      <span
+                                        key={type}
+                                        className="inline-flex items-center gap-1 rounded-full bg-white/90 backdrop-blur-sm px-2.5 py-1 text-xs font-medium text-stone-700 shadow-sm"
+                                      >
+                                        {type === 'Video' ? <Video className="h-3 w-3" /> : <MessageSquare className="h-3 w-3" />}
+                                        {type}
+                                      </span>
+                                    ))}
+                                  </div>
                                 </>
                               ) : (
-                                <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-teal-50 to-emerald-100">
-                                  <div className="flex h-20 w-20 items-center justify-center rounded-full border border-teal-200 bg-white/90 shadow-sm">
-                                    <span className="text-3xl font-bold text-teal-700">
+                                <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-violet-50 to-purple-100">
+                                  <div className="flex h-20 w-20 items-center justify-center rounded-full border border-violet-200 bg-white/90 shadow-sm">
+                                    <span className="text-3xl font-bold text-violet-700">
                                       {fullName.charAt(0).toUpperCase()}
                                     </span>
                                   </div>
@@ -204,17 +217,32 @@ const TherapistsSection = () => {
 
                             {/* ================= Card Content ================= */}
                             <div className="flex flex-1 flex-col p-5">
-                              <h3 className="line-clamp-1 text-lg font-bold leading-tight text-stone-800 transition-colors group-hover:text-teal-700">
-                                {fullName}
-                              </h3>
+                              <div className="flex items-start justify-between gap-2">
+                                <h3 className="line-clamp-1 text-lg font-bold leading-tight text-stone-800 transition-colors group-hover:text-violet-700">
+                                  {fullName}
+                                </h3>
+                                <div className="flex-shrink-0 flex items-center gap-1 text-sm font-medium text-violet-700">
+                                  <Star className="h-3.5 w-3.5 fill-violet-400 text-violet-400" />
+                                  <span>{rating.toFixed(1)}</span>
+                                  {reviewCount > 0 && (
+                                    <span className="text-stone-400">({reviewCount})</span>
+                                  )}
+                                </div>
+                              </div>
                               <p className="mt-0.5 truncate text-sm font-medium text-stone-500">
                                 {title}
                               </p>
 
-                              {/* Specialization Badge (fixed-height row keeps alignment) */}
-                              <div className="mt-3 flex min-h-[32px] items-start">
+                              {/* Location */}
+                              <div className="mt-2 flex items-center gap-1.5 text-xs text-stone-500">
+                                <MapPin className="h-3 w-3" />
+                                <span>{location}</span>
+                              </div>
+
+                              {/* Specialization Badge */}
+                              <div className="mt-3 flex min-h-[28px] items-start">
                                 {doc.specializations?.length > 0 && (
-                                  <span className="inline-flex max-w-full items-center rounded-full border border-teal-100 bg-teal-50 px-2.5 py-1 text-xs font-medium text-teal-700">
+                                  <span className="inline-flex max-w-full items-center rounded-full border border-violet-100 bg-violet-50 px-2.5 py-1 text-xs font-medium text-violet-700">
                                     <span className="truncate">{doc.specializations[0].name}</span>
                                   </span>
                                 )}
@@ -223,7 +251,7 @@ const TherapistsSection = () => {
                               {/* Action Button */}
                               <Link
                                 href={doc.slug ? `/consultant/${doc.slug}` : '/consultant'}
-                                className="mt-auto flex w-full items-center justify-center gap-2 rounded-xl border border-stone-200 bg-stone-50 px-4 py-2.5 text-sm font-semibold text-stone-700 transition-all duration-300 hover:border-teal-600 hover:bg-teal-700 hover:text-white"
+                                className="mt-auto flex w-full items-center justify-center gap-2 rounded-xl border border-stone-200 bg-stone-50 px-4 py-2.5 text-sm font-semibold text-stone-700 transition-all duration-300 hover:border-violet-600 hover:bg-violet-700 hover:text-white"
                               >
                                 <MessageCircle className="h-4 w-4" />
                                 Book Session
@@ -237,14 +265,14 @@ const TherapistsSection = () => {
                 </CarouselContent>
 
                 <div className="hidden md:block">
-                  <CarouselPrevious className="-left-12 h-11 w-11 border-stone-200 bg-white text-stone-600 transition-colors hover:border-teal-200 hover:bg-teal-50 hover:text-teal-700 lg:-left-14" />
-                  <CarouselNext className="-right-12 h-11 w-11 border-stone-200 bg-white text-stone-600 transition-colors hover:border-teal-200 hover:bg-teal-50 hover:text-teal-700 lg:-right-14" />
+                  <CarouselPrevious className="-left-12 h-11 w-11 border-stone-200 bg-white text-stone-600 transition-colors hover:border-violet-200 hover:bg-violet-50 hover:text-violet-700 lg:-left-14" />
+                  <CarouselNext className="-right-12 h-11 w-11 border-stone-200 bg-white text-stone-600 transition-colors hover:border-violet-200 hover:bg-violet-50 hover:text-violet-700 lg:-right-14" />
                 </div>
 
-                {/* Fraction indicator instead of dots */}
+                {/* Fraction indicator */}
                 <div className="mt-8 text-center">
                   <span className="text-sm font-medium text-stone-600">
-                    <span className="text-teal-700 font-bold" id="carousel-current">1</span>
+                    <span className="text-violet-700 font-bold" id="carousel-current">1</span>
                     <span className="text-stone-400 mx-2">/</span>
                     <span className="font-bold" id="carousel-total">{therapists.length}</span>
                   </span>
@@ -256,7 +284,7 @@ const TherapistsSection = () => {
 
         <Reveal y={20} delay={0.15}>
           <div className="mt-12 text-center">
-            <Button asChild variant="ghost" className="group h-auto rounded-2xl px-8 py-4 text-base font-semibold text-teal-700 hover:bg-teal-50">
+            <Button asChild variant="ghost" className="group h-auto rounded-2xl px-8 py-4 text-base font-semibold text-violet-700 hover:bg-violet-50">
               <Link href="/consultant">
                 <span>View all specialists</span>
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />

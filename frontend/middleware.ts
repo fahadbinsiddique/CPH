@@ -166,7 +166,7 @@ function buildCsp(isProduction: boolean): string {
     "img-src 'self' http://res.cloudinary.com https://res.cloudinary.com https://images.unsplash.com https://centreforpsychologicalhealth.com https://*.tawk.to https://lh3.googleusercontent.com https://ssl.gstatic.com https://www.facebook.com https://www.googletagmanager.com https://*.google.com https://www.google.com.ad https://www.google-analytics.com data: blob:",
     "font-src 'self' https://*.tawk.to",
     `connect-src 'self' ${backendUrl} https://stats.g.doubleclick.net https://www.google-analytics.com https://analytics.google.com https://*.tawk.to wss://*.tawk.to https://accounts.google.com https://connect.facebook.net https://www.facebook.com`,
-    "frame-src https://www.googletagmanager.com https://*.tawk.to https://accounts.google.com",
+    "frame-src https://www.googletagmanager.com https://*.tawk.to https://accounts.google.com https://www.google.com https://maps.google.com",
     "frame-ancestors 'self'",
     "object-src 'none'",
     "base-uri 'self'",
